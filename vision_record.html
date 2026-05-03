@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>体験記録 / Vision Log — 2024.09</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Share+Tech+Mono&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap');
+
+  :root {
+    --black: #0a0a0f;
+    --deep: #0f0f1a;
+    --panel: #13131f;
+    --border: #2a2a3a;
+    --white: #e8e8f0;
+    --dim: #888899;
+    --violet: #9b8ec4;
+    --violet-light: #c4b8e8;
+    --violet-dim: #4a3f6b;
+    --glow: rgba(155, 142, 196, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* 背景グリッド */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(155,142,196,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(155,142,196,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ヘッダー */
+  .header {
+    border-left: 2px solid var(--violet);
+    padding-left: 20px;
+    margin-bottom: 60px;
+    animation: fadeIn 1s ease;
+    background: #1a1828;
+    padding: 24px 24px 24px 24px;
+    border-left: 3px solid #9b8ec4;
+  }
+
+  .header .label {
+    font-family: 'Share Tech Mono', monospace, sans-serif;
+    font-size: 12px;
+    color: #d8ccff !important;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    -webkit-text-fill-color: #d8ccff;
+  }
+
+  .header h1 {
+    font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.6;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff;
+    opacity: 1 !important;
+  }
+
+  .header .meta {
+    margin-top: 16px;
+    font-family: 'Share Tech Mono', monospace, sans-serif;
+    font-size: 12px;
+    color: #c8c8e0 !important;
+    -webkit-text-fill-color: #c8c8e0;
+    letter-spacing: 2px;
+  }
+
+  /* 六角形ビジョン図 */
+  .vision-diagram {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 50px 0;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .hex-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    animation: hexAppear 1.5s ease forwards;
+    opacity: 0;
+  }
+  .hex-wrapper:nth-child(1) { animation-delay: 0.3s; }
+  .hex-wrapper:nth-child(2) { animation-delay: 0.8s; }
+  .hex-wrapper:nth-child(3) { animation-delay: 1.3s; }
+
+  .hex-container {
+    position: relative;
+    width: 110px;
+    height: 110px;
+  }
+
+  .hex-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hex-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--violet-dim);
+    letter-spacing: 2px;
+  }
+
+  /* グリッド内セル */
+  .grid-cell {
+    animation: cellPulse 3s ease-in-out infinite;
+  }
+  .cell-white { fill: #e8e8f0; animation-delay: 0s; }
+  .cell-violet { fill: #9b8ec4; animation-delay: 0.3s; }
+  .cell-black { fill: #1a1a2a; animation-delay: 0.6s; }
+
+  /* セクション */
+  .section {
+    margin-bottom: 48px;
+    animation: fadeIn 1s ease;
+  }
+
+  .section-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--violet);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* 体験記録カード */
+  .record-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--violet-dim);
+    padding: 28px;
+    margin-bottom: 20px;
+    position: relative;
+    transition: border-color 0.3s;
+  }
+
+  .record-card:hover {
+    border-left-color: var(--violet);
+    box-shadow: -4px 0 20px var(--glow);
+  }
+
+  .record-card .card-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--violet);
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+  }
+
+  .record-card p {
+    font-size: 14px;
+    line-height: 2;
+    color: var(--white);
+    font-weight: 300;
+  }
+
+  /* フロー図 */
+  .flow {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .flow-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .flow-arrow {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--violet-dim);
+    font-size: 13px;
+    min-width: 20px;
+    margin-top: 2px;
+  }
+
+  .flow-text {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--white);
+  }
+
+  .flow-sub {
+    font-size: 12px;
+    color: var(--dim);
+    margin-top: 2px;
+  }
+
+  /* 考察テーブル */
+  .analysis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 560px) {
+    .analysis-grid { grid-template-columns: 1fr; }
+  }
+
+  .analysis-item {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 20px;
+    transition: background 0.3s;
+  }
+
+  .analysis-item:hover {
+    background: #1a1a2e;
+  }
+
+  .analysis-item .a-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--violet);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+
+  .analysis-item p {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--dim);
+  }
+
+  .analysis-item p strong {
+    color: var(--white);
+    font-weight: 400;
+  }
+
+  /* 色彩パターン凡例 */
+  .color-legend {
+    display: flex;
+    gap: 24px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+
+  .color-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--dim);
+  }
+
+  .color-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* 結論ブロック */
+  .conclusion {
+    border: 1px solid var(--violet-dim);
+    padding: 32px;
+    margin-top: 48px;
+    position: relative;
+    background: linear-gradient(135deg, var(--panel), rgba(155,142,196,0.05));
+  }
+
+  .conclusion::before {
+    content: '◈';
+    position: absolute;
+    top: -12px;
+    left: 28px;
+    background: var(--black);
+    padding: 0 8px;
+    color: var(--violet);
+    font-size: 18px;
+  }
+
+  .conclusion p {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 15px;
+    line-height: 2.2;
+    color: var(--white);
+    font-weight: 300;
+  }
+
+  /* フッター */
+  .footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--violet-dim);
+    letter-spacing: 2px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* アニメーション */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes hexAppear {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes cellPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ヘッダー -->
+  <div class="header">
+    <div class="label">Vision Log / Personal Record</div>
+    <h1>閉眼ビジョン体験記録<br>六角形光格子の出現と即時寛解</h1>
+    <div class="meta">DATE: 2024.09 ／ TIME: 09:00頃 ／ STATUS: 記録済</div>
+    <div class="meta" style="margin-top:8px; color:#c4b8e8;">SUBJECT: 男性・40代</div>
+  </div>
+
+  <!-- 六角形ビジョン図 -->
+  <div class="section">
+    <div class="section-title">Vision Diagram</div>
+
+    <!-- 図1：単体 -->
+    <div style="text-align:center; margin-bottom:8px;">
+      <span style="font-family:'Share Tech Mono',monospace; font-size:10px; color:#9b8ec4; letter-spacing:3px;">PHASE 01 — SINGLE</span>
+    </div>
+    <div class="vision-diagram">
+      <canvas id="visionCanvas1" width="220" height="240" style="max-width:100%;"></canvas>
+    </div>
+
+    <!-- 図2：入れ子3層 -->
+    <div style="text-align:center; margin:24px 0 8px;">
+      <span style="font-family:'Share Tech Mono',monospace; font-size:10px; color:#9b8ec4; letter-spacing:3px;">PHASE 02 — NESTED × 3</span>
+    </div>
+    <div class="vision-diagram">
+      <canvas id="visionCanvas2" width="220" height="240" style="max-width:100%;"></canvas>
+    </div>
+
+    <!-- 色彩パターン凡例 -->
+    <div class="color-legend" style="justify-content:center; margin-top:20px;">
+      <div class="color-item">
+        <div class="color-dot" style="background:#e8e8f0;"></div>
+        <span>白 ×2</span>
+      </div>
+      <div class="color-item">
+        <div class="color-dot" style="background:#9b8ec4;"></div>
+        <span>薄紫 ×2</span>
+      </div>
+      <div class="color-item">
+        <div class="color-dot" style="background:#2a2a4a; border:1px solid #4a4a6a;"></div>
+        <span>黒 ×1</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    const COLORS = ['#e8e8f0', '#e8e8f0', '#9b8ec4', '#9b8ec4', '#111122'];
+    const BG = '#0a0a0f';
+
+    function hexPoints(cx, cy, r, angleOffset = 0) {
+      const pts = [];
+      for (let i = 0; i < 6; i++) {
+        const a = Math.PI / 180 * (60 * i + angleOffset);
+        pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+      }
+      return pts;
+    }
+
+    function drawBand(ctx, outerPts, innerPts, segColors) {
+      for (let side = 0; side < 6; side++) {
+        const o0 = outerPts[side], o1 = outerPts[(side+1)%6];
+        const i0 = innerPts[side],  i1 = innerPts[(side+1)%6];
+        for (let s = 0; s < 5; s++) {
+          const t0 = s/5, t1 = (s+1)/5;
+          const oa = [o0[0]+(o1[0]-o0[0])*t0, o0[1]+(o1[1]-o0[1])*t0];
+          const ob = [o0[0]+(o1[0]-o0[0])*t1, o0[1]+(o1[1]-o0[1])*t1];
+          const ia = [i0[0]+(i1[0]-i0[0])*t0, i0[1]+(i1[1]-i0[1])*t0];
+          const ib = [i0[0]+(i1[0]-i0[0])*t1, i0[1]+(i1[1]-i0[1])*t1];
+          ctx.beginPath();
+          ctx.moveTo(oa[0],oa[1]); ctx.lineTo(ob[0],ob[1]);
+          ctx.lineTo(ib[0],ib[1]); ctx.lineTo(ia[0],ia[1]);
+          ctx.closePath();
+          ctx.fillStyle = segColors[s];
+          ctx.globalAlpha = 0.92;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          ctx.strokeStyle = BG;
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+    }
+
+    function fillHex(ctx, pts, color) {
+      ctx.beginPath();
+      pts.forEach((p,i) => i===0 ? ctx.moveTo(p[0],p[1]) : ctx.lineTo(p[0],p[1]));
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+
+    function strokeHex(ctx, pts, color, lw) {
+      ctx.beginPath();
+      pts.forEach((p,i) => i===0 ? ctx.moveTo(p[0],p[1]) : ctx.lineTo(p[0],p[1]));
+      ctx.closePath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lw;
+      ctx.stroke();
+    }
+
+    // 六角形リングを1つ描く
+    // bandRatio: 帯の太さ比率（0〜1）。2/3細め = innerR = outerR * (1 - 0.28)
+    function drawRing(ctx, cx, cy, outerR, bandRatio, colors, colorShift) {
+      const innerR = outerR * (1 - bandRatio);
+      const outer = hexPoints(cx, cy, outerR, -30);
+      const inner = hexPoints(cx, cy, innerR, -30);
+      const shifted = colors.map((_,i) => colors[(i + colorShift) % colors.length]);
+
+      fillHex(ctx, outer, BG);
+      drawBand(ctx, outer, inner, shifted);
+      fillHex(ctx, inner, BG);
+      strokeHex(ctx, outer, '#c4b8e8', 1.2);
+      strokeHex(ctx, inner, '#4a3f6b', 0.8);
+    }
+
+    // ---- 図1：単体 ----
+    const c1 = document.getElementById('visionCanvas1');
+    const x1 = c1.getContext('2d');
+    x1.fillStyle = BG; x1.fillRect(0,0,c1.width,c1.height);
+    drawRing(x1, 110, 112, 90, 0.28, COLORS, 0);
+    x1.fillStyle = '#4a3f6b';
+    x1.font = '10px "Share Tech Mono",monospace';
+    x1.textAlign = 'center';
+    x1.fillText('HEX — PHASE 01', 110, 218);
+
+    // ---- 図2：入れ子3層（層間に隙間） ----
+    const c2 = document.getElementById('visionCanvas2');
+    const x2 = c2.getContext('2d');
+    x2.fillStyle = BG; x2.fillRect(0,0,c2.width,c2.height);
+
+    // 帯幅ratio=0.28、層間ギャップ=7px
+    const BAND = 0.28;
+    const GAP  = 7;
+    const r1 = 92;
+    const r2 = r1 * (1 - BAND) - GAP;   // 1層目内側 - ギャップ = 2層目外側
+    const r3 = r2 * (1 - BAND) - GAP;   // 2層目内側 - ギャップ = 3層目外側
+
+    [
+      { outerR: r1, shift: 0 },
+      { outerR: r2, shift: 1 },
+      { outerR: r3, shift: 2 },
+    ].forEach(l => { if(l.outerR > 8) drawRing(x2, 110, 112, l.outerR, BAND, COLORS, l.shift); });
+
+    x2.fillStyle = '#4a3f6b';
+    x2.font = '10px "Share Tech Mono",monospace';
+    x2.textAlign = 'center';
+    x2.fillText('HEX — PHASE 02 ( ×3 NESTED )', 110, 218);
+
+  })();
+  </script>
+
+  <hr class="divider">
+
+  <!-- 体験の経緯 -->
+  <div class="section">
+    <div class="section-title">Incident Record</div>
+
+    <div class="record-card">
+      <div class="card-label">Context / 状況</div>
+      <p>仕事前に急激な腹痛に襲われる。三ヶ月前の急逝腸炎時とほぼ同じ痛みと判断。「今日はもうダメかもしれない」という状態から、自発的に精神統一を試みた。</p>
+    </div>
+
+    <div class="record-card">
+      <div class="card-label">Method / 実施内容（自発的）</div>
+      <p>①　指先に意識を集中し、フィラメントを意識してそこに電極が流れるイメージを維持<br>
+      ②　呼吸をできるだけ静かに・長くする<br>
+      ③　特定の知識に基づかず、身体が自然に誘導した手順</p>
+    </div>
+
+    <div class="record-card">
+      <div class="card-label">Method / 手の形・姿勢（詳細）</div>
+      <p>
+      <strong style="color:#c4b8e8;">場所：</strong>車の運転座席、ひとり<br><br>
+      <strong style="color:#c4b8e8;">手の形：</strong>小指と薬指を網目状に組み、親指の甲（根本の固い部分）同士をくっつける。人差し指と中指はフィラメントを意識して離す。組んだ手全体がハスの花のようなイメージ。<br><br>
+      <strong style="color:#c4b8e8;">配置：</strong>組んだ手を鼻筋の上・おでこ付近に当てる。<br><br>
+      <strong style="color:#c4b8e8;">姿勢：</strong>人目を避けるため前屈みの姿勢。結果として何かに祈っているような体勢となった。<br><br>
+      <span style="font-size:12px; color:#888899;">考察：この手の形は古来のムドラー（手印）に近い形を無意識に選択。おでこへの配置は松果体・前頭前野への意識誘導と一致。前屈み姿勢は迷走神経を刺激しやすい体勢でもある。</span>
+      </p>
+    </div>
+
+    <div class="record-card" style="border-left-color:#6a5a3a;">
+      <div class="card-label" style="color:#c8a86a;">Trigger / ピンチがトリガー</div>
+      <p>本体験は<strong style="color:#c8a86a;">追い詰められた状況下</strong>で発現した。通常の状態では再現できない可能性があり、極度のストレスがトリガーとなった可能性が高い。<br><br>
+      <span style="font-size:12px; color:#888899;">考察：追い詰められることで前頭前野（考える脳）が一時的にオフになり、より原始的な脳幹が主導権を持つ。雑念が消えた状態で身体の自動操縦モードが発動、本来持っている自己修復プロトコルが起動したと考えられる。武道・瞑想で言う「無我の境地」に近い状態。考えようとして入る状態ではなく、考えられなくなった時に入る状態＝ピンチがトリガー。</span>
+      </p>
+    </div>
+
+    <div class="record-card">
+      <div class="card-label">Vision / ビジョン内容（1回目）</div>
+      <p><strong style="color:#c4b8e8;">発生様式：</strong>いつの間にか現れていた（受動的・無意識）<br><br>
+      意識が深く入った状態で、気づいたら既に六角形が存在していた。光の粒子が一斉に正六角形を形成し、枠内は均等な長方形に仕切られ、白・薄紫・黒の順に右回りで点灯。<br><br>
+      <strong style="color:#c4b8e8;">光の動き方：</strong>連続的に流れるのではなく、マス目（セグメント）単位でひとつずつ点灯していくアナログ点滅に近い動き。横方向への移動感があった。一周のマス数は30〜60以上の可能性もある。一周にかかる時間は時計の秒針の動きに似た体感があり、30秒〜1分程度と推測されるが、体感と実際の時間には解離があるため断定できない。<br><br>      <span style="font-size:12px; color:#888899;">考察：連続光ではなくデジタル的な点滅単位の移動は、DNAの塩基配列がリボソームに一つずつ読み取られる動き方と構造的に類似している可能性。</span><br><br>
+      <span style="font-size:12px; color:#888899;">考察：身体が自発的に見せた無意識領域からの自然発生。意識の介入なし。</span>
+      </p>
+    </div>
+
+    <div class="record-card">
+      <div class="card-label">Vision / ビジョン内容（2回目）</div>
+      <p><strong style="color:#c4b8e8;">発生様式：</strong>光の粒子（残滓）が集まった（半能動的・半意識）<br><br>
+      一度目を開けた後、再度閉じると目蓋の裏に残った光の粒子・残滓が再集合。六角形が内側に向かってさらに二つ増殖し、合計三つの入れ子構造となった。<br><br>
+      <strong style="color:#c4b8e8;">三層の光のパターン：</strong>各層の点灯出発地点がランダムで、三層が同じ場所からスタートしていない。層同士で重なる地点がない可能性がある。<br><br>
+      <span style="font-size:12px; color:#888899;">考察：1回目のビジョンがリセットされず残滓として残存。意識が能動的に関与して再集合させた。これは量子力学の「観測者効果」が2段階で起きた可能性——1回目は無意識の波動収縮、2回目は意識的な観測による再収縮。三層の位相がずれて動く構造は、DNAの二重螺旋が位相をずらして巻いている構造と類似。干渉縞のような状態が生じていた可能性。</span>
+      </p>
+    </div>
+
+    <div class="record-card" style="border-left-color:#5a7a5a;">
+      <div class="card-label" style="color:#7ec87e;">Vision / 終盤の変化（補足・約4〜5分後）</div>
+      <p>三層構造をそのまま4〜5分ほど観察し続けたところ、終盤に<strong style="color:#7ec87e;">緑</strong>と<strong style="color:#e07070;">赤</strong>の色が増えたような感覚があった。確信ではなく希望による幻視の可能性も否定できないが、記録として残す。<br><br>
+      <span style="font-size:12px; color:#888899;">考察：緑（波長530nm付近）= 細胞修復・再生のバイオフォトン域。赤（波長660nm付近）= 生命エネルギーの再起動・ミトコンドリア活性域。修復完了後の「生命力の復活」を示すシグナル色である可能性。</span></p>
+    </div>
+
+    <div class="record-card">
+      <div class="card-label">Result / 結果</div>
+      <p>ビジョン終了後、数秒で腹痛が<strong style="color:#c4b8e8;">完全に消失</strong>。以降、同様の症状は現れていない。</p>
+    </div>
+
+    <div class="record-card">
+      <div class="card-label">Context / 医療的背景</div>
+      <p>本体験の痛みは三ヶ月前の急性腸炎と同種と判断。当時は病院でレントゲンを撮影し、<strong style="color:#c4b8e8;">炎症箇所・状況を医師により確認済み</strong>。根拠のない思い込みではなく、診断された炎症の再発と認識した上での体験である。</p>
+    </div>
+
+    <div class="record-card" style="border-left-color:#3a5a6a;">
+      <div class="card-label" style="color:#7ab8c8;">Note / 再現性・エネルギー問題</div>
+      <p>痛みの消失後、<strong style="color:#7ab8c8;">再び瞑想状態に入る気になれなかった</strong>。科学が再現性を信用の基準とすることを知りながらも、身体が「もう十分」と判断した可能性がある。<br><br>
+      <strong style="color:#7ab8c8;">自己考察：エネルギーの捻出問題</strong><br>
+      ストック（平時の蓄積）→ 捻出（修復への全振り）→ 不足（放出後の枯渇）→ 遮断（身体の防衛反応）という段階が存在する可能性。再現できないのは欠点ではなく、この体験における<strong style="color:#7ab8c8;">特性</strong>として記録する。<br><br>
+      <strong style="color:#7ab8c8;">発動条件について</strong><br>
+      今回の条件（追い詰められた状況・エネルギー状態・身体の認識）は本体験固有のもの。エネルギー問題と認識問題がクリアされれば発動条件は変わる可能性があり、今後の探求課題とする。<br><br>
+      <span style="font-size:12px; color:#888899;">参考：重病回復後の極度の疲労感は医学的にも「修復へのエネルギー全振り後の枯渇」として知られている。</span>
+      </p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 考察 -->
+  <div class="section">
+    <div class="section-title">Analysis / 考察</div>
+
+    <div class="analysis-grid">
+      <div class="analysis-item">
+        <div class="a-label">神経科学的解釈</div>
+        <p><strong>迷走神経の活性化</strong><br>長い呼吸により副交感神経が優位になり、腸の炎症シグナルが即座に鎮静。数秒での痛み消失は生理学的に説明可能。</p>
+      </div>
+      <div class="analysis-item">
+        <div class="a-label">生体電気的解釈</div>
+        <p><strong>ファシアネットワーク</strong><br>指先への意識集中は筋膜（ファシア）ネットワークのアクセスポイント。経絡・鍼灸の作用機序と構造的に一致。</p>
+      </div>
+      <div class="analysis-item">
+        <div class="a-label">バイオフォトン的解釈</div>
+        <p><strong>生体光の再配置</strong><br>意識が向いた経路にバイオフォトンが集中。六角形ビジョンは細胞レベルの情報処理が視覚野に投影されたインジケーター。</p>
+      </div>
+      <div class="analysis-item">
+        <div class="a-label">量子的解釈</div>
+        <p><strong>観測者効果</strong><br>意識による観測が波動を収縮・再統合。ラッセルの「圧力の再調整」と量子力学の観測者問題が同時に成立している可能性。</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- メカニズムフロー -->
+  <div class="section">
+    <div class="section-title">Mechanism Flow</div>
+    <div class="flow">
+      <div class="flow-item">
+        <div class="flow-arrow">▸</div>
+        <div class="flow-text">腸の炎症・強い痛み
+          <div class="flow-sub">= 波動の乱れ・圧力の不均衡（ラッセル的解釈）</div>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-arrow">↓</div>
+        <div class="flow-text">精神統一・指先フィラメント意識・長い呼吸
+          <div class="flow-sub">= 身体が自動選択した自己修復プロトコル</div>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-arrow">↓</div>
+        <div class="flow-text">光の粒子 → 六角形格子の形成（×3、フラクタル状）
+          <div class="flow-sub">= 細胞レベルの情報処理が意識に可視化された瞬間</div>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-arrow">↓</div>
+        <div class="flow-text">白・薄紫・黒の右回り点灯サイクル
+          <div class="flow-sub">= B型DNAの巻き方向と一致 / エネルギー再配置の可視化</div>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-arrow">↓</div>
+        <div class="flow-text">数秒で腹痛完全消失
+          <div class="flow-sub">= 波動・圧力の再調整完了 / 処理完了サイン</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 結論 -->
+  <div class="conclusion">
+    <p>
+      知識なしに身体が古来の叡智と同じ答えに自動的に辿り着いた。<br>
+      ビジョンは「宇宙との交信」であると同時に、<br>
+      自己の細胞・波動レベルの情報を意識が受信した体験でもある。<br><br>
+      身体の中に宇宙の原理がある——とすれば、どちらも正解である。<br><br>
+      <span style="display:inline-block; background:#2a1f4a; color:#e0d4ff; font-size:14px; letter-spacing:2px; padding:12px 20px; border-left:3px solid #9b8ec4; margin-top:8px;">
+      ラッセル：「内側と外側は同じ原理で動いている」
+      </span>
+    </p>
+  </div>
+
+  <!-- フッター -->
+  <div class="footer">
+    <span>VISION LOG — PERSONAL ARCHIVE</span>
+    <span>2024.09 / RECORDED & ANALYZED 2025</span>
+  </div>
+
+</div>
+</body>
+</html>
