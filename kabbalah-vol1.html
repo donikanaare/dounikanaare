@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カバラ Vol.1 — パス双方向数式と言語解説</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@200;300;400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#05050e;
+  --bg2:#08081a;
+  --gold:#c9a84c;
+  --gl:#f0d878;
+  --gd:#3a2808;
+  --gm:#8b6a28;
+  --text:#ddd0b4;
+  --dim:rgba(221,208,180,.52);
+  --border:rgba(201,168,76,.13);
+}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Noto Serif JP',serif;
+  font-weight:300;
+  line-height:1.9;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 70% 50% at 50% 20%,rgba(30,15,80,.18) 0%,transparent 60%);
+  pointer-events:none;z-index:0;
+}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:210px;
+  background:linear-gradient(180deg,#060610 0%,#04040c 100%);
+  border-right:1px solid var(--border);
+  padding:32px 0;
+  display:flex;flex-direction:column;
+  z-index:100;overflow-y:auto;
+}
+.sb-logo{padding:0 20px 24px;border-bottom:1px solid var(--border);margin-bottom:16px;text-align:center;}
+.sb-logo .sym{font-family:'Cinzel',serif;font-size:28px;color:var(--gold);display:block;margin-bottom:6px;text-shadow:0 0 24px rgba(201,168,76,.5);animation:glow 4s ease-in-out infinite;}
+@keyframes glow{0%,100%{text-shadow:0 0 24px rgba(201,168,76,.4);}50%{text-shadow:0 0 40px rgba(201,168,76,.7);}}
+.sb-logo .ttl{font-family:'Cinzel',serif;font-size:7.5px;color:var(--gm);letter-spacing:.25em;line-height:1.8;text-transform:uppercase;}
+.nav-label{font-family:'Cinzel',serif;font-size:7px;color:var(--gd);letter-spacing:.3em;text-transform:uppercase;padding:14px 20px 4px;}
+nav a{display:block;padding:7px 20px;font-family:'Cinzel',serif;font-size:8.5px;color:var(--dim);text-decoration:none;letter-spacing:.14em;text-transform:uppercase;transition:all .2s;border-left:2px solid transparent;line-height:1.5;}
+nav a:hover{color:var(--gold);border-left-color:var(--gold);background:rgba(201,168,76,.04);}
+nav a.active{color:var(--gl);border-left-color:var(--gl);background:rgba(201,168,76,.07);}
+
+/* ── MAIN ── */
+main{margin-left:210px;position:relative;z-index:1;}
+
+/* ── COVER ── */
+.cover{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 80px;
+  background:radial-gradient(ellipse 100% 80% at 50% 40%,rgba(20,10,60,.35) 0%,transparent 70%);
+  border-bottom:1px solid var(--border);position:relative;
+}
+.cover-sym{font-family:'Cinzel',serif;font-size:56px;color:var(--gold);margin-bottom:28px;text-shadow:0 0 60px rgba(201,168,76,.6);animation:glow 4s ease-in-out infinite;}
+.cover h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(26px,4vw,50px);color:var(--gl);text-align:center;letter-spacing:.12em;line-height:1.2;margin-bottom:12px;}
+.cover-sub{font-family:'Cinzel',serif;font-size:10px;color:var(--gm);letter-spacing:.3em;text-align:center;text-transform:uppercase;line-height:2;margin-bottom:36px;}
+.cover-rule{width:100%;max-width:500px;border:none;border-top:1px solid var(--border);margin:0 auto 28px;position:relative;}
+.cover-rule::before{content:'◆';position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--gold);background:var(--bg);padding:0 8px;}
+.cover-quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:rgba(201,168,76,.5);text-align:center;letter-spacing:.08em;line-height:1.7;max-width:480px;margin:0 auto 8px;}
+.cover-cite{font-family:'Cinzel',serif;font-size:8.5px;color:var(--dim);letter-spacing:.2em;text-align:center;}
+
+/* ── CHAPTER ── */
+.chapter{padding:72px 80px 56px;border-bottom:1px solid rgba(201,168,76,.07);position:relative;}
+.chapter::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,transparent,var(--gold),transparent);opacity:0;transition:opacity .4s;}
+.chapter:hover::before{opacity:.35;}
+.ch-num{font-family:'Cinzel',serif;font-size:10px;color:var(--gm);letter-spacing:.4em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+.ch-num::after{content:'';flex:1;height:1px;background:var(--border);}
+.chapter>h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(20px,3vw,34px);color:var(--gl);letter-spacing:.1em;margin-bottom:32px;line-height:1.3;}
+
+/* ── SECTION ── */
+.sec{margin-bottom:44px;}
+.sec h3{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:.24em;text-transform:uppercase;margin-bottom:14px;padding-bottom:7px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.sec h3::before{content:'✦';font-size:9px;color:var(--gm);}
+.sec h4{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:17px;color:rgba(201,168,76,.85);margin:22px 0 9px;letter-spacing:.06em;}
+p{margin-bottom:14px;color:var(--text);font-weight:300;}
+b,strong{color:#e8dcc0;font-weight:600;}
+em{font-style:italic;color:rgba(201,168,76,.8);}
+
+/* ── PATH BLOCK ── */
+.path-block{
+  margin:32px 0;
+  border:1px solid rgba(201,168,76,.14);
+  border-radius:4px;
+  overflow:hidden;
+  background:rgba(201,168,76,.02);
+  transition:border-color .3s;
+}
+.path-block:hover{border-color:rgba(201,168,76,.3);}
+.path-header{
+  padding:16px 22px;
+  background:rgba(201,168,76,.05);
+  border-bottom:1px solid rgba(201,168,76,.1);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+.path-title{font-family:'Cinzel',serif;font-size:11px;color:var(--gl);letter-spacing:.18em;}
+.path-group{font-family:'Cinzel',serif;font-size:8px;color:var(--gm);letter-spacing:.2em;text-transform:uppercase;}
+.path-body{padding:20px 22px;}
+
+/* formula */
+.formula{
+  background:rgba(201,168,76,.04);
+  border:1px solid rgba(201,168,76,.18);
+  border-radius:3px;
+  padding:14px 18px;
+  margin:12px 0;
+  font-family:'Cinzel',serif;
+  font-size:13.5px;
+  color:rgba(240,216,120,.9);
+  text-align:center;
+  letter-spacing:.04em;
+  line-height:1.9;
+}
+.formula .f-sub{font-size:10px;color:var(--dim);font-family:'Noto Serif JP',serif;margin-top:5px;letter-spacing:.02em;}
+
+/* direction */
+.direction{
+  margin:14px 0;
+  padding:13px 16px;
+  border-left:2px solid var(--gm);
+  background:rgba(255,255,255,.018);
+  font-size:10.5px;
+  line-height:1.9;
+  color:var(--dim);
+}
+.direction .dir-label{
+  font-family:'Cinzel',serif;font-size:8px;
+  color:var(--gold);letter-spacing:.22em;
+  text-transform:uppercase;margin-bottom:7px;
+  display:flex;align-items:center;gap:6px;
+}
+.direction.down{border-left-color:rgba(201,168,76,.6);}
+.direction.up{border-left-color:rgba(100,160,255,.5);}
+.direction.down .dir-label{color:rgba(240,200,80,.8);}
+.direction.up .dir-label{color:rgba(140,180,255,.8);}
+
+/* quantum tag */
+.q-tag{display:inline-block;background:rgba(80,120,255,.08);border:1px solid rgba(80,120,255,.25);border-radius:2px;padding:1px 7px;font-family:'Cinzel',serif;font-size:7.5px;color:rgba(140,180,255,.75);letter-spacing:.1em;margin-right:4px;}
+
+/* table */
+.tbl-wrap{overflow-x:auto;margin:20px 0;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+thead tr{background:rgba(20,16,40,.9);}
+thead th{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gl);padding:11px 13px;border:1px solid rgba(201,168,76,.22);font-weight:400;text-align:left;}
+tbody tr:nth-child(even){background:rgba(201,168,76,.02);}
+tbody tr:hover{background:rgba(201,168,76,.05);}
+tbody td{padding:9px 13px;border:1px solid rgba(201,168,76,.09);color:var(--text);font-weight:300;vertical-align:top;}
+tbody td:first-child{color:var(--gold);font-family:'Cinzel',serif;font-size:10px;}
+.star-row td{color:rgba(240,210,60,.9)!important;}
+.star-row{background:rgba(201,168,76,.05)!important;}
+
+/* highlight */
+.hl{margin:20px 0;padding:15px 20px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.18);border-radius:3px;}
+.hl p{margin:0;color:rgba(220,205,160,.85);font-size:10.5px;}
+
+/* quote */
+.quote{margin:24px 0;padding:18px 26px;border-left:3px solid var(--gold);background:linear-gradient(90deg,rgba(201,168,76,.06) 0%,rgba(201,168,76,.01) 100%);border-radius:0 4px 4px 0;position:relative;}
+.quote::before{content:'"';position:absolute;top:-8px;left:18px;font-family:'Cormorant Garamond',serif;font-size:56px;color:rgba(201,168,76,.13);line-height:1;}
+.quote p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(220,200,150,.8);margin:0;line-height:1.8;}
+.quote cite{display:block;margin-top:7px;font-family:'Cinzel',serif;font-size:8.5px;color:var(--dim);letter-spacing:.18em;}
+
+/* divider */
+.div{text-align:center;margin:44px 0;color:var(--gd);font-size:11px;letter-spacing:.5em;}
+
+/* badge */
+.badge{display:inline-block;padding:3px 10px;border-radius:2px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.15em;margin-right:5px;margin-bottom:4px;}
+.badge-upper{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:rgba(240,216,120,.8);}
+.badge-daath{background:rgba(150,60,220,.08);border:1px solid rgba(150,60,220,.3);color:rgba(180,120,255,.8);}
+.badge-middle{background:rgba(100,160,255,.08);border:1px solid rgba(100,160,255,.25);color:rgba(140,190,255,.8);}
+.badge-lower{background:rgba(60,200,100,.06);border:1px solid rgba(60,200,100,.2);color:rgba(100,220,140,.7);}
+.badge-cross{background:rgba(255,150,60,.06);border:1px solid rgba(255,150,60,.2);color:rgba(255,180,100,.7);}
+
+/* big formula */
+.big-formula{
+  margin:32px 0;padding:28px;
+  background:rgba(201,168,76,.04);
+  border:1px solid rgba(201,168,76,.25);
+  border-radius:4px;text-align:center;
+}
+.big-formula .bf-main{font-family:'Cinzel',serif;font-size:16px;color:var(--gl);letter-spacing:.05em;line-height:2;}
+.big-formula .bf-sub{font-size:11px;color:var(--dim);margin-top:10px;font-family:'Noto Serif JP',serif;line-height:1.8;}
+
+/* footer */
+footer{padding:36px 80px;text-align:center;border-top:1px solid var(--border);background:rgba(201,168,76,.02);}
+footer p{font-family:'Cinzel',serif;font-size:8.5px;color:var(--dim);letter-spacing:.22em;}
+
+/* progress */
+.progress{position:fixed;top:0;left:210px;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gl));transform-origin:left;transform:scaleX(0);z-index:200;}
+
+/* fade in */
+.fi{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+.fi.vis{opacity:1;transform:translateY(0);}
+
+/* mobile */
+.menu-btn{display:none;position:fixed;top:14px;left:14px;z-index:300;background:var(--bg2);border:1px solid var(--border);color:var(--gold);padding:7px 12px;cursor:pointer;font-family:'Cinzel',serif;font-size:9px;border-radius:2px;}
+@media(max-width:860px){
+  .sidebar{transform:translateX(-100%);transition:transform .3s;}
+  .sidebar.open{transform:translateX(0);}
+  main{margin-left:0;}
+  .progress{left:0;}
+  .chapter,.cover{padding:56px 22px 40px;}
+  footer{padding:28px 22px;}
+  .menu-btn{display:block;}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<button class="menu-btn" onclick="document.getElementById('sb').classList.toggle('open')">☰</button>
+
+<aside class="sidebar" id="sb">
+  <div class="sb-logo">
+    <span class="sym">✦</span>
+    <div class="ttl">カバラ Vol.1<br>パス双方向数式</div>
+  </div>
+  <nav id="nav">
+    <div class="nav-label">目次</div>
+    <a href="#cover">表紙</a>
+    <a href="#intro">読み方・統合式</a>
+    <div class="nav-label">セフィロト</div>
+    <a href="#sephirot">基本情報</a>
+    <div class="nav-label">上位三角形</div>
+    <a href="#p01">P01 ケテル↔コクマー</a>
+    <a href="#p02">P02 ケテル↔ビナー</a>
+    <a href="#p03">P03 コクマー↔ビナー</a>
+    <div class="nav-label">深淵パス</div>
+    <a href="#p04">P04 コクマー↔ダアト</a>
+    <a href="#p05">P05 ビナー↔ダアト</a>
+    <a href="#p06">P06 ダアト↔ティファレト</a>
+    <div class="nav-label">中位三角形</div>
+    <a href="#p07">P07 ケテル↔ティファレト</a>
+    <a href="#p08">P08 コクマー↔ケセド</a>
+    <a href="#p09">P09 ビナー↔ゲブラー</a>
+    <a href="#p10">P10 ケセド↔ゲブラー</a>
+    <a href="#p11">P11 ケセド↔ティファレト</a>
+    <a href="#p12">P12 ゲブラー↔ティファレト</a>
+    <div class="nav-label">下位三角形</div>
+    <a href="#p13">P13 ケセド↔ネツァク</a>
+    <a href="#p14">P14 ゲブラー↔ホド</a>
+    <a href="#p15">P15 ティファレト↔ネツァク</a>
+    <a href="#p16">P16 ティファレト↔ホド</a>
+    <a href="#p17">P17 ネツァク↔ホド</a>
+    <a href="#p18">P18 ティファレト↔イェソド</a>
+    <a href="#p19">P19 ネツァク↔イェソド</a>
+    <a href="#p20">P20 ホド↔イェソド</a>
+    <a href="#p21">P21 イェソド↔マルクト</a>
+    <div class="nav-label">交差パス</div>
+    <a href="#p22">P22 ケセド↔ホド</a>
+    <a href="#p23">P23 ゲブラー↔ネツァク</a>
+    <div class="nav-label">統合</div>
+    <a href="#final">最終統合式</a>
+  </nav>
+</aside>
+
+<main>
+<!-- COVER -->
+<section class="cover" id="cover">
+  <div class="cover-sym">✦</div>
+  <h1>カバラ 生命の木<br>全パス双方向数式と言語解説</h1>
+  <div class="cover-sub">Vol.1 · Kabbalah · 22 Paths · Bilateral Equations · Language Decoded</div>
+  <hr class="cover-rule">
+  <p class="cover-quote">"As above, so below. As within, so without."</p>
+  <p class="cover-cite">— Emerald Tablet / エメラルドタブレット</p>
+</section>
+
+<!-- INTRO -->
+<section class="chapter fi" id="intro">
+  <div class="ch-num">Introduction</div>
+  <h2>読み方・統合式</h2>
+  <div class="sec">
+    <h3>三層構造</h3>
+    <p>このレポートはカバラの<b>22のパス</b>と<b>10のセフィロト</b>を三つの層で記述します。</p>
+    <div class="formula">
+      数式（圧縮された真実）<br>
+      <span style="color:var(--dim)">↓</span><br>
+      言語解説・降下方向（ケテルから降りる時）<br>
+      <span style="color:var(--dim)">↓</span><br>
+      言語解説・上昇方向（マルクトから登る時）
+      <div class="f-sub">降下 = 神性が物質へ凝縮するプロセス &nbsp;|&nbsp; 上昇 = 人間が神性へ還帰するプロセス</div>
+    </div>
+  </div>
+  <div class="sec">
+    <h3>統合式——全体を貫く一本の式</h3>
+    <div class="big-formula">
+      <div class="bf-main">𝒦 = lim(AIN→∞) ∮[ケテル→マルクト] S(φⁿ) / Ψ_ego dn = 1</div>
+      <div class="bf-sub">無限の無（AIN）から始まり、黄金比で凝縮しながら物質へ降り、<br>自我を溶かして積分すると、答えは常に <b style="color:var(--gl)">1（ひとつ）</b> に戻る。<br>全パスはこの式の部分プロセスである。</div>
+    </div>
+  </div>
+  <div class="sec">
+    <h3>双方向の本質</h3>
+    <div class="formula">
+      降下 = × (1/φ) &nbsp;&nbsp;（凝縮・物質化・具現化）<br>
+      上昇 = × φ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;（拡張・精神化・還帰）
+      <div class="f-sub">全22パスはφによる乗除の繰り返し。宇宙は黄金比で呼吸している。</div>
+    </div>
+  </div>
+</section>
+
+<!-- SEPHIROT TABLE -->
+<section class="chapter fi" id="sephirot">
+  <div class="ch-num">Sephirot</div>
+  <h2>10のセフィロト — 基本情報</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>#</th><th>セフィロト</th><th>意味</th><th>惑星</th><th>金属</th><th>φ位置</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>ケテル</td><td>王冠・純粋光</td><td>源</td><td>純粋光</td><td>E₀</td></tr>
+        <tr><td>2</td><td>コクマー</td><td>知恵・父性</td><td>恒星天</td><td>原質</td><td>E₀/φ</td></tr>
+        <tr><td>3</td><td>ビナー</td><td>理解・母性</td><td>土星 ♄</td><td>鉛 Pb</td><td>E₀/φ²</td></tr>
+        <tr><td>✦</td><td>ダアト</td><td>隠された知識</td><td>隠</td><td>−</td><td>深淵の扉</td></tr>
+        <tr><td>4</td><td>ケセド</td><td>慈悲・拡大</td><td>木星 ♃</td><td>錫 Sn</td><td>E₀/φ³</td></tr>
+        <tr><td>5</td><td>ゲブラー</td><td>力・裁き</td><td>火星 ♂</td><td>鉄 Fe</td><td>E₀/φ⁴</td></tr>
+        <tr class="star-row"><td>6★</td><td>ティファレト</td><td>美・調和・中心</td><td>太陽 ☉</td><td>金 Au</td><td>E₀/φ⁵</td></tr>
+        <tr><td>7</td><td>ネツァク</td><td>勝利・感情</td><td>金星 ♀</td><td>銅 Cu</td><td>E₀/φ⁶</td></tr>
+        <tr><td>8</td><td>ホド</td><td>栄光・知性</td><td>水星 ☿</td><td>水銀 Hg</td><td>E₀/φ⁷</td></tr>
+        <tr><td>9</td><td>イェソド</td><td>基盤・潜在意識</td><td>月 ☽</td><td>銀 Ag</td><td>E₀/φ⁸</td></tr>
+        <tr><td>10</td><td>マルクト</td><td>王国・物質世界</td><td>地球 ⊕</td><td>全金属</td><td>E₀/φ⁹</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="hl"><p>★ ティファレトはφ⁵の位置で黄金比の焦点。心臓・アナーハタ・ゼロポイントと完全対応。</p></div>
+</section>
+
+<!-- UPPER TRIANGLE -->
+<section class="chapter fi" id="p01">
+  <div class="ch-num">Path 01 · <span class="badge badge-upper">上位三角形</span></div>
+  <h2>ケテル ↔ コクマー</h2>
+  <div class="formula">K → K/φ &nbsp;（降下）&nbsp;&nbsp;&nbsp; Cₕ × φ → K &nbsp;（上昇）<div class="f-sub">コクマー = ケテル ÷ φ</div></div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ケテル → コクマー）963Hz → 852Hz</div>純粋光が最初に分化する瞬間。無が父性へ。光はφで割られることで初めて「方向」を持つ。ケテルには方向がない——それは全方向であり無方向だから。コクマーに降りた瞬間、初めて「能動」という概念が生まれる。宇宙が「動こうとする意志」を持つ最初の瞬間。<br><br><span class="q-tag">量子対応</span> 波動関数の発生。真空から最初の揺らぎが生まれる瞬間。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（コクマー → ケテル）852Hz → 963Hz</div>知恵がφを乗じて光に還る。人間が純粋な直感・閃き・インスピレーションを経験する時、コクマーからケテルへの上昇が起きている。「考えた」のではなく「降りてきた」と感じる体験がこれ。自我が薄れた瞬間に起きる。<br><br><span class="q-tag">量子対応</span> 波動関数の重ね合わせへの回帰。観測をやめた状態。</div>
+</section>
+
+<section class="chapter fi" id="p02">
+  <div class="ch-num">Path 02 · <span class="badge badge-upper">上位三角形</span></div>
+  <h2>ケテル ↔ ビナー</h2>
+  <div class="formula">K → K/φ² &nbsp;（降下）&nbsp;&nbsp;&nbsp; B × φ² → K &nbsp;（上昇）<div class="f-sub">ビナー = ケテル ÷ φ²</div></div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ケテル → ビナー）963Hz → 741Hz</div>純粋光が母性へ。陰の誕生。時間と制限が始まる。ケテルからビナーへの降下はφの2乗分の割り算。ビナーは「受け取る器」として光を受容し、形を与える力。ここで「時間」という概念が初めて生まれる——なぜなら制限なしに時間は存在できないから。<br><br><span class="q-tag">量子対応</span> 境界条件の設定。波動関数に「壁」が生まれる瞬間。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ビナー → ケテル）741Hz → 963Hz</div>制限の理解が光に還る。深い悲しみ・喪失・限界の受容を経て「それでも全てはひとつだ」という理解に至る時、ビナーからケテルへの上昇が起きている。老賢者が死を静かに受け入れる時の意識がこれ。<br><br><span class="q-tag">量子対応</span> 境界条件の消滅。波動が再び自由になる。</div>
+</section>
+
+<section class="chapter fi" id="p03">
+  <div class="ch-num">Path 03 · <span class="badge badge-upper">上位三角形</span></div>
+  <h2>コクマー ↔ ビナー</h2>
+  <div class="formula">(+∞/2) ↔ (−∞/2)<br>張力 = (Cₕ − B)/2 ≠ 0 → 創造が始まる<div class="f-sub">父性の能動と母性の受動の出会い</div></div>
+  <div class="direction down"><div class="dir-label">↓ 降下（コクマー → ビナー）852Hz → 741Hz</div>父性の能動が母性の受動と出会い、張力が生まれる。コクマー（陽・+∞）とビナー（陰・−∞）が出会うこのパスなしに、宇宙は展開しない。二つが等しくなった瞬間（張力=0）に宇宙は消滅する。この「ズレ」こそが存在の根拠。愛の原型。<br><br><span class="q-tag">量子対応</span> 量子の重ね合わせ——どちらでもある状態が保たれている。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ビナー → コクマー）741Hz → 852Hz</div>受容の深さが能動へと反転する。完全に受け入れた時、行動が始まる。これは逆説に見えるが、抵抗をやめた時に最大の力が生まれるという武道・禅の原理と同じ。「何もしない」が「全てをする」に等しい状態。<br><br><span class="q-tag">量子対応</span> 重ね合わせの維持——観測されない間の自由な状態。</div>
+</section>
+
+<!-- DAATH -->
+<section class="chapter fi" id="p04">
+  <div class="ch-num">Path 04 · <span class="badge badge-daath">深淵パス</span></div>
+  <h2>コクマー ↔ ダアト</h2>
+  <div class="formula">Cₕ →(ego→0) D = lim(ego→0) Cₕ/Ψ_ego<br>D → Cₕ = D × φ &nbsp;（上昇）<div class="f-sub">自我消滅時のコクマー → ダアト</div></div>
+  <div class="direction down"><div class="dir-label">↓ 降下（コクマー → ダアト）852Hz → 693Hz</div>父性の知恵が自我なしに流れ込む時に開く扉。コクマーの直感・閃き・知恵は、自我がある状態では「私のアイデア」として処理される。自我がゼロに近づいた時のみ、その知恵は「ダアトの知識」として深淵を通過できる。<br><br><span class="q-tag">量子対応</span> 観測者効果——観測（自我）をやめた時の量子状態。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ダアト → コクマー）693Hz → 852Hz</div>深淵で溶けた自我が、純粋な知恵として再生する。一度ダアトで自我を手放した者が上昇する時、その知恵はもはや「個人の知恵」ではない。宇宙の知恵として降りてくる直感になる。<br><br><span class="q-tag">量子対応</span> デコヒーレンス後の純粋状態への回帰。</div>
+</section>
+
+<section class="chapter fi" id="p05">
+  <div class="ch-num">Path 05 · <span class="badge badge-daath">深淵パス</span></div>
+  <h2>ビナー ↔ ダアト</h2>
+  <div class="formula">B →(ego→0) D = lim(ego→0) B/Ψ_ego<br>D → B = D × φ² &nbsp;（上昇）<div class="f-sub">自我消滅時のビナー → ダアト</div></div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ビナー → ダアト）741Hz → 693Hz</div>母性の理解が自我なしに流れ込む。知識と愛が一体になる境界。ビナーの「受け入れる力」が自我を超えた時、それは単なる個人の理解ではなく「全てを知る慈悲」になる。<br><br><span class="q-tag">量子対応</span> 波動関数の収縮なき状態——観測されずに全てと繋がっている。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ダアト → ビナー）693Hz → 741Hz</div>深淵の知識が母性の理解として再統合される。ダアトで経験した「自我なき知識」が、ビナーの「形を与える力」によって言語化・構造化される瞬間。神秘体験を言葉にできる時、この上昇が完了している。<br><br><span class="q-tag">量子対応</span> 量子状態の古典的記述への変換。</div>
+</section>
+
+<section class="chapter fi" id="p06">
+  <div class="ch-num">Path 06 · <span class="badge badge-daath">深淵パス</span></div>
+  <h2>ダアト ↔ ティファレト</h2>
+  <div class="formula">D →(深淵横断) T = D × e^{−λ_abyss}<br>T → D = T / e^{−λ_abyss} &nbsp;（上昇）<div class="f-sub">深淵を渡った先が心臓（ティファレト）</div></div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ダアト → ティファレト）693Hz → 639Hz</div>深淵を渡り切った意識が、ティファレトという黄金の中心に着地する。これは「悟り」ではなく「統合」。上位の神性体験が、心臓という現実の中心点に降りてきた状態。愛として生きられる知恵になる。<br><br><span class="q-tag">量子対応</span> トンネル効果——古典的には超えられない壁を量子的に通過する。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ティファレト → ダアト）639Hz → 693Hz</div>心臓の愛が自我を溶かし深淵へ向かう。ティファレトで完全な愛（アナーハタ）を体験した者が、さらに深く登ろうとする時、深淵という「自我の消滅」の試練に向かう。愛することで怖くなくなった時のみ、この道を歩ける。<br><br><span class="q-tag">量子対応</span> 励起状態から量子トンネルへのエネルギー投入。</div>
+</section>
+
+<!-- MIDDLE -->
+<section class="chapter fi" id="p07">
+  <div class="ch-num">Path 07 · <span class="badge badge-middle">中位三角形</span></div>
+  <h2>ケテル ↔ ティファレト（中央の柱）</h2>
+  <div class="formula">T = K × e^{−λ×5} = K/φ⁵ &nbsp;（降下）<br>K = T × e^{+λ×5} = T × φ⁵ &nbsp;（上昇）<div class="f-sub">ティファレト = ケテルの5段階凝縮</div></div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ケテル → ティファレト）963Hz → 639Hz</div>光が中央の柱を降りて心臓に届く直通路。ケテル（頭頂・サハスラーラ）からティファレト（心臓・アナーハタ）への中央の柱は、スシュムナー経絡そのもの。この道を光が降りてくる時、人は「愛されている」という感覚を体験する。<br><br><span class="q-tag">量子対応</span> 光子が真空を伝播する最短経路。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ティファレト → ケテル）639Hz → 963Hz</div>心臓から頭頂への光の帰還。クンダリーニ上昇の本質。深い祈り・瞑想・愛の体験が頭頂まで達する時、この上昇が起きている。「全てとひとつになった」という体験。自分の心臓の鼓動が宇宙の鼓動と同じに感じられる瞬間。<br><br><span class="q-tag">量子対応</span> フォトンの放出——励起状態から基底状態への遷移。</div>
+</section>
+
+<section class="chapter fi" id="p08">
+  <div class="ch-num">Path 08 · <span class="badge badge-middle">中位三角形</span></div>
+  <h2>コクマー ↔ ケセド</h2>
+  <div class="formula">Cs = Cₕ/φ³ &nbsp;（降下）&nbsp;&nbsp;&nbsp; Cₕ = Cs × φ³ &nbsp;（上昇）</div>
+  <div class="direction down"><div class="dir-label">↓ 降下（コクマー → ケセド）852Hz → 528Hz</div>父性の知恵が右の柱を降り、拡大する慈悲となる。コクマーの「直感・閃き・宇宙の知恵」がケセドに降りた時、それは「与えたい」という衝動になる。知恵を持つ者が自然と他者を助けようとする力。木星の拡大するエネルギー。<br><br><span class="q-tag">量子対応</span> エネルギーの伝達——高エネルギー状態から周囲への放出。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ケセド → コクマー）528Hz → 852Hz</div>与えることで知恵が磨かれる。与え続けた者だけが到達できる知恵がある。経験を通じた直感——それがケセドからコクマーへの上昇。「理論」ではなく「生きてきた知恵」として降りてくる閃き。<br><br><span class="q-tag">量子対応</span> 情報の蓄積と圧縮——経験が高次の理解へ変換される。</div>
+</section>
+
+<section class="chapter fi" id="p09">
+  <div class="ch-num">Path 09 · <span class="badge badge-middle">中位三角形</span></div>
+  <h2>ビナー ↔ ゲブラー</h2>
+  <div class="formula">G = B/φ³ &nbsp;（降下）&nbsp;&nbsp;&nbsp; B = G × φ³ &nbsp;（上昇）</div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ビナー → ゲブラー）741Hz → 396Hz</div>母性の理解が左の柱を降り、制限する力となる。ビナーの「受け入れる理解」がゲブラーに降りた時、それは「必要なものと不要なものを見分ける力」になる。愛があるからこそ切れる。外科医のメスは慈悲からこそ正確に動く。<br><br><span class="q-tag">量子対応</span> 負のポテンシャルエネルギー——境界を定める力。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ゲブラー → ビナー）396Hz → 741Hz</div>裁きの経験が深い理解へと変容する。人生で「切らなければならなかった」経験——別れ・終わり・断念——を経た者が到達する理解の深さ。「なぜ制限があるのか」を知る知恵。<br><br><span class="q-tag">量子対応</span> エネルギー障壁の理解——制限を超えた先の視点。</div>
+</section>
+
+<section class="chapter fi" id="p10">
+  <div class="ch-num">Path 10 · <span class="badge badge-middle">中位三角形</span></div>
+  <h2>ケセド ↔ ゲブラー</h2>
+  <div class="formula">C − G = 0 &nbsp;（均衡時）<br>Φ_balance = (C − G)/T = 0 → ティファレトが安定<div class="f-sub">慈悲と力の拮抗がティファレトを安定させる</div></div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ケセド → ゲブラー）528Hz → 396Hz</div>慈悲が厳格に出会い、張力の均衡が生まれる。ケセドとゲブラーは「慈悲と力」「拡大と制限」「与えると切る」の対極。この二力が拮抗することでティファレト（中心・心臓）が安定する。どちらかが勝った瞬間に全体のバランスが崩れる。<br><br><span class="q-tag">量子対応</span> ハミルトニアン——ポテンシャルと運動エネルギーの均衡。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ゲブラー → ケセド）396Hz → 528Hz</div>力が慈悲へと変容する。厳格な修行・鍛練・苦しみを経た後、それが慈悲に変わる時。「力を知る者だけが慈悲を正しく使える」という逆説の道。<br><br><span class="q-tag">量子対応</span> エネルギーの変換——運動エネルギーがポテンシャルエネルギーへ。</div>
+</section>
+
+<section class="chapter fi" id="p11">
+  <div class="ch-num">Path 11 · <span class="badge badge-middle">中位三角形</span></div>
+  <h2>ケセド ↔ ティファレト</h2>
+  <div class="formula">T = Cs × φ⁻¹ = Cs/φ &nbsp;（降下）<br>Cs = T × φ &nbsp;（上昇）</div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ケセド → ティファレト）528Hz → 639Hz</div>慈悲が黄金比で凝縮すると愛（美）になる。拡大するだけの慈悲（ケセド）が、φで絞られることで「焦点を持つ愛」になる。全てを愛そうとする大きな愛が、目の前の一人への具体的な愛に凝縮される瞬間。<br><br><span class="q-tag">量子対応</span> フォトンの干渉——波が収束して焦点を結ぶ。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ティファレト → ケセド）639Hz → 528Hz</div>個人の愛が無条件の慈悲へと広がる。一人を深く愛した経験が、全ての存在への慈悲に拡大する時。「この人を愛することで、全ての人を愛せるようになった」という体験がこのパス。<br><br><span class="q-tag">量子対応</span> コヒーレントな波動の拡散——焦点が広がる。</div>
+</section>
+
+<section class="chapter fi" id="p12">
+  <div class="ch-num">Path 12 · <span class="badge badge-middle">中位三角形</span></div>
+  <h2>ゲブラー ↔ ティファレト</h2>
+  <div class="formula">T = G × φ⁻¹ = G/φ &nbsp;（降下）<br>G = T × φ &nbsp;（上昇）</div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ゲブラー → ティファレト）396Hz → 639Hz</div>力が黄金比で凝縮すると美（調和）になる。切断する力（ゲブラー）がφで絞られた時、それは「不要を除いた後に残る美」になる。彫刻家が石を削って像を現すように。制限が完成を生む。<br><br><span class="q-tag">量子対応</span> エネルギー最小化の原理——系が最も安定した状態へ落ち着く。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ティファレト → ゲブラー）639Hz → 396Hz</div>美の体験が意志の力に変換される。真に美しいものを見た時、人は「これを守りたい」「これを生み出したい」という強い意志を持つ。美が力の源になる上昇。<br><br><span class="q-tag">量子対応</span> 対称性の破れ——美しい構造が力の方向性を決める。</div>
+</section>
+
+<!-- LOWER -->
+<section class="chapter fi" id="p13">
+  <div class="ch-num">Path 13 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ケセド ↔ ネツァク</h2>
+  <div class="formula">N = Cs/φ² &nbsp;（降下）&nbsp;&nbsp;&nbsp; Cs = N × φ² &nbsp;（上昇）</div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ケセド → ネツァク）528Hz → 417Hz</div>慈悲の右柱が感情・欲求として現れる。木星の慈悲（ケセド）が金星の感情（ネツァク）に凝縮される時、「与えたい」が「感じたい・触れたい」になる。愛の抽象が、身体的な欲求・美への渇望・感動する能力として具現化する。<br><br><span class="q-tag">量子対応</span> 波動のモード変換——高次モードが低次の振動として現れる。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ネツァク → ケセド）417Hz → 528Hz</div>感情の純化が慈悲へと昇華する。傷つくほど感じた経験が、他者の痛みへの共感力になる時。「感情的」から「感受性が豊か」への変容。感じることを恐れなくなった者だけが到達できる慈悲。<br><br><span class="q-tag">量子対応</span> エネルギーレベルの上昇——励起による高次モードへの遷移。</div>
+</section>
+
+<section class="chapter fi" id="p14">
+  <div class="ch-num">Path 14 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ゲブラー ↔ ホド</h2>
+  <div class="formula">H = G/φ² &nbsp;（降下）&nbsp;&nbsp;&nbsp; G = H × φ² &nbsp;（上昇）</div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ゲブラー → ホド）396Hz → 285Hz</div>厳格の左柱が言語・知性として現れる。火星の力（ゲブラー）が水星の知性（ホド）に凝縮される時、「切る力」が「分析する力」になる。解剖・分類・論理——これらは全てゲブラーの力が精緻化した姿。<br><br><span class="q-tag">量子対応</span> 情報の符号化——エネルギーが情報として変換される。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ホド → ゲブラー）285Hz → 396Hz</div>知性が意志の力に変換される。深く考えることで「なすべきこと」が明確になった時、知性が行動の力になる。「なぜ」の理解が「いかに」の意志になる変換。<br><br><span class="q-tag">量子対応</span> 情報からエネルギーへの変換——マクスウェルの悪魔。</div>
+</section>
+
+<section class="chapter fi" id="p15">
+  <div class="ch-num">Path 15 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ティファレト ↔ ネツァク</h2>
+  <div class="formula">N = T/φ &nbsp;（降下）&nbsp;&nbsp;&nbsp; T = N × φ &nbsp;（上昇）</div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ティファレト → ネツァク）639Hz → 417Hz</div>心臓の愛が感情・美の欲求として右手に流れる。ティファレトの「統合された愛」がネツァクに降りた時、それは「感じる喜び」「美しいものへの渇望」「創造したい衝動」になる。右手が感じ、触れ、作る。<br><br><span class="q-tag">量子対応</span> エネルギーの右旋回成分——スピンの右回り。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ネツァク → ティファレト）417Hz → 639Hz</div>感情の真の体験が心臓を開く。深く感じること——美しいものに涙すること、音楽に魂を揺さぶられること——が、ティファレトへの上昇を促す。感情を抑圧せず、完全に感じ切ることで心臓が開く。<br><br><span class="q-tag">量子対応</span> スピンの反転——観測による状態の確定。</div>
+</section>
+
+<section class="chapter fi" id="p16">
+  <div class="ch-num">Path 16 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ティファレト ↔ ホド</h2>
+  <div class="formula">H = T/φ &nbsp;（降下）&nbsp;&nbsp;&nbsp; T = H × φ &nbsp;（上昇）</div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ティファレト → ホド）639Hz → 285Hz</div>心臓の知恵が言語・知性として左手に流れる。ティファレトの「統合された理解」がホドに降りた時、それは「言葉にする力」「分析する力」「道具を使う知性」になる。左手が書き、分析し、表現する。<br><br><span class="q-tag">量子対応</span> エネルギーの左旋回成分——スピンの左回り。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ホド → ティファレト）285Hz → 639Hz</div>言語化の完成が心臓の統合をもたらす。「言葉にできた」瞬間に理解が完成する。知ったことを伝えることで、知識が愛に変わる。<br><br><span class="q-tag">量子対応</span> 情報の完全な記述——エントロピーの減少。</div>
+</section>
+
+<section class="chapter fi" id="p17">
+  <div class="ch-num">Path 17 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ネツァク ↔ ホド</h2>
+  <div class="formula">sin θ ↔ cos θ &nbsp;（位相差90°）<br>N² + H² = T² &nbsp;（ピタゴラスの関係）<div class="f-sub">感情と知性は同じ波の違う顔</div></div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ネツァク → ホド）417Hz → 285Hz</div>感情が言語化される。体験が知識になる。感じたこと（ネツァク）を言葉にしようとする時（ホド）、このパスが活性化する。詩・音楽・絵画——感情を形にする全ての創造行為がこの変換。<br><br><span class="q-tag">量子対応</span> 量子の位相差——干渉縞の形成。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ホド → ネツァク）285Hz → 417Hz</div>知識が感動に変わる。概念が体験になる。「頭で分かっている」ことが「心で感じられる」ようになる時。数学の美しさに震える体験。哲学の言葉が突然リアルになる瞬間。<br><br><span class="q-tag">量子対応</span> 干渉縞の逆変換——パターンから波動への回帰。</div>
+</section>
+
+<section class="chapter fi" id="p18">
+  <div class="ch-num">Path 18 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ティファレト ↔ イェソド</h2>
+  <div class="formula">Y = √T &nbsp;（降下）&nbsp;&nbsp;&nbsp; T = Y² &nbsp;（上昇）<div class="f-sub">意識と潜在意識の通路</div></div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ティファレト → イェソド）639Hz → 432Hz</div>意識が潜在意識へ圧縮される。夢と現実の通路。昼間に体験したことが夜に夢として処理される。意識の9倍が潜在意識に蓄積される（√の逆：T=Y²）。<br><br><span class="q-tag">量子対応</span> シュレーディンガー方程式の虚数時間解——意識下のプロセス。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（イェソド → ティファレト）432Hz → 639Hz</div>潜在意識が意識へ浮上する。夢が現実を照らす。深い内省・夢分析・瞑想で「気づき」が生まれる時、イェソドからティファレトへの上昇が起きている。<br><br><span class="q-tag">量子対応</span> 量子デコヒーレンス——量子状態が古典的状態として顕現。</div>
+</section>
+
+<section class="chapter fi" id="p19">
+  <div class="ch-num">Path 19 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ネツァク ↔ イェソド</h2>
+  <div class="formula">Y = N/φ &nbsp;（降下）&nbsp;&nbsp;&nbsp; N = Y × φ &nbsp;（上昇）</div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ネツァク → イェソド）417Hz → 432Hz</div>感情の体験が潜在意識に蓄積される。感じたこと（ネツァク）はφで凝縮されてイェソドに格納される。喜びも悲しみも、体験する度に潜在意識のデータベースに書き込まれる。<br><br><span class="q-tag">量子対応</span> 量子メモリ——感情体験の量子的符号化。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（イェソド → ネツァク）432Hz → 417Hz</div>潜在意識の感情パターンが意識上に浮上する。「なぜかこういう感情になる」「このパターンが繰り返される」という体験は、イェソドからネツァクへの上昇。シャドウワークがこのパスの意識的な活性化。<br><br><span class="q-tag">量子対応</span> 量子状態の観測——潜在していた情報が顕在化。</div>
+</section>
+
+<section class="chapter fi" id="p20">
+  <div class="ch-num">Path 20 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ホド ↔ イェソド</h2>
+  <div class="formula">Y = H/φ &nbsp;（降下）&nbsp;&nbsp;&nbsp; H = Y × φ &nbsp;（上昇）</div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ホド → イェソド）285Hz → 432Hz</div>思考の結果が潜在意識に蓄積される。自動化。繰り返し考えたことがやがて「考えなくても動く」自動化になる。技術の習得・習慣形成・信念の形成がこのプロセス。<br><br><span class="q-tag">量子対応</span> ニューラルネットの重み更新——学習の量子的アナログ。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（イェソド → ホド）432Hz → 285Hz</div>自動化された無意識パターンを意識化する。「なぜこう考えるのか」を問い、無意識の思考パターンを言語化する時。認知行動療法・内省・哲学がこのパスの意識的な上昇。<br><br><span class="q-tag">量子対応</span> 逆計算——出力から重みを逆算するバックプロパゲーション。</div>
+</section>
+
+<section class="chapter fi" id="p21">
+  <div class="ch-num">Path 21 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>イェソド ↔ マルクト</h2>
+  <div class="formula">Ψ_wave →(観測) Ψ_particle &nbsp;（降下）<br>Ψ_particle →(Solve) Ψ_wave &nbsp;（上昇）<div class="f-sub">波動が粒子になる瞬間。量子の観測と同じ。</div></div>
+  <div class="direction down"><div class="dir-label">↓ 降下（イェソド → マルクト）432Hz → 174Hz</div>波動が粒子になる瞬間。夢が現実になる。これは量子力学の「波動関数の収縮」と完全に同じ構造。イェソドの潜在意識（波）が現実（マルクト・粒子）として顕現する。観測する（意識を向ける）ことで夢が現実になる。<br><br><span class="q-tag">量子対応</span> 波動関数の収縮——観測の瞬間。シュレーディンガー方程式の答え。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（マルクト → イェソド）174Hz → 432Hz</div>現実の体験が夢・潜在意識へと溶ける。眠りにつく瞬間。瞑想で現実から離れる時。物質世界の体験がイェソドの波動として再び溶け込む。死がこの上昇の最大のもの——肉体（マルクト）が潜在意識（イェソド）へと還帰する。<br><br><span class="q-tag">量子対応</span> 観測の終了——波動関数が再び重ね合わせ状態へ広がる。</div>
+</section>
+
+<!-- CROSS -->
+<section class="chapter fi" id="p22">
+  <div class="ch-num">Path 22 · <span class="badge badge-cross">交差パス</span></div>
+  <h2>ケセド ↔ ホド</h2>
+  <div class="formula">H ← Cs × e^{−λ} &nbsp;（降下）<br>Cs ← H × e^{+λ} &nbsp;（上昇）<div class="f-sub">右柱（慈悲）から左柱（知性）への交差</div></div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ケセド → ホド）528Hz → 285Hz</div>慈悲の心が言葉になる。与えたいという心が、具体的な言葉・説明・表現として現れる時。教師が生徒に教える時の愛がこれ。「伝えたいから話せる」という変換。<br><br><span class="q-tag">量子対応</span> エネルギーの横断的伝達——柱間のカップリング。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ホド → ケセド）285Hz → 528Hz</div>知性が慈悲へと昇華する。「理解した」ことが「助けたい」に変わる時。医師が病気の仕組みを理解することで患者への慈悲が増す。知識が愛の動機になる上昇。<br><br><span class="q-tag">量子対応</span> 情報からエネルギーへの逆変換。</div>
+</section>
+
+<section class="chapter fi" id="p23">
+  <div class="ch-num">Path 23 · <span class="badge badge-cross">交差パス</span></div>
+  <h2>ゲブラー ↔ ネツァク</h2>
+  <div class="formula">N ← G × e^{−λ} &nbsp;（降下）<br>G ← N × e^{+λ} &nbsp;（上昇）<div class="f-sub">左柱（厳格）から右柱（感情）への交差</div></div>
+  <div class="direction down"><div class="dir-label">↓ 降下（ゲブラー → ネツァク）396Hz → 417Hz</div>力強さが情熱になる。意志の力が感情のエネルギーに変換される時。勝利への渇望・競争への情熱・戦士の美学がこれ。力があるから強く感じられる。<br><br><span class="q-tag">量子対応</span> スピン-軌道相互作用——力の場が感情場に結合。</div>
+  <div class="direction up"><div class="dir-label">↑ 上昇（ネツァク → ゲブラー）417Hz → 396Hz</div>情熱が意志の力に変換される。強く感じることが行動の力になる時。怒りが正義の行動になる。愛が守る力になる。感じたことを力に変える錬金術。<br><br><span class="q-tag">量子対応</span> 感情場から力の場への変換——エネルギー変換の逆プロセス。</div>
+</section>
+
+<!-- FINAL -->
+<section class="chapter fi" id="final">
+  <div class="ch-num">Final Integration</div>
+  <h2>最終統合式</h2>
+  <div class="sec">
+    <h3>三つの式は = E である</h3>
+    <div class="big-formula">
+      <div class="bf-main">E = Ĥψ = m(D₊D₋+D₋D₊)/2 · x = 𝒦 · E₀</div>
+      <div class="bf-sub">
+        シュレーディンガー：エネルギーが波をどう動かすか → イェソド→マルクト<br>
+        ヤスエ：その波がなぜそこにあるか → ダアト（確率的ゆらぎの根拠）<br>
+        カバラ統合式：そのエネルギーの源は何か → ケテル（AIN SOPHからの流出）
+      </div>
+    </div>
+    <div class="formula">
+      降下 = × (1/φ) &nbsp;&nbsp; 上昇 = × φ<br>
+      <span style="font-size:11px;color:var(--dim)">全22パスはφによる乗除の繰り返し。宇宙は黄金比で呼吸している。</span>
+    </div>
+  </div>
+  <div class="sec">
+    <h3>あなたへの最終式</h3>
+    <div class="big-formula" style="border-color:rgba(201,168,76,.4);">
+      <div class="bf-main" style="font-size:18px;">あなた = ∫[マルクト→ケテル] φⁿ · Fₙ dn</div>
+      <div class="bf-sub">物質（根）から意識（光）へ、黄金比とフィボナッチが螺旋を描きながら積み重なったものがあなた自身。<br>全てのパスを歩いてきた記録が、今ここにいるあなたを作っている。</div>
+    </div>
+  </div>
+  <div class="div">✦ &nbsp; ◆ &nbsp; ✦</div>
+  <div class="quote">
+    <p>"As above, so below. As within, so without."<br>上にあるものは下にあるものの如く。内にあるものは外にあるものの如く。</p>
+    <cite>— Emerald Tablet</cite>
+  </div>
+  <p style="text-align:center;font-family:'Cinzel',serif;font-size:9px;color:var(--dim);letter-spacing:.2em;margin-top:24px;">
+    Vol.1 パス双方向数式 → Vol.2 周波数統合 → Vol.3 量子論完全統合
+  </p>
+</section>
+
+<footer><p>カバラ 生命の木 Vol.1 &nbsp;✦&nbsp; 全パス双方向数式と言語解説 &nbsp;✦&nbsp; Kabbalah · 22 Paths · One Structure</p></footer>
+</main>
+
+<script>
+// Progress
+window.addEventListener('scroll',()=>{
+  const t=document.body.scrollHeight-window.innerHeight;
+  document.getElementById('prog').style.transform=`scaleX(${window.scrollY/t})`;
+});
+// Active nav
+const secs=document.querySelectorAll('section[id]');
+const links=document.querySelectorAll('nav a');
+const obs=new IntersectionObserver(e=>{
+  e.forEach(en=>{
+    if(en.isIntersecting){
+      const id=en.target.id;
+      links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));
+    }
+  });
+},{rootMargin:'-25% 0px -65% 0px'});
+secs.forEach(s=>obs.observe(s));
+// Fade in
+const fi=new IntersectionObserver(e=>{
+  e.forEach(en=>{if(en.isIntersecting){en.target.classList.add('vis');fi.unobserve(en.target);}});
+},{threshold:0.06});
+document.querySelectorAll('.fi').forEach(el=>fi.observe(el));
+// Mobile sidebar close
+document.addEventListener('click',e=>{
+  const sb=document.getElementById('sb');
+  const btn=document.querySelector('.menu-btn');
+  if(sb.classList.contains('open')&&!sb.contains(e.target)&&e.target!==btn)sb.classList.remove('open');
+});
+</script>
+</body>
+</html>

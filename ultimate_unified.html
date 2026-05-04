@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>究極統合マップ — 人体・チャクラ・カバラ・フィボナッチ</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@300;400;600&family=IM+Fell+English:ital@0;1&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#03030a;
+  --gold:#c9a84c;--gl:#f0d080;--gd:#3a2808;
+  --text:#ddd0b8;--dim:rgba(221,208,184,.48);
+  --c1:#ff4444;  /* ムーラダーラ 赤 */
+  --c2:#ff8c00;  /* スワディスターナ 橙 */
+  --c3:#ffe030;  /* マニプーラ 黄 */
+  --c4:#40cc60;  /* アナーハタ 緑 */
+  --c5:#40c8f0;  /* ヴィシュッダ 水色 */
+  --c6:#4060ff;  /* アージュニャー 藍 */
+  --c7:#c060ff;  /* サハスラーラ 紫 */
+  --phi:1.618;
+}
+
+body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 100% at 50% 30%,rgba(40,20,100,.12) 0%,transparent 65%),
+    radial-gradient(ellipse 60% 40% at 20% 80%,rgba(20,60,40,.08) 0%,transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 80%,rgba(60,20,80,.08) 0%,transparent 50%);
+  font-family:'Noto Serif JP',serif;
+  color:var(--text);
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:24px 10px 60px;
+  overflow-x:hidden;
+}
+
+/* ── HEADER ── */
+.header-wrap{text-align:center;margin-bottom:20px;}
+h1{
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(11px,2vw,16px);
+  color:var(--gl);
+  letter-spacing:.18em;
+  text-shadow:0 0 40px rgba(201,168,76,.55),0 0 80px rgba(100,60,220,.2);
+  margin-bottom:4px;
+}
+.sub{
+  font-family:'Cinzel',serif;font-size:clamp(6.5px,1.2vw,9px);
+  color:var(--gd);letter-spacing:.32em;text-transform:uppercase;
+}
+.tagline{
+  font-family:'IM Fell English',serif;font-style:italic;
+  font-size:clamp(9px,1.6vw,12px);color:rgba(201,168,76,.38);
+  letter-spacing:.1em;margin-top:5px;
+}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;margin-bottom:18px;flex-wrap:wrap;justify-content:center;}
+.tab{
+  font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.13em;
+  padding:6px 13px;border-radius:2px;cursor:pointer;
+  border:1px solid var(--gd);background:transparent;color:var(--gd);
+  transition:all .22s;text-transform:uppercase;
+}
+.tab:hover{border-color:var(--gold);color:var(--gold);}
+.tab.active{background:rgba(201,168,76,.09);border-color:var(--gold);color:var(--gl);box-shadow:0 0 12px rgba(201,168,76,.15);}
+
+/* ── PANELS ── */
+.panel{display:none;width:100%;max-width:1140px;animation:fu .5s ease both;}
+.panel.active{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;align-items:flex-start;}
+@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+canvas{border:1px solid rgba(201,168,76,.08);border-radius:3px;background:#020208;flex-shrink:0;display:block;}
+
+/* ── INFO PANEL ── */
+.info{flex:1;min-width:230px;max-width:360px;display:flex;flex-direction:column;gap:13px;}
+.sec{border-left:2px solid var(--gd);padding-left:11px;}
+.sec-t{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+.sec-b{font-size:10px;line-height:1.95;color:var(--dim);}
+.sec-b b{color:var(--text);}
+.sec-b em{font-style:italic;}
+
+/* chakra rows */
+.chakra-list{display:flex;flex-direction:column;gap:4px;}
+.ch-row{
+  display:grid;grid-template-columns:10px 16px 1fr 1fr;
+  gap:7px;align-items:center;
+  padding:5px 9px;border-radius:3px;
+  border:1px solid rgba(255,255,255,.04);
+  background:rgba(255,255,255,.02);
+  transition:background .2s;cursor:default;font-size:9.5px;
+}
+.ch-row:hover{background:rgba(255,255,255,.05);}
+.ch-dot{width:10px;height:10px;border-radius:50%;}
+.ch-num{font-family:'Cinzel',serif;font-size:8px;color:rgba(255,255,255,.3);}
+.ch-name{color:var(--text);}
+.ch-seph{color:var(--dim);font-size:9px;}
+
+.fib-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+.fib-num{
+  font-family:'Cinzel',serif;font-size:10px;
+  padding:3px 7px;border-radius:2px;
+  border:1px solid rgba(201,168,76,.2);
+  background:rgba(201,168,76,.05);color:var(--gold);
+}
+.fib-num.hi3{border-color:rgba(255,80,80,.5);color:rgba(255,130,130,.9);background:rgba(255,80,80,.06);}
+.fib-num.hi13{border-color:rgba(64,200,144,.5);color:rgba(100,220,170,.9);background:rgba(64,200,144,.06);}
+.fib-num.hi8{border-color:rgba(80,180,255,.5);color:rgba(130,210,255,.9);background:rgba(80,180,255,.06);}
+
+.ctrl{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;justify-content:center;}
+.btn{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;padding:5px 11px;border-radius:2px;cursor:pointer;border:1px solid rgba(201,168,76,.2);background:rgba(201,168,76,.05);color:var(--gold);transition:all .18s;text-transform:uppercase;}
+.btn:hover{background:rgba(201,168,76,.14);border-color:var(--gold);}
+.btn.on{background:rgba(201,168,76,.17);border-color:var(--gl);color:var(--gl);}
+
+.foot{margin-top:36px;font-family:'Cinzel',serif;font-size:7.5px;color:rgba(201,168,76,.18);letter-spacing:.22em;text-align:center;}
+</style>
+</head>
+<body>
+
+<div class="header-wrap">
+  <h1>究極統合マップ ✦ The Human Cosmos</h1>
+  <div class="sub">Chakra · Sephirot · Fibonacci · Golden Ratio · Metatron · One Body</div>
+  <div class="tagline">"Man is the measure of all things" — Protagoras</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('body',this)">人体統合図</button>
+  <button class="tab" onclick="show('fibonacci',this)">フィボナッチ × φ</button>
+  <button class="tab" onclick="show('chakra_seph',this)">チャクラ × セフィロト</button>
+  <button class="tab" onclick="show('ultimate',this)">✦ 究極統合</button>
+</div>
+
+<!-- ══════ TAB 1: BODY MAP ══════ -->
+<div class="panel active" id="body">
+<canvas id="cBody" width="380" height="600"></canvas>
+<div class="info">
+  <div class="sec">
+    <div class="sec-t">✦ 人体は宇宙の縮図</div>
+    <div class="sec-b">
+      エメラルドタブレット<em>「上にあるものは下にあるものの如く」</em>の最も具体的な表れが人体。<br><br>
+      <b>心臓（ティファレト）</b>が黄金比の分割点として全体の中心に位置し、上（宇宙的意識）と下（物質世界）を繋ぐ。<br><br>
+      チャクラは7つ、セフィロトは10。一見違うが<b>上位3つのセフィロト（超三角形）</b>は頭部に集まり、チャクラ第7と対応する。
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">✦ 黄金比の分割点</div>
+    <div class="sec-b">
+      身長をφで分割すると<b>へそ</b>が境界点。<br>
+      へそから頭頂をさらにφで割ると<b>心臓</b>。<br>
+      心臓から頭頂をφで割ると<b>喉</b>。<br><br>
+      これがチャクラの配置とほぼ完全に一致する。<b>人体はフィボナッチ数列が生み出す黄金比の生きた結晶</b>。
+    </div>
+  </div>
+  <div class="chakra-list">
+    <div class="ch-row"><div class="ch-dot" style="background:var(--c7);box-shadow:0 0 6px var(--c7)"></div><span class="ch-num">7</span><span class="ch-name">サハスラーラ</span><span class="ch-seph">ケテル（光）</span></div>
+    <div class="ch-row"><div class="ch-dot" style="background:var(--c6);box-shadow:0 0 6px var(--c6)"></div><span class="ch-num">6</span><span class="ch-name">アージュニャー</span><span class="ch-seph">コクマー＋ビナー</span></div>
+    <div class="ch-row"><div class="ch-dot" style="background:var(--c5);box-shadow:0 0 6px var(--c5)"></div><span class="ch-num">5</span><span class="ch-name">ヴィシュッダ</span><span class="ch-seph">ケセド＋ゲブラー</span></div>
+    <div class="ch-row" style="border-color:rgba(64,204,96,.2);background:rgba(64,204,96,.03)"><div class="ch-dot" style="background:var(--c4);box-shadow:0 0 8px var(--c4)"></div><span class="ch-num">4</span><span class="ch-name" style="color:#60e080;">アナーハタ ★</span><span class="ch-seph" style="color:rgba(240,192,32,.8);">ティファレト（金）</span></div>
+    <div class="ch-row"><div class="ch-dot" style="background:var(--c3);box-shadow:0 0 6px var(--c3)"></div><span class="ch-num">3</span><span class="ch-name">マニプーラ</span><span class="ch-seph">ホド＋ネツァク</span></div>
+    <div class="ch-row"><div class="ch-dot" style="background:var(--c2);box-shadow:0 0 6px var(--c2)"></div><span class="ch-num">2</span><span class="ch-name">スワディスターナ</span><span class="ch-seph">イェソド（銀）</span></div>
+    <div class="ch-row"><div class="ch-dot" style="background:var(--c1);box-shadow:0 0 6px var(--c1)"></div><span class="ch-num">1</span><span class="ch-name">ムーラダーラ</span><span class="ch-seph">マルクト（全）</span></div>
+  </div>
+  <div class="ctrl">
+    <button class="btn on" id="bChakra" onclick="togBody('chakra',this)">チャクラ</button>
+    <button class="btn on" id="bSeph" onclick="togBody('seph',this)">セフィロト</button>
+    <button class="btn on" id="bPhi" onclick="togBody('phi',this)">黄金比線</button>
+    <button class="btn on" id="bSpiral" onclick="togBody('spiral',this)">螺旋</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════ TAB 2: FIBONACCI × PHI ══════ -->
+<div class="panel" id="fibonacci">
+<canvas id="cFib" width="440" height="440"></canvas>
+<div class="info">
+  <div class="sec">
+    <div class="sec-t">✦ フィボナッチ数列の構造</div>
+    <div class="sec-b">
+      <b>1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89...</b><br><br>
+      前の2数を足すと次の数になる。隣り合う数の比は黄金比<b>φ＝1.618...</b>に収束する。<br><br>
+      <b style="color:rgba(255,130,130,.9);">3</b>　→ テスラの「3」・カバラ上位三角形<br>
+      <b style="color:rgba(130,210,255,.9);">8</b>　→ メタトロン正八面体の頂点数<br>
+      <b style="color:rgba(100,220,170,.9);">13</b>　→ メタトロン13円・フルーツオブライフ<br>
+      <b>21</b>　→ 2+1=<b>3</b>（テスラ）<br>
+      <b>34</b>　→ 3+4=<b>7</b>（チャクラの数）<br>
+      <b>55</b>　→ 5+5=<b>10</b>（セフィロトの数）→1+0=<b>1</b>（ケテル）
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">✦ φ = 1.618... の神秘</div>
+    <div class="sec-b">
+      φ² = φ+1<br>
+      1/φ = φ-1<br><br>
+      <em>唯一、自分自身で完結する数。</em><br><br>
+      これが「完全・美・神聖」の象徴とされる理由。カバラのティファレト（美・調和）との完全対応。<br><br>
+      自然界：ひまわりの種・松ぼっくり・銀河の腕・DNAの螺旋・人体の比率
+    </div>
+  </div>
+  <div class="fib-row">
+    <span class="fib-num">1</span><span class="fib-num">1</span><span class="fib-num">2</span>
+    <span class="fib-num hi3">3</span><span class="fib-num">5</span>
+    <span class="fib-num hi8">8</span>
+    <span class="fib-num hi13">13</span>
+    <span class="fib-num">21</span><span class="fib-num">34</span><span class="fib-num">55</span><span class="fib-num">89</span>
+  </div>
+  <div class="ctrl">
+    <button class="btn on" id="fSpiral" onclick="togFib('spiral',this)">黄金螺旋</button>
+    <button class="btn on" id="fRect" onclick="togFib('rect',this)">黄金矩形</button>
+    <button class="btn on" id="fPenta" onclick="togFib('penta',this)">五芒星</button>
+    <button class="btn on" id="fMeta" onclick="togFib('meta',this)">メタトロン接続</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════ TAB 3: CHAKRA × SEPHIROT ══════ -->
+<div class="panel" id="chakra_seph">
+<canvas id="cCS" width="440" height="500"></canvas>
+<div class="info">
+  <div class="sec">
+    <div class="sec-t">✦ チャクラとセフィロトの対応原理</div>
+    <div class="sec-b">
+      チャクラは古代インドのヴェーダ・ヨーガ伝統、セフィロトはユダヤ神秘主義カバラ。地理的に何千kmも離れた文明が<b>同じ人体の地図</b>を描いた。<br><br>
+      両者の対応は<b>3つの三角形</b>という構造で見ると最もクリアになる。
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">✦ 三つの三角形構造</div>
+    <div class="sec-b">
+      <b style="color:rgba(192,96,255,.9);">上位三角形（神性）</b><br>
+      ケテル・コクマー・ビナー ＝ サハスラーラ・アージュニャー<br>
+      純粋意識・宇宙的知性の領域<br><br>
+      <b style="color:rgba(240,192,32,.9);">中位三角形（魂）</b><br>
+      ケセド・ゲブラー・ティファレト ＝ ヴィシュッダ・アナーハタ<br>
+      愛・意志・表現の領域<br><br>
+      <b style="color:rgba(64,200,144,.9);">下位三角形（物質）</b><br>
+      ネツァク・ホド・イェソド・マルクト ＝ マニプーラ・スワディスターナ・ムーラダーラ<br>
+      感情・本能・物質の領域
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">✦ スシュムナー ＝ 均衡の柱</div>
+    <div class="sec-b">
+      ヨガの三本の経絡（ナーディー）：<br>
+      <b>スシュムナー</b>（中央）＝ 均衡の柱<br>
+      <b>イダー</b>（左・陰）＝ 厳しさの柱<br>
+      <b>ピンガラー</b>（右・陽）＝ 慈悲の柱<br><br>
+      カバラの三本の柱と完全対応。クンダリーニの上昇＝セフィロトの上昇（ニグレド→ルベド）。
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════ TAB 4: ULTIMATE ══════ -->
+<div class="panel" id="ultimate">
+<canvas id="cUlt" width="460" height="600" style="cursor:crosshair;"></canvas>
+<div class="info">
+  <div class="sec">
+    <div class="sec-t">✦ 全知識体系の統合点</div>
+    <div class="sec-b">
+      一枚の図に全てが重なる。<br><br>
+      <b>人体シルエット</b>に<br>
+      　チャクラ7点（インド）<br>
+      　セフィロト10点（カバラ）<br>
+      　黄金比の分割線（数学）<br>
+      　フィボナッチ螺旋（自然）<br>
+      　メタトロンの輪郭（幾何学）<br>
+      　ラッセルの波動（物理）<br>
+      が全て重なって<b>一つの構造</b>を示す。
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">✦ 中心点はティファレト＝心臓</div>
+    <div class="sec-b">
+      全ての知識体系において<b>心臓・中心・太陽</b>が<em>統合の鍵</em>になっている。<br><br>
+      カバラ → ティファレト（金・美）<br>
+      チャクラ → アナーハタ（愛・無条件）<br>
+      黄金比 → φの分割点<br>
+      ラッセル → ゼロポイント<br>
+      錬金術 → ルベド（赤化・完成）<br>
+      エメラルド → As above so below の鏡面<br><br>
+      <em>「心臓を開くことが全ての道に共通する答え」</em>というのは偶然ではない。
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">✦ ノードをホバーで詳細表示</div>
+    <div class="sec-b">
+      図の光る点にカーソルを当てると各ポイントの詳細情報が表示されます。
+    </div>
+  </div>
+  <div class="ctrl">
+    <button class="btn on" id="uChakra" onclick="togUlt('chakra',this)">チャクラ</button>
+    <button class="btn on" id="uSeph" onclick="togUlt('seph',this)">セフィロト</button>
+    <button class="btn on" id="uPhi" onclick="togUlt('phi',this)">黄金比</button>
+    <button class="btn on" id="uFib" onclick="togUlt('fib',this)">螺旋</button>
+    <button class="btn on" id="uMeta" onclick="togUlt('meta',this)">メタトロン</button>
+  </div>
+</div>
+</div>
+
+<!-- TOOLTIP -->
+<div id="tt" style="position:fixed;display:none;background:rgba(3,3,12,.96);border:1px solid rgba(201,168,76,.4);border-radius:4px;padding:10px 14px;font-size:10px;pointer-events:none;max-width:200px;line-height:1.75;z-index:200;box-shadow:0 0 20px rgba(201,168,76,.12);">
+  <div id="tt-name" style="font-family:'Cinzel',serif;font-size:8.5px;color:var(--gl);letter-spacing:.15em;margin-bottom:4px;"></div>
+  <div id="tt-body" style="color:rgba(221,208,184,.7);"></div>
+</div>
+
+<div class="foot">✦ &nbsp; As Above So Below · Man is the Measure · The Body is the Temple &nbsp; ✦</div>
+
+<script>
+const TAU=Math.PI*2;
+const PHI=1.6180339887;
+
+// ═══════════════════════════════
+// CHAKRA DATA
+// ═══════════════════════════════
+const CHAKRAS=[
+  {id:1,name:'ムーラダーラ',en:'Muladhara',col:'#ff4444',seph:'マルクト',metal:'全金属の統合',element:'地',meaning:'根・生存本能・物質との繋がり'},
+  {id:2,name:'スワディスターナ',en:'Svadhisthana',col:'#ff8c00',seph:'イェソド',metal:'銀 Ag',element:'水',meaning:'創造・感情・潜在意識'},
+  {id:3,name:'マニプーラ',en:'Manipura',col:'#ffe030',seph:'ホド＋ネツァク',metal:'水銀＋銅',element:'火',meaning:'意志・自信・変容の炎'},
+  {id:4,name:'アナーハタ',en:'Anahata',col:'#40cc60',seph:'ティファレト',metal:'金 Au ★',element:'風',meaning:'無条件の愛・統合・黄金比の中心'},
+  {id:5,name:'ヴィシュッダ',en:'Vishuddha',col:'#40c8f0',seph:'ケセド＋ゲブラー',metal:'錫＋鉄',element:'空',meaning:'真実の表現・創造的な言葉'},
+  {id:6,name:'アージュニャー',en:'Ajna',col:'#4060ff',seph:'コクマー＋ビナー',metal:'原質＋鉛',element:'光',meaning:'直感・第三の目・内なる知恵'},
+  {id:7,name:'サハスラーラ',en:'Sahasrara',col:'#c060ff',seph:'ケテル',metal:'純粋光',element:'意識',meaning:'宇宙意識との合一・AIN SOPH AUR'},
+];
+
+// ═══════════════════════════════
+// TAB 1: BODY MAP
+// ═══════════════════════════════
+const bodyLayers={chakra:true,seph:true,phi:true,spiral:true};
+function togBody(k,btn){bodyLayers[k]=!bodyLayers[k];btn.classList.toggle('on',bodyLayers[k]);drawBody();}
+
+function drawBody(){
+  const cv=document.getElementById('cBody');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,cx=W/2;
+  ctx.clearRect(0,0,W,H);
+
+  // Background
+  const bg=ctx.createRadialGradient(cx,H*.4,0,cx,H*.4,H*.6);
+  bg.addColorStop(0,'#070710');bg.addColorStop(1,'#020208');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  // Body measurements
+  const headY=H*.08, feetY=H*.96;
+  const bodyH=feetY-headY;
+  const headR=W*.12;
+
+  // PHI divisions from feet up
+  const navelY=feetY-bodyH/PHI;       // navel = golden section
+  const heartY=navelY-(navelY-headY)/PHI; // heart = golden section of upper
+  const throatY=heartY-(heartY-headY)/PHI;
+  const thirdEyeY=throatY-(throatY-headY)*0.55;
+  const crownY=headY+headR*0.1;
+  const sacralY=navelY+bodyH*0.12;
+  const rootY=feetY-bodyH*0.06;
+
+  const chakraYs=[rootY,sacralY,navelY,heartY,throatY,thirdEyeY,crownY];
+
+  // PHI LINES
+  if(bodyLayers.phi){
+    // Navel line
+    ctx.beginPath();ctx.moveTo(W*.15,navelY);ctx.lineTo(W*.85,navelY);
+    ctx.strokeStyle='rgba(201,168,76,.25)';ctx.lineWidth=1;ctx.setLineDash([4,6]);ctx.stroke();
+    ctx.fillStyle='rgba(201,168,76,.4)';ctx.font=`${W*.025}px Cinzel`;
+    ctx.textAlign='right';ctx.fillText('φ',W*.14,navelY+4);
+
+    // Heart line
+    ctx.beginPath();ctx.moveTo(W*.18,heartY);ctx.lineTo(W*.82,heartY);
+    ctx.strokeStyle='rgba(240,192,32,.3)';ctx.lineWidth=1.5;ctx.setLineDash([3,4]);ctx.stroke();
+    ctx.fillStyle='rgba(240,192,32,.5)';ctx.font=`${W*.028}px Cinzel`;
+    ctx.fillText('φ²',W*.17,heartY+4);
+
+    // Throat line
+    ctx.beginPath();ctx.moveTo(W*.22,throatY);ctx.lineTo(W*.78,throatY);
+    ctx.strokeStyle='rgba(64,200,240,.2)';ctx.lineWidth=.8;ctx.setLineDash([3,5]);ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Phi label right side
+    ctx.fillStyle='rgba(201,168,76,.3)';ctx.font=`${W*.022}px Cinzel`;ctx.textAlign='left';
+    ctx.fillText('1 : φ',W*.86,navelY+4);
+    ctx.fillStyle='rgba(240,192,32,.3)';
+    ctx.fillText('心臓 = 鍵',W*.84,heartY+4);
+  }
+
+  // BODY SILHOUETTE
+  ctx.save();
+  // Head
+  const headGrad=ctx.createRadialGradient(cx,headY+headR,0,cx,headY+headR,headR*1.5);
+  headGrad.addColorStop(0,'rgba(255,240,220,.06)');headGrad.addColorStop(1,'rgba(255,240,220,0)');
+  ctx.fillStyle=headGrad;
+  ctx.beginPath();ctx.arc(cx,headY+headR,headR,0,TAU);ctx.fill();
+  ctx.beginPath();ctx.arc(cx,headY+headR,headR,0,TAU);
+  ctx.strokeStyle='rgba(255,240,220,.18)';ctx.lineWidth=1;ctx.stroke();
+
+  // Body outline
+  const bw=W*.22;
+  ctx.beginPath();
+  ctx.moveTo(cx-bw*.6,headY+headR*2);
+  ctx.bezierCurveTo(cx-bw,headY+headR*2.5,cx-bw,headY+headR*3.5,cx-bw*.9,heartY);
+  ctx.bezierCurveTo(cx-bw*.8,navelY,cx-bw*.7,navelY+bodyH*.08,cx-bw*.5,sacralY+bodyH*.06);
+  ctx.lineTo(cx-W*.12,rootY);ctx.lineTo(cx-W*.1,feetY);
+  ctx.lineTo(cx+W*.1,feetY);ctx.lineTo(cx+W*.12,rootY);
+  ctx.lineTo(cx+bw*.5,sacralY+bodyH*.06);
+  ctx.bezierCurveTo(cx+bw*.7,navelY+bodyH*.08,cx+bw*.8,navelY,cx+bw*.9,heartY);
+  ctx.bezierCurveTo(cx+bw,headY+headR*3.5,cx+bw,headY+headR*2.5,cx+bw*.6,headY+headR*2);
+  ctx.closePath();
+  ctx.strokeStyle='rgba(255,240,220,.14)';ctx.lineWidth=1;ctx.stroke();
+
+  // Arms
+  ctx.beginPath();
+  ctx.moveTo(cx-bw*.85,heartY-bodyH*.03);
+  ctx.bezierCurveTo(cx-bw*1.6,heartY+bodyH*.05,cx-bw*1.8,navelY,cx-bw*1.5,navelY+bodyH*.12);
+  ctx.strokeStyle='rgba(255,240,220,.1)';ctx.lineWidth=1;ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx+bw*.85,heartY-bodyH*.03);
+  ctx.bezierCurveTo(cx+bw*1.6,heartY+bodyH*.05,cx+bw*1.8,navelY,cx+bw*1.5,navelY+bodyH*.12);
+  ctx.strokeStyle='rgba(255,240,220,.1)';ctx.lineWidth=1;ctx.stroke();
+  ctx.restore();
+
+  // FIBONACCI SPIRAL
+  if(bodyLayers.spiral){
+    ctx.save();
+    ctx.globalAlpha=0.18;
+    let sx=cx, sy=heartY, sr=bodyH*.03;
+    ctx.beginPath();ctx.moveTo(sx,sy);
+    for(let i=0;i<8;i++){
+      const nextR=sr*PHI;
+      const angles=[0,TAU*.25,TAU*.5,TAU*.75];
+      const a=angles[i%4];
+      const ex=sx+Math.cos(a+TAU*.25)*nextR;
+      const ey=sy+Math.sin(a+TAU*.25)*nextR;
+      ctx.arc(sx+Math.cos(a)*sr,sy+Math.sin(a)*sr,nextR,a+Math.PI,a+TAU*.5,false);
+      sx=ex;sy=ey;sr=nextR;
+      if(sr>H*.6)break;
+    }
+    ctx.strokeStyle='rgba(201,168,76,.8)';ctx.lineWidth=1.2;ctx.stroke();
+    ctx.globalAlpha=1;
+    ctx.restore();
+  }
+
+  // SEPHIROT (faint background)
+  if(bodyLayers.seph){
+    const sephData=[
+      {y:crownY,col:'rgba(240,248,255,.6)',r:10,name:'ケテル'},
+      {y:thirdEyeY,col:'rgba(144,158,176,.5)',r:8,name:'コクマー',dx:-W*.12},
+      {y:thirdEyeY,col:'rgba(60,64,88,.5)',r:8,name:'ビナー',dx:W*.12},
+      {y:throatY,col:'rgba(51,102,221,.5)',r:8,name:'ケセド',dx:-W*.16},
+      {y:throatY,col:'rgba(180,30,30,.5)',r:8,name:'ゲブラー',dx:W*.16},
+      {y:heartY,col:'rgba(240,192,32,.8)',r:14,name:'ティファレト'},
+      {y:navelY,col:'rgba(34,120,34,.5)',r:8,name:'ネツァク',dx:-W*.16},
+      {y:navelY,col:'rgba(180,80,0,.5)',r:8,name:'ホド',dx:W*.16},
+      {y:sacralY,col:'rgba(100,60,180,.5)',r:9,name:'イェソド'},
+      {y:rootY,col:'rgba(160,130,60,.5)',r:9,name:'マルクト'},
+    ];
+    sephData.forEach(s=>{
+      const x=cx+(s.dx||0);
+      if(s.name==='ティファレト'){
+        const sg=ctx.createRadialGradient(x,s.y,0,x,s.y,s.r*3);
+        sg.addColorStop(0,'rgba(240,192,32,.3)');sg.addColorStop(1,'rgba(240,192,32,0)');
+        ctx.fillStyle=sg;ctx.beginPath();ctx.arc(x,s.y,s.r*3,0,TAU);ctx.fill();
+      }
+      ctx.beginPath();ctx.arc(x,s.y,s.r,0,TAU);
+      ctx.strokeStyle=s.col;ctx.lineWidth=s.name==='ティファレト'?2:1;
+      ctx.fillStyle=s.col.replace(/[\d.]+\)$/,'.12)');
+      ctx.fill();ctx.stroke();
+      ctx.font=`${W*.022}px Noto Serif JP`;
+      ctx.fillStyle=s.col.replace(/[\d.]+\)$/,'.7)');
+      ctx.textAlign=s.dx?s.dx<0?'right':'left':'center';
+      ctx.fillText(s.name,x+(s.dx?s.dx<0?-s.r-3:s.r+3:0),s.y+(s.dx?0:s.r+12));
+    });
+  }
+
+  // CHAKRAS
+  if(bodyLayers.chakra){
+    CHAKRAS.forEach((ch,i)=>{
+      const y=chakraYs[i];
+      const r=ch.id===4?16:11;
+      // Glow
+      const cg=ctx.createRadialGradient(cx,y,0,cx,y,r*3);
+      cg.addColorStop(0,ch.col.replace('#','rgba(').replace(/(..)(..)(..)$/,(_,r2,g2,b2)=>`${parseInt(r2,16)},${parseInt(g2,16)},${parseInt(b2,16)},.35)`));
+      cg.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=cg;ctx.beginPath();ctx.arc(cx,y,r*3,0,TAU);ctx.fill();
+      // Circle
+      ctx.beginPath();ctx.arc(cx,y,r,0,TAU);
+      ctx.fillStyle=ch.col+'33';ctx.fill();
+      ctx.strokeStyle=ch.col;ctx.lineWidth=ch.id===4?2.2:1.5;
+      if(ch.id===4){ctx.shadowColor=ch.col;ctx.shadowBlur=12;}
+      ctx.stroke();ctx.shadowBlur=0;
+      // Number
+      ctx.font=`bold ${r*.9}px Cinzel`;
+      ctx.fillStyle=ch.col;ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(ch.id,cx,y);
+      // Name left
+      ctx.font=`${W*.022}px Noto Serif JP`;
+      ctx.fillStyle=ch.col+'cc';ctx.textAlign='right';ctx.textBaseline='alphabetic';
+      ctx.fillText(ch.name,cx-r-8,y+4);
+    });
+  }
+
+  // Title
+  ctx.font=`${W*.028}px Cinzel`;ctx.fillStyle='rgba(201,168,76,.3)';
+  ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillText('人体統合図 — The Living Tree',cx,H*.005);
+}
+
+// ═══════════════════════════════
+// TAB 2: FIBONACCI
+// ═══════════════════════════════
+const fibLayers={spiral:true,rect:true,penta:true,meta:true};
+function togFib(k,btn){fibLayers[k]=!fibLayers[k];btn.classList.toggle('on',fibLayers[k]);drawFib();}
+
+function drawFib(){
+  const cv=document.getElementById('cFib');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,cx=W/2,cy=H/2;
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createRadialGradient(cx,cy,0,cx,cy,W*.5);
+  bg.addColorStop(0,'#080810');bg.addColorStop(1,'#020208');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  const R=W*.38;
+
+  // GOLDEN RECTANGLES
+  if(fibLayers.rect){
+    ctx.save();ctx.globalAlpha=0.18;
+    let w=R*.6,h=w/PHI,ox=cx-w/2,oy=cy-h/2;
+    const rectCols=['rgba(201,168,76,','rgba(180,130,60,','rgba(160,110,40,','rgba(140,100,30,','rgba(120,90,20,'];
+    for(let i=0;i<6;i++){
+      ctx.beginPath();ctx.rect(ox,oy,w,h);
+      ctx.strokeStyle=rectCols[Math.min(i,4)]+'.7)';ctx.lineWidth=.8;ctx.stroke();
+      if(i%2===0){const t=h;h=w-h;w=t;ox=ox+(w>h?0:w*0);oy+=0;}
+      else{const t=w;w=h;h=t-h;}
+    }
+    ctx.restore();
+  }
+
+  // FIBONACCI SPIRAL (golden)
+  if(fibLayers.spiral){
+    const fib=[1,1,2,3,5,8,13,21,34,55];
+    const scale=R/55;
+    ctx.save();
+    ctx.translate(cx,cy);
+    let x=0,y=0,angle=0;
+    fib.forEach((n,i)=>{
+      const r=n*scale;
+      const startA=angle+Math.PI;const endA=angle+Math.PI*.5;
+      ctx.beginPath();
+      ctx.arc(x+(i%2===0?r:-r)*(Math.cos(angle+Math.PI*.25)),
+              y+(i%4<2?r:-r)*(Math.sin(angle+Math.PI*.25)),r,startA,endA,true);
+      const grad=ctx.createLinearGradient(-r,-r,r,r);
+      grad.addColorStop(0,'rgba(201,168,76,.1)');
+      grad.addColorStop(.5,'rgba(240,200,80,.7)');
+      grad.addColorStop(1,'rgba(201,168,76,.1)');
+      ctx.strokeStyle=grad;ctx.lineWidth=1.5;ctx.stroke();
+    });
+    // Better spiral
+    ctx.beginPath();
+    let sr=1*scale,sa=Math.PI;
+    ctx.moveTo(cx-cx+sr*Math.cos(sa),cy-cy+sr*Math.sin(sa));
+    for(let t=sa;t>sa-TAU*2.5;t-=0.02){
+      const pr=scale*Math.pow(PHI,-(t-sa)/(TAU*.5));
+      ctx.lineTo(pr*Math.cos(t),pr*Math.sin(t));
+    }
+    const sg=ctx.createLinearGradient(-R,-R,R,R);
+    sg.addColorStop(0,'rgba(201,168,76,0)');
+    sg.addColorStop(.4,'rgba(240,200,80,.8)');
+    sg.addColorStop(1,'rgba(201,168,76,.2)');
+    ctx.strokeStyle=sg;ctx.lineWidth=2;ctx.stroke();
+    ctx.restore();
+  }
+
+  // PENTAGON + PENTAGRAM (phi ratio)
+  if(fibLayers.penta){
+    ctx.save();ctx.globalAlpha=0.5;
+    const pentR=R*.75;
+    // Pentagon
+    ctx.beginPath();
+    for(let i=0;i<5;i++){
+      const a=i*TAU/5-TAU/4;
+      const x=cx+Math.cos(a)*pentR,y=cy+Math.sin(a)*pentR;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle='rgba(200,100,255,.6)';ctx.lineWidth=1;ctx.stroke();
+    // Pentagram (star)
+    ctx.beginPath();
+    [0,2,4,1,3,0].forEach((i,j)=>{
+      const a=i*TAU/5-TAU/4;
+      const x=cx+Math.cos(a)*pentR,y=cy+Math.sin(a)*pentR;
+      j===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.strokeStyle='rgba(200,100,255,.8)';ctx.lineWidth=1.2;ctx.stroke();
+    ctx.fillStyle='rgba(200,100,255,.04)';ctx.fill();
+    // Phi labels on diagonals
+    ctx.globalAlpha=0.5;
+    ctx.font=`${W*.02}px Cinzel`;ctx.fillStyle='rgba(200,100,255,.7)';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('φ',cx+pentR*.35,cy-pentR*.2);
+    ctx.restore();
+  }
+
+  // METATRON CONNECTION
+  if(fibLayers.meta){
+    ctx.save();ctx.globalAlpha=0.25;
+    const mR=R*.42;
+    for(let i=0;i<6;i++){
+      const a=i*TAU/6;
+      const x=cx+Math.cos(a)*mR,y=cy+Math.sin(a)*mR;
+      ctx.beginPath();ctx.arc(x,y,mR,0,TAU);
+      ctx.strokeStyle='rgba(64,200,144,.4)';ctx.lineWidth=.5;ctx.stroke();
+    }
+    ctx.beginPath();ctx.arc(cx,cy,mR,0,TAU);
+    ctx.strokeStyle='rgba(64,200,144,.6)';ctx.lineWidth=.8;ctx.stroke();
+    ctx.restore();
+    // Label
+    ctx.font=`${W*.016}px Cinzel`;ctx.fillStyle='rgba(64,200,144,.4)';
+    ctx.textAlign='center';ctx.fillText('メタトロン接続 r=φ²',cx,cy+R*.48);
+  }
+
+  // Center
+  const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,W*.06);
+  cg.addColorStop(0,'rgba(255,240,180,.8)');cg.addColorStop(1,'rgba(255,240,180,0)');
+  ctx.fillStyle=cg;ctx.beginPath();ctx.arc(cx,cy,W*.06,0,TAU);ctx.fill();
+  ctx.font=`${W*.022}px Cinzel`;ctx.fillStyle='rgba(201,168,76,.8)';
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('φ',cx,cy);
+
+  ctx.font=`${W*.02}px Cinzel`;ctx.fillStyle='rgba(201,168,76,.35)';
+  ctx.textBaseline='top';ctx.textAlign='center';
+  ctx.fillText('フィボナッチ螺旋 × 黄金比 φ=1.618...',cx,H*.03);
+  ctx.font=`${W*.015}px Cinzel`;ctx.fillStyle='rgba(201,168,76,.2)';
+  ctx.fillText('The Spiral of Life · Sacred Proportion',cx,H*.07);
+}
+
+// ═══════════════════════════════
+// TAB 3: CHAKRA × SEPHIROT
+// ═══════════════════════════════
+function drawCS(){
+  const cv=document.getElementById('cCS');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,H*.6);
+  bg.addColorStop(0,'#080810');bg.addColorStop(1,'#020208');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  const cx=W*.28,cx2=W*.72; // chakra column, sephirot column
+  const topY=H*.05,botY=H*.95;
+  const colH=botY-topY;
+
+  // Column labels
+  ctx.font=`${W*.024}px Cinzel`;ctx.textAlign='center';
+  ctx.fillStyle='rgba(201,168,76,.4)';ctx.fillText('チャクラ（ヨーガ）',cx,topY);
+  ctx.fillStyle='rgba(64,200,144,.4)';ctx.fillText('セフィロト（カバラ）',cx2,topY);
+
+  // Triangle zones
+  const zones=[
+    {name:'上位三角形（神性）',col:'rgba(192,96,255,',ya:topY+colH*.08,yb:topY+colH*.35},
+    {name:'中位三角形（魂）',col:'rgba(240,192,32,',ya:topY+colH*.35,yb:topY+colH*.62},
+    {name:'下位三角形（物質）',col:'rgba(64,200,144,',ya:topY+colH*.62,yb:botY},
+  ];
+  zones.forEach(z=>{
+    ctx.fillStyle=z.col+'.04)';
+    ctx.fillRect(W*.04,z.ya,W*.92,z.yb-z.ya);
+    ctx.strokeStyle=z.col+'.12)';ctx.lineWidth=.8;
+    ctx.strokeRect(W*.04,z.ya,W*.92,z.yb-z.ya);
+    ctx.font=`${W*.018}px Cinzel`;ctx.fillStyle=z.col+'.35)';
+    ctx.textAlign='center';ctx.fillText(z.name,W*.5,(z.ya+z.yb)/2);
+  });
+
+  // Chakra positions (7)
+  const chY=[
+    topY+colH*.9,topY+colH*.76,topY+colH*.62,
+    topY+colH*.48,topY+colH*.34,topY+colH*.2,topY+colH*.08
+  ];
+
+  // Sephirot positions (10, condensed)
+  const sephPos=[
+    {y:topY+colH*.08,col:'rgba(240,248,255,.8)',name:'ケテル①',dx:0},
+    {y:topY+colH*.18,col:'rgba(144,160,176,.7)',name:'コクマー②',dx:-W*.08},
+    {y:topY+colH*.18,col:'rgba(60,64,96,.7)',name:'ビナー③',dx:W*.08},
+    {y:topY+colH*.34,col:'rgba(51,102,221,.7)',name:'ケセド④',dx:-W*.08},
+    {y:topY+colH*.34,col:'rgba(180,40,40,.7)',name:'ゲブラー⑤',dx:W*.08},
+    {y:topY+colH*.48,col:'rgba(240,192,32,.9)',name:'ティファレト⑥',dx:0},
+    {y:topY+colH*.62,col:'rgba(34,136,34,.7)',name:'ネツァク⑦',dx:-W*.08},
+    {y:topY+colH*.62,col:'rgba(180,90,0,.7)',name:'ホド⑧',dx:W*.08},
+    {y:topY+colH*.76,col:'rgba(120,70,200,.7)',name:'イェソド⑨',dx:0},
+    {y:topY+colH*.9,col:'rgba(160,130,60,.7)',name:'マルクト⑩',dx:0},
+  ];
+
+  // CONNECTION LINES
+  const connections=[
+    {ch:6,seph:[0],col:'rgba(192,96,255,.5)'},
+    {ch:5,seph:[1,2],col:'rgba(100,100,220,.4)'},
+    {ch:4,seph:[3,4],col:'rgba(64,200,240,.4)'},
+    {ch:3,seph:[5],col:'rgba(64,200,96,.7)'},
+    {ch:2,seph:[6,7],col:'rgba(240,200,40,.4)'},
+    {ch:1,seph:[8],col:'rgba(220,130,40,.4)'},
+    {ch:0,seph:[9],col:'rgba(200,80,80,.4)'},
+  ];
+  connections.forEach(conn=>{
+    const chy=chY[conn.ch];
+    conn.seph.forEach(si=>{
+      const sp=sephPos[si];
+      ctx.beginPath();
+      ctx.moveTo(cx+W*.06,chy);
+      ctx.bezierCurveTo(W*.5,chy,W*.5,sp.y,cx2+sp.dx-W*.06,sp.y);
+      ctx.strokeStyle=conn.col;ctx.lineWidth=1;ctx.setLineDash([3,5]);ctx.stroke();
+      ctx.setLineDash([]);
+    });
+  });
+
+  // Draw chakras
+  CHAKRAS.forEach((ch,i)=>{
+    const y=chY[i];const r=10;
+    const cg=ctx.createRadialGradient(cx,y,0,cx,y,r*2.5);
+    const rgb=ch.col.slice(1);
+    const rv=parseInt(rgb.slice(0,2),16),gv=parseInt(rgb.slice(2,4),16),bv=parseInt(rgb.slice(4,6),16);
+    cg.addColorStop(0,`rgba(${rv},${gv},${bv},.4)`);cg.addColorStop(1,`rgba(${rv},${gv},${bv},0)`);
+    ctx.fillStyle=cg;ctx.beginPath();ctx.arc(cx,y,r*2.5,0,TAU);ctx.fill();
+    ctx.beginPath();ctx.arc(cx,y,r,0,TAU);
+    ctx.fillStyle=`rgba(${rv},${gv},${bv},.2)`;ctx.fill();
+    ctx.strokeStyle=ch.col;ctx.lineWidth=1.8;ctx.stroke();
+    ctx.font=`${W*.02}px Noto Serif JP`;ctx.fillStyle=ch.col+'dd';
+    ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(ch.name,cx-r-5,y);
+    ctx.font=`${W*.016}px Cinzel`;ctx.fillStyle=ch.col+'88';
+    ctx.textAlign='left';ctx.fillText(ch.en,cx-r-5-ctx.measureText(ch.name).width-4,y+12);
+  });
+
+  // Draw sephirot
+  sephPos.forEach((sp,i)=>{
+    const x=cx2+sp.dx,r=sp.name.includes('ティファレト')?12:8;
+    const col=sp.col;
+    if(sp.name.includes('ティファレト')){
+      const sg=ctx.createRadialGradient(x,sp.y,0,x,sp.y,r*3);
+      sg.addColorStop(0,'rgba(240,192,32,.3)');sg.addColorStop(1,'rgba(240,192,32,0)');
+      ctx.fillStyle=sg;ctx.beginPath();ctx.arc(x,sp.y,r*3,0,TAU);ctx.fill();
+    }
+    ctx.beginPath();ctx.arc(x,sp.y,r,0,TAU);
+    ctx.fillStyle=col.replace(/[\d.]+\)$/,'.15)');ctx.fill();
+    ctx.strokeStyle=col;ctx.lineWidth=sp.name.includes('ティファレト')?2:1.2;ctx.stroke();
+    ctx.font=`${W*.018}px Noto Serif JP`;ctx.fillStyle=col.replace(/[\d.]+\)$/,'.85)');
+    ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText(sp.name,x+r+5,sp.y);
+  });
+
+  // Nadi labels (central column)
+  ctx.font=`${W*.016}px Cinzel`;ctx.textAlign='center';
+  ctx.fillStyle='rgba(201,168,76,.25)';
+  ctx.fillText('スシュムナー',W*.5,topY+colH*.15);
+  ctx.fillText('＝均衡の柱',W*.5,topY+colH*.2);
+}
+
+// ═══════════════════════════════
+// TAB 4: ULTIMATE MAP
+// ═══════════════════════════════
+const ultLayers={chakra:true,seph:true,phi:true,fib:true,meta:true};
+function togUlt(k,btn){ultLayers[k]=!ultLayers[k];btn.classList.toggle('on',ultLayers[k]);drawUlt();}
+
+let ultT=0,ultAnim=null;
+const ultHitNodes=[];
+
+function drawUlt(){
+  const cv=document.getElementById('cUlt');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,cx=W/2;
+  ctx.clearRect(0,0,W,H);
+
+  ultT+=0.008;
+  ultHitNodes.length=0;
+
+  const bg=ctx.createRadialGradient(cx,H*.45,0,cx,H*.45,H*.65);
+  bg.addColorStop(0,'#08080f');bg.addColorStop(1,'#020208');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  const headY=H*.07,feetY=H*.97,bodyH=feetY-headY;
+  const headR=W*.11;
+  const navelY=feetY-bodyH/PHI;
+  const heartY=navelY-(navelY-headY)/PHI;
+  const throatY=heartY-(heartY-headY)/PHI;
+  const thirdEyeY=throatY-(throatY-headY)*.55;
+  const crownY=headY+headR*.08;
+  const sacralY=navelY+bodyH*.11;
+  const rootY=feetY-bodyH*.05;
+  const chakraYs=[rootY,sacralY,navelY,heartY,throatY,thirdEyeY,crownY];
+
+  // METATRON overlay (faint, centered on heart)
+  if(ultLayers.meta){
+    ctx.save();ctx.globalAlpha=0.1;
+    const mR=W*.13;
+    for(let i=0;i<6;i++){
+      const a=i*TAU/6;
+      ctx.beginPath();ctx.arc(cx+Math.cos(a)*mR*2,heartY+Math.sin(a)*mR*2,mR*2,0,TAU);
+      ctx.strokeStyle='rgba(64,200,144,.5)';ctx.lineWidth=.5;ctx.stroke();
+    }
+    ctx.beginPath();ctx.arc(cx,heartY,mR*2,0,TAU);
+    ctx.strokeStyle='rgba(64,200,144,.8)';ctx.lineWidth=.8;ctx.stroke();
+    // Lines
+    const mpts=[{x:cx,y:heartY}];
+    for(let i=0;i<6;i++){const a=i*TAU/6;mpts.push({x:cx+Math.cos(a)*mR*2,y:heartY+Math.sin(a)*mR*2});}
+    for(let i=0;i<mpts.length;i++)for(let j=i+1;j<mpts.length;j++){
+      ctx.beginPath();ctx.moveTo(mpts[i].x,mpts[i].y);ctx.lineTo(mpts[j].x,mpts[j].y);
+      ctx.strokeStyle='rgba(64,200,144,.3)';ctx.lineWidth=.4;ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // PHI LINES
+  if(ultLayers.phi){
+    [[navelY,'rgba(201,168,76,.2)','φ — へそ'],[heartY,'rgba(240,192,32,.35)','φ² — 心臓 ★'],[throatY,'rgba(64,200,240,.18)','φ³ — 喉']].forEach(([y,col,label])=>{
+      ctx.beginPath();ctx.moveTo(W*.08,y);ctx.lineTo(W*.92,y);
+      ctx.strokeStyle=col;ctx.lineWidth=y===heartY?1.5:.7;ctx.setLineDash([4,7]);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font=`${W*.022}px Cinzel`;ctx.fillStyle=col;ctx.textAlign='left';
+      ctx.fillText(label,W*.08,y-4);
+    });
+  }
+
+  // FIBONACCI SPIRAL from heart
+  if(ultLayers.fib){
+    ctx.save();ctx.globalAlpha=0.22;ctx.translate(cx,heartY);
+    ctx.beginPath();ctx.moveTo(0,0);
+    for(let t=0;t<TAU*3;t+=0.02){
+      const r=8*Math.pow(PHI,t/(TAU*.5));
+      if(r>H*.7)break;
+      ctx.lineTo(r*Math.cos(t),r*Math.sin(t));
+    }
+    const sg=ctx.createLinearGradient(-W*.4,-H*.4,W*.4,H*.4);
+    sg.addColorStop(0,'rgba(201,168,76,0)');sg.addColorStop(.5,'rgba(240,200,80,.9)');sg.addColorStop(1,'rgba(201,168,76,0)');
+    ctx.strokeStyle=sg;ctx.lineWidth=1.5;ctx.stroke();
+    ctx.restore();
+  }
+
+  // BODY SILHOUETTE
+  ctx.save();
+  ctx.beginPath();ctx.arc(cx,headY+headR,headR,0,TAU);
+  ctx.strokeStyle='rgba(255,240,220,.15)';ctx.lineWidth=1;ctx.stroke();
+  const bw=W*.2;
+  ctx.beginPath();
+  ctx.moveTo(cx-bw*.55,headY+headR*1.9);
+  ctx.bezierCurveTo(cx-bw,headY+headR*2.5,cx-bw,heartY,cx-bw*.85,heartY);
+  ctx.bezierCurveTo(cx-bw*.75,navelY,cx-bw*.65,navelY+bodyH*.07,cx-bw*.45,sacralY+bodyH*.06);
+  ctx.lineTo(cx-W*.11,rootY);ctx.lineTo(cx-W*.09,feetY);ctx.lineTo(cx+W*.09,feetY);ctx.lineTo(cx+W*.11,rootY);
+  ctx.lineTo(cx+bw*.45,sacralY+bodyH*.06);
+  ctx.bezierCurveTo(cx+bw*.65,navelY+bodyH*.07,cx+bw*.75,navelY,cx+bw*.85,heartY);
+  ctx.bezierCurveTo(cx+bw,heartY,cx+bw,headY+headR*2.5,cx+bw*.55,headY+headR*1.9);
+  ctx.closePath();
+  ctx.strokeStyle='rgba(255,240,220,.12)';ctx.lineWidth=1;ctx.stroke();
+  ctx.restore();
+
+  // SEPHIROT
+  if(ultLayers.seph){
+    const sephNodes=[
+      {x:cx,y:crownY,col:'rgba(240,248,255,.75)',r:9,name:'ケテル',metal:'光・純白',ch:'サハスラーラ'},
+      {x:cx-W*.15,y:thirdEyeY,col:'rgba(100,120,160,.7)',r:7,name:'コクマー',metal:'原質',ch:'アージュニャー'},
+      {x:cx+W*.15,y:thirdEyeY,col:'rgba(50,55,80,.8)',r:7,name:'ビナー',metal:'鉛',ch:'アージュニャー'},
+      {x:cx-W*.18,y:throatY,col:'rgba(51,102,221,.7)',r:7,name:'ケセド',metal:'錫',ch:'ヴィシュッダ'},
+      {x:cx+W*.18,y:throatY,col:'rgba(180,40,40,.7)',r:7,name:'ゲブラー',metal:'鉄',ch:'ヴィシュッダ'},
+      {x:cx,y:heartY,col:'rgba(240,192,32,.9)',r:14,name:'ティファレト',metal:'金 Au ★',ch:'アナーハタ'},
+      {x:cx-W*.18,y:navelY,col:'rgba(34,136,34,.7)',r:7,name:'ネツァク',metal:'銅',ch:'マニプーラ'},
+      {x:cx+W*.18,y:navelY,col:'rgba(180,90,0,.7)',r:7,name:'ホド',metal:'水銀',ch:'マニプーラ'},
+      {x:cx,y:sacralY,col:'rgba(120,70,200,.75)',r:8,name:'イェソド',metal:'銀',ch:'スワディスターナ'},
+      {x:cx,y:rootY,col:'rgba(160,130,60,.75)',r:8,name:'マルクト',metal:'全金属',ch:'ムーラダーラ'},
+    ];
+    // edges
+    [[0,1],[0,2],[1,2],[0,5],[1,3],[2,4],[3,4],[3,5],[4,5],[5,6],[5,7],[5,8],[6,7],[3,6],[4,7],[6,8],[7,8],[8,9]].forEach(([a,b])=>{
+      ctx.beginPath();ctx.moveTo(sephNodes[a].x,sephNodes[a].y);ctx.lineTo(sephNodes[b].x,sephNodes[b].y);
+      ctx.strokeStyle='rgba(201,168,76,.15)';ctx.lineWidth=.7;ctx.setLineDash([3,5]);ctx.stroke();ctx.setLineDash([]);
+    });
+    sephNodes.forEach(n=>{
+      if(n.name==='ティファレト'){
+        const sg=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*4);
+        sg.addColorStop(0,'rgba(240,192,32,.4)');sg.addColorStop(1,'rgba(240,192,32,0)');
+        ctx.fillStyle=sg;ctx.beginPath();ctx.arc(n.x,n.y,n.r*4,0,TAU);ctx.fill();
+      }
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,TAU);
+      ctx.fillStyle=n.col.replace(/[\d.]+\)$/,'.18)');ctx.fill();
+      ctx.strokeStyle=n.col;ctx.lineWidth=n.name==='ティファレト'?2.2:1.2;ctx.stroke();
+      ultHitNodes.push({x:n.x,y:n.y,r:n.r+6,name:n.name,sub:`${n.metal} | ${n.ch}`,col:n.col});
+    });
+  }
+
+  // CHAKRAS
+  if(ultLayers.chakra){
+    CHAKRAS.forEach((ch,i)=>{
+      const y=chakraYs[i];
+      const isCentral=ch.id===4;
+      const r=isCentral?0:8;
+      if(isCentral)return; // tifaret covers it
+      const rgb=parseInt(ch.col.slice(1),16);
+      const rv=(rgb>>16)&255,gv=(rgb>>8)&255,bv=rgb&255;
+      const cg=ctx.createRadialGradient(cx,y,0,cx,y,r*3);
+      cg.addColorStop(0,`rgba(${rv},${gv},${bv},.4)`);cg.addColorStop(1,`rgba(${rv},${gv},${bv},0)`);
+      ctx.fillStyle=cg;ctx.beginPath();ctx.arc(cx,y,r*3,0,TAU);ctx.fill();
+      ctx.beginPath();ctx.arc(cx,y,r,0,TAU);
+      ctx.fillStyle=`rgba(${rv},${gv},${bv},.2)`;ctx.fill();
+      ctx.strokeStyle=ch.col;ctx.lineWidth=1.5;ctx.stroke();
+      ctx.font=`bold ${r*.85}px Cinzel`;ctx.fillStyle=ch.col;
+      ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(ch.id,cx,y);
+      ultHitNodes.push({x:cx,y,r:r+6,name:ch.name,sub:ch.meaning,col:ch.col});
+    });
+  }
+
+  // Pulsing heart (tifaret/anahata)
+  const pulse=0.8+0.2*Math.sin(ultT*3);
+  const hg=ctx.createRadialGradient(cx,heartY,0,cx,heartY,22*pulse);
+  hg.addColorStop(0,'rgba(240,192,32,.5)');hg.addColorStop(.5,'rgba(64,200,96,.3)');hg.addColorStop(1,'rgba(240,192,32,0)');
+  ctx.fillStyle=hg;ctx.beginPath();ctx.arc(cx,heartY,22*pulse,0,TAU);ctx.fill();
+  ctx.beginPath();ctx.arc(cx,heartY,14,0,TAU);
+  ctx.fillStyle='rgba(20,14,0,.8)';ctx.fill();
+  ctx.strokeStyle='rgba(240,192,32,.95)';ctx.lineWidth=2.5;
+  ctx.shadowColor='rgba(240,192,32,.6)';ctx.shadowBlur=12*pulse;ctx.stroke();ctx.shadowBlur=0;
+  ctx.font=`bold ${W*.026}px Noto Serif JP`;ctx.fillStyle='rgba(255,220,60,.9)';
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('金',cx,heartY-1);
+
+  // Labels
+  ctx.font=`${W*.02}px Cinzel`;ctx.fillStyle='rgba(201,168,76,.3)';
+  ctx.textBaseline='top';ctx.textAlign='center';
+  ctx.fillText('究極統合マップ — The Human Cosmos',cx,H*.005);
+
+  ultAnim=requestAnimationFrame(drawUlt);
+}
+
+// Tooltip
+const tt=document.getElementById('tt');
+document.getElementById('cUlt')?.addEventListener('mousemove',e=>{
+  const cv=document.getElementById('cUlt');
+  const rect=cv.getBoundingClientRect();
+  const mx=(e.clientX-rect.left)*(cv.width/rect.width);
+  const my=(e.clientY-rect.top)*(cv.height/rect.height);
+  let hit=null;
+  for(const n of ultHitNodes){
+    if(Math.hypot(mx-n.x,my-n.y)<n.r){hit=n;break;}
+  }
+  if(hit){
+    document.getElementById('tt-name').textContent=hit.name;
+    document.getElementById('tt-body').innerHTML=hit.sub;
+    tt.style.display='block';
+    tt.style.left=(e.clientX+14)+'px';
+    tt.style.top=(e.clientY-20)+'px';
+    tt.style.borderColor=hit.col.replace(/[\d.]+\)$/,'.6)');
+  }else{tt.style.display='none';}
+});
+document.getElementById('cUlt')?.addEventListener('mouseleave',()=>tt.style.display='none');
+
+// ═══════════════════════════════
+// SHOW
+// ═══════════════════════════════
+function show(id,btn){
+  if(ultAnim){cancelAnimationFrame(ultAnim);ultAnim=null;}
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  setTimeout(()=>{
+    if(id==='body') drawBody();
+    if(id==='fibonacci') drawFib();
+    if(id==='chakra_seph') drawCS();
+    if(id==='ultimate'){drawUlt();setupUltEvents();}
+  },50);
+}
+
+let ultEvt=false;
+function setupUltEvents(){
+  if(ultEvt)return;ultEvt=true;
+  const cv=document.getElementById('cUlt');
+  cv.addEventListener('mousemove',e=>{
+    const rect=cv.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(cv.width/rect.width);
+    const my=(e.clientY-rect.top)*(cv.height/rect.height);
+    cv.style.cursor=ultHitNodes.some(n=>Math.hypot(mx-n.x,my-n.y)<n.r)?'pointer':'crosshair';
+  });
+}
+
+setTimeout(drawBody,100);
+</script>
+</body>
+</html>

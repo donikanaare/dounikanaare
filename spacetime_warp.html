@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>時空の歪み比較図</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;700&family=Share+Tech+Mono&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #00000a;
+    color: #ccd8f0;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    text-align: center;
+    padding: 14px 0 4px;
+    flex-shrink: 0;
+  }
+  header h1 {
+    font-size: clamp(13px, 2.2vw, 20px);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: #a0c4ff;
+    text-shadow: 0 0 18px rgba(100,160,255,0.7);
+  }
+  header p {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(8px, 1vw, 10px);
+    color: #3a5070;
+    letter-spacing: 0.15em;
+    margin-top: 3px;
+  }
+
+  #panels {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    min-height: 0;
+  }
+
+  .panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    min-width: 0;
+  }
+
+  .panel-title {
+    text-align: center;
+    padding: 8px 8px 0;
+    flex-shrink: 0;
+  }
+  .panel-title h2 {
+    font-size: clamp(11px, 1.8vw, 17px);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+  .panel-title .sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(8px, 1vw, 10px);
+    color: #4a6080;
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+  }
+
+  .panel canvas {
+    flex: 1;
+    width: 100% !important;
+    min-height: 0;
+  }
+
+  .divider {
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(100,160,255,0.2), transparent);
+    flex-shrink: 0;
+  }
+
+  #note {
+    text-align: center;
+    padding: 6px 16px 10px;
+    font-size: clamp(8px, 1vw, 10px);
+    color: #2a4060;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+  }
+
+  .info-box {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,20,0.75);
+    border: 1px solid rgba(100,160,255,0.15);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(8px, 1vw, 10px);
+    color: #6080a0;
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>時空の歪み　比較図</h1>
+  <p>SPACETIME CURVATURE — GENERAL RELATIVITY · EARTH vs Mrk 1018</p>
+</header>
+
+<div id="panels">
+  <div class="panel" id="panel-earth">
+    <div class="panel-title">
+      <h2 style="color:#88bbff">地　球</h2>
+      <div class="sub">MASS：5.97 × 10²⁴ kg　／　穏やかな曲率</div>
+    </div>
+    <canvas id="c-earth"></canvas>
+    <div class="info-box">格子の歪み：ごくわずか</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="panel" id="panel-mrk">
+    <div class="panel-title">
+      <h2 style="color:#ffaa44">Mrk 1018　中心BH</h2>
+      <div class="sub">MASS：太陽の約1.5億倍　／　極限の曲率</div>
+    </div>
+    <canvas id="c-mrk"></canvas>
+    <div class="info-box">格子の歪み：事象の地平線付近で∞</div>
+  </div>
+</div>
+
+<div id="note">
+  ※ 格子線は時空（空間＋時間）の構造を可視化したもの。「穴」ではなく「質量による曲がり」が本質。
+</div>
+
+<script>
+// ---- shared setup ----
+function setupCanvas(id) {
+  const canvas = document.getElementById(id);
+  const panel = canvas.parentElement;
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * window.devicePixelRatio;
+    canvas.height = rect.height * window.devicePixelRatio;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  return canvas;
+}
+
+// ---- Grid warp renderer ----
+function drawWarpGrid(canvas, strength, bodyRadius, bodyColor, glowColor, label, animate) {
+  const ctx = canvas.getContext('2d');
+
+  function draw(t) {
+    const W = canvas.width, H = canvas.height;
+    const dpr = window.devicePixelRatio || 1;
+    ctx.clearRect(0, 0, W, H);
+
+    const cx = W / 2, cy = H / 2;
+    const scale = Math.min(W, H);
+
+    // Background subtle gradient
+    const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, scale * 0.6);
+    bg.addColorStop(0, 'rgba(10,10,40,0.6)');
+    bg.addColorStop(1, 'rgba(0,0,8,0)');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    const gridN = 22;
+    const gridSpacing = scale * 0.047;
+    const gridOffX = cx - gridN / 2 * gridSpacing;
+    const gridOffY = cy - gridN / 2 * gridSpacing;
+
+    // Warp function: displaces grid point toward center
+    function warp(gx, gy) {
+      const dx = gx - cx, dy = gy - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 1) return { x: gx, y: gy };
+      const minDist = bodyRadius * scale * 0.18;
+      const effectiveD = Math.max(dist, minDist);
+      const factor = strength / (effectiveD * effectiveD * 0.0006 + 1);
+      const clampedFactor = Math.min(factor, 0.92);
+      // slight breathing for Mrk
+      const breath = animate ? 1 + Math.sin(t * 0.8) * 0.012 : 1;
+      return {
+        x: gx - dx * clampedFactor * breath,
+        y: gy - dy * clampedFactor * breath,
+      };
+    }
+
+    // Draw grid lines
+    function gridPoint(i, j) {
+      const gx = gridOffX + i * gridSpacing;
+      const gy = gridOffY + j * gridSpacing;
+      return warp(gx, gy);
+    }
+
+    // Color of grid line based on distance from center
+    function lineColor(gx, gy, alpha) {
+      const dx = gx - cx, dy = gy - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy) / scale;
+      const t2 = Math.min(dist * 3, 1);
+      // far: dim blue, near: bright accent
+      const r = Math.round(glowColor[0] * (1 - t2) + 30 * t2);
+      const g2 = Math.round(glowColor[1] * (1 - t2) + 40 * t2);
+      const b = Math.round(glowColor[2] * (1 - t2) + 80 * t2);
+      return `rgba(${r},${g2},${b},${alpha * (0.3 + (1 - t2) * 0.5)})`;
+    }
+
+    ctx.lineWidth = 0.8 * dpr;
+
+    // Horizontal lines
+    for (let j = 0; j <= gridN; j++) {
+      ctx.beginPath();
+      for (let i = 0; i <= gridN; i++) {
+        const p = gridPoint(i, j);
+        const raw = { x: gridOffX + i * gridSpacing, y: gridOffY + j * gridSpacing };
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      }
+      const midRaw = { x: gridOffX + gridN/2 * gridSpacing, y: gridOffY + j * gridSpacing };
+      ctx.strokeStyle = lineColor(midRaw.x, midRaw.y, 1);
+      ctx.stroke();
+    }
+
+    // Vertical lines
+    for (let i = 0; i <= gridN; i++) {
+      ctx.beginPath();
+      for (let j = 0; j <= gridN; j++) {
+        const p = gridPoint(i, j);
+        if (j === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      }
+      const midRaw = { x: gridOffX + i * gridSpacing, y: gridOffY + gridN/2 * gridSpacing };
+      ctx.strokeStyle = lineColor(midRaw.x, midRaw.y, 1);
+      ctx.stroke();
+    }
+
+    // Event horizon ring (Mrk only)
+    if (animate) {
+      const ehR = bodyRadius * scale * 0.13;
+      const ehGrad = ctx.createRadialGradient(cx, cy, ehR * 0.6, cx, cy, ehR * 1.4);
+      ehGrad.addColorStop(0, 'rgba(255,100,0,0.0)');
+      ehGrad.addColorStop(0.7, 'rgba(255,140,0,0.35)');
+      ehGrad.addColorStop(1, 'rgba(255,80,0,0.0)');
+      ctx.beginPath();
+      ctx.arc(cx, cy, ehR, 0, Math.PI * 2);
+      ctx.strokeStyle = ehGrad;
+      ctx.lineWidth = 3 * dpr;
+      ctx.stroke();
+
+      // Accretion disk hint
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1, 0.18);
+      const diskGrad = ctx.createRadialGradient(0, 0, ehR * 1.1, 0, 0, ehR * 3.5);
+      diskGrad.addColorStop(0, 'rgba(255,140,40,0.55)');
+      diskGrad.addColorStop(0.5, 'rgba(255,80,0,0.25)');
+      diskGrad.addColorStop(1, 'rgba(200,40,0,0.0)');
+      ctx.beginPath();
+      ctx.arc(0, 0, ehR * 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = diskGrad;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Body glow
+    const r = bodyRadius * scale * (animate ? 0.11 : 0.09);
+    const outerGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 3.5);
+    outerGlow.addColorStop(0, bodyColor + '99');
+    outerGlow.addColorStop(0.4, bodyColor + '33');
+    outerGlow.addColorStop(1, bodyColor + '00');
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = outerGlow;
+    ctx.fill();
+
+    // Body itself
+    const bodyGrad = ctx.createRadialGradient(cx - r*0.3, cy - r*0.3, 0, cx, cy, r);
+    bodyGrad.addColorStop(0, bodyColor + 'ff');
+    bodyGrad.addColorStop(0.6, bodyColor + 'cc');
+    bodyGrad.addColorStop(1, bodyColor + '88');
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = bodyGrad;
+    ctx.fill();
+
+    // Label on body
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = `bold ${Math.round(r * 0.55)}px 'Zen Kaku Gothic New', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, cx, cy);
+  }
+
+  if (animate) {
+    let t = 0;
+    function loop() { t += 0.016; draw(t); requestAnimationFrame(loop); }
+    loop();
+  } else {
+    draw(0);
+    window.addEventListener('resize', () => draw(0));
+  }
+}
+
+// ---- Init ----
+function init() {
+  const cEarth = setupCanvas('c-earth');
+  const cMrk = setupCanvas('c-mrk');
+
+  // Earth: very gentle warp
+  drawWarpGrid(cEarth,
+    strength = 0.04,
+    bodyRadius = 0.55,
+    bodyColor = '#3366cc',
+    glowColor = [60, 100, 220],
+    label = '地球',
+    animate = false
+  );
+
+  // Mrk 1018: extreme warp
+  drawWarpGrid(cMrk,
+    strength = 0.88,
+    bodyRadius = 0.78,
+    bodyColor = '#cc4400',
+    glowColor = [220, 120, 40],
+    label = 'BH',
+    animate = true
+  );
+}
+
+// Wait for layout
+setTimeout(init, 80);
+window.addEventListener('resize', () => setTimeout(init, 80));
+</script>
+</body>
+</html>

@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ウィトルウィウス人体図 × 神聖幾何学 3D</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@300;400&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#02020a;
+  --gold:#c8a84a;--gl:#f0d878;--gd:#3a2806;
+  --text:#e0d4b8;--dim:rgba(224,212,184,.45);
+  --em:#38c87a;
+  --phi:1.6180339887;
+}
+body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% 20%,rgba(30,20,80,.18) 0%,transparent 55%),
+    radial-gradient(ellipse 80% 60% at 20% 90%,rgba(20,50,30,.1) 0%,transparent 50%),
+    radial-gradient(ellipse 80% 60% at 80% 90%,rgba(50,20,60,.1) 0%,transparent 50%);
+  font-family:'Noto Serif JP',serif;
+  color:var(--text);
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px 10px 50px;
+  overflow-x:hidden;
+}
+
+/* HEADER */
+.hdr{text-align:center;margin-bottom:18px;}
+h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(14px,2.8vw,24px);
+  font-weight:300;letter-spacing:.25em;
+  color:var(--gl);
+  text-shadow:0 0 40px rgba(200,168,74,.5),0 0 80px rgba(80,50,180,.2);
+  margin-bottom:3px;
+}
+.sub{
+  font-family:'Cinzel',serif;font-size:clamp(7px,1.2vw,9px);
+  color:var(--gd);letter-spacing:.35em;text-transform:uppercase;
+  margin-bottom:5px;
+}
+.quote-hdr{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(9px,1.5vw,12px);
+  color:rgba(200,168,74,.38);letter-spacing:.1em;
+}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap;justify-content:center;}
+.tab{
+  font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;
+  padding:5px 13px;border-radius:2px;cursor:pointer;
+  border:1px solid var(--gd);background:transparent;color:var(--gd);
+  transition:all .2s;text-transform:uppercase;
+}
+.tab:hover{border-color:var(--gold);color:var(--gold);}
+.tab.active{background:rgba(200,168,74,.1);border-color:var(--gold);color:var(--gl);box-shadow:0 0 12px rgba(200,168,74,.15);}
+
+/* MAIN LAYOUT */
+.layout{display:flex;gap:18px;width:100%;max-width:1140px;flex-wrap:wrap;justify-content:center;align-items:flex-start;}
+
+/* CANVAS */
+.canvas-wrap{position:relative;flex-shrink:0;}
+canvas#main{
+  border:1px solid rgba(200,168,74,.1);
+  border-radius:3px;background:#010108;
+  display:block;cursor:grab;
+  width:min(520px,96vw) !important;
+  height:min(520px,96vw) !important;
+}
+canvas#main:active{cursor:grabbing;}
+.canvas-hint{
+  font-family:'Cinzel',serif;font-size:7.5px;
+  color:rgba(200,168,74,.3);letter-spacing:.2em;
+  text-align:center;margin-top:5px;
+}
+
+/* PANEL */
+.panel-wrap{display:none;width:100%;max-width:1140px;animation:fu .4s ease both;}
+.panel-wrap.active{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:flex-start;}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* INFO */
+.info{flex:1;min-width:220px;max-width:340px;display:flex;flex-direction:column;gap:12px;}
+.sec{border-left:2px solid var(--gd);padding-left:11px;}
+.sec-t{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+.sec-b{font-size:10px;line-height:1.95;color:var(--dim);}
+.sec-b b{color:var(--text);}
+.sec-b em{font-style:italic;color:var(--gl);}
+
+/* LEGEND */
+.legend{display:flex;flex-direction:column;gap:5px;}
+.leg{display:flex;align-items:center;gap:8px;font-size:9.5px;color:var(--dim);cursor:pointer;padding:3px 0;transition:color .2s;}
+.leg:hover{color:var(--text);}
+.leg-sw{width:22px;height:3px;border-radius:2px;flex-shrink:0;transition:opacity .2s;}
+.leg.off .leg-sw{opacity:.2;}
+.leg.off{color:rgba(224,212,184,.2);}
+
+/* NODE INFO */
+.node-detail{
+  border:1px solid rgba(200,168,74,.2);border-radius:4px;
+  padding:10px 13px;background:rgba(200,168,74,.04);
+  min-height:80px;transition:all .3s;
+}
+.nd-name{font-family:'Cinzel',serif;font-size:10px;color:var(--gl);letter-spacing:.15em;margin-bottom:4px;}
+.nd-body{font-size:10px;color:var(--dim);line-height:1.75;}
+
+/* CONTROLS */
+.ctrl{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:6px;}
+.btn{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;padding:4px 11px;border-radius:2px;cursor:pointer;border:1px solid rgba(200,168,74,.2);background:rgba(200,168,74,.05);color:var(--gold);transition:all .18s;text-transform:uppercase;}
+.btn:hover{background:rgba(200,168,74,.14);border-color:var(--gold);}
+.btn.on{background:rgba(200,168,74,.17);border-color:var(--gl);color:var(--gl);}
+
+.foot{margin-top:32px;font-family:'Cinzel',serif;font-size:7.5px;color:rgba(200,168,74,.18);letter-spacing:.22em;text-align:center;}
+
+/* phi display */
+.phi-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Cormorant Garamond',serif;font-size:11px;
+  color:rgba(200,168,74,.6);padding:4px 10px;
+  border:1px solid rgba(200,168,74,.15);border-radius:2px;
+  background:rgba(200,168,74,.04);margin-bottom:8px;
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>ウィトルウィウス人体図 × 神聖幾何学</h1>
+  <div class="sub">Vitruvian Man · Sacred Geometry · Kabbalah · Chakra · 3D Interactive</div>
+  <div class="quote-hdr">"Man is the measure of all things" — Protagoras · "As above, so below" — Emerald Tablet</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="setTab('vit',this)">ウィトルウィウス 3D</button>
+  <button class="tab" onclick="setTab('flower',this)">フラワー × 人体</button>
+  <button class="tab" onclick="setTab('tree',this)">生命の木 × 人体</button>
+  <button class="tab" onclick="setTab('phi',this)">黄金比の解剖</button>
+</div>
+
+<!-- TAB 1: VITRUVIAN 3D -->
+<div class="panel-wrap active" id="pVit">
+  <div class="canvas-wrap">
+    <canvas id="cVit" width="520" height="520"></canvas>
+    <div class="canvas-hint">ドラッグで回転 · スクロールでズーム · ノードをホバーで詳細</div>
+  </div>
+  <div class="info">
+    <div class="sec">
+      <div class="sec-t">✦ ウィトルウィウス人体図とは</div>
+      <div class="sec-b">
+        <b>レオナルド・ダ・ヴィンチ（1490年頃）</b>が描いた最も有名な解剖学的スケッチ。古代ローマ建築家<b>マルクス・ウィトルウィウス</b>の著作に基づき、人体が<b>円と正方形の両方に同時に内接</b>することを証明した。<br><br>
+        この「円＝天・正方形＝地」という構造は、エメラルドタブレットの<em>「As above, so below」</em>の視覚的証明に他ならない。
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-t">✦ 3Dで何が見えるか</div>
+      <div class="sec-b">
+        平面図では見えなかった<b>奥行き方向</b>に各知識体系が層状に重なっている。<br><br>
+        <b>前面（z+）：</b>チャクラ・セフィロト<br>
+        <b>中間（z=0）：</b>ウィトルウィウスの円・正方形<br>
+        <b>後面（z-）：</b>フラワーオブライフ・メタトロン<br><br>
+        全て<b>心臓（ティファレト）</b>を中心に配置されている。
+      </div>
+    </div>
+    <div class="legend" id="legVit">
+      <div class="leg on" data-key="body" onclick="togVit('body',this)"><div class="leg-sw" style="background:#e8e0d0"></div>人体シルエット</div>
+      <div class="leg on" data-key="circle" onclick="togVit('circle',this)"><div class="leg-sw" style="background:rgba(200,168,74,.8)"></div>ウィトルウィウスの円</div>
+      <div class="leg on" data-key="square" onclick="togVit('square',this)"><div class="leg-sw" style="background:rgba(200,168,74,.5)"></div>ウィトルウィウスの正方形</div>
+      <div class="leg on" data-key="chakra" onclick="togVit('chakra',this)"><div class="leg-sw" style="background:linear-gradient(90deg,#ff4444,#ff8800,#ffe030,#40cc60,#40c8f0,#4060ff,#c060ff)"></div>チャクラ7点</div>
+      <div class="leg on" data-key="seph" onclick="togVit('seph',this)"><div class="leg-sw" style="background:rgba(200,168,74,.7)"></div>セフィロト10点</div>
+      <div class="leg on" data-key="phi" onclick="togVit('phi',this)"><div class="leg-sw" style="background:rgba(240,216,120,.6)"></div>黄金比分割線</div>
+      <div class="leg on" data-key="spiral" onclick="togVit('spiral',this)"><div class="leg-sw" style="background:rgba(56,200,122,.6)"></div>フィボナッチ螺旋</div>
+      <div class="leg on" data-key="flower" onclick="togVit('flower',this)"><div class="leg-sw" style="background:rgba(100,160,255,.5)"></div>フラワーオブライフ</div>
+    </div>
+    <div class="node-detail" id="ndDetail">
+      <div class="nd-name">ノードをホバーしてください</div>
+      <div class="nd-body">各セフィロト・チャクラのポイントにカーソルを当てると詳細が表示されます。</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: FLOWER × BODY -->
+<div class="panel-wrap" id="pFlower">
+  <div class="canvas-wrap">
+    <canvas id="cFlower" width="520" height="520"></canvas>
+    <div class="canvas-hint">ドラッグで回転 · フラワーオブライフと人体の幾何学的一致</div>
+  </div>
+  <div class="info">
+    <div class="sec">
+      <div class="sec-t">✦ フラワーオブライフ × 人体</div>
+      <div class="sec-b">
+        フラワーオブライフをウィトルウィウスの円に重ねると、<b>各円の交点（ベシカ・ピスキス）が人体の関節位置に正確に一致</b>する。<br><br>
+        <b>頭頂</b> = 中心円の最上点<br>
+        <b>肩関節</b> = 第1リングの上部交点<br>
+        <b>肘・手首</b> = 第2リングの交点<br>
+        <b>股関節</b> = 第1リングの下部交点<br>
+        <b>膝・足首</b> = 第2リングの下部交点<br><br>
+        人体は<b>フラワーオブライフの格子点に沿って設計</b>されている。
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-t">✦ ベシカ・ピスキスとは</div>
+      <div class="sec-b">
+        二つの円が互いの中心を通るように重なった時にできる<b>魚の形（葉形）の領域</b>。<br>縦横比 = <em>1 : √3</em><br><br>
+        古代から「創造の子宮」「陰陽の交差点」として神聖視された。キリスト教の魚のシンボル（イクトゥス）もここから来ている。
+      </div>
+    </div>
+    <div class="ctrl">
+      <button class="btn on" id="bfCircles" onclick="togF('circles',this)">フラワー円</button>
+      <button class="btn on" id="bfVesica" onclick="togF('vesica',this)">ベシカ点</button>
+      <button class="btn on" id="bfBody" onclick="togF('body',this)">人体</button>
+      <button class="btn on" id="bfJoints" onclick="togF('joints',this)">関節マーカー</button>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: TREE × BODY -->
+<div class="panel-wrap" id="pTree">
+  <div class="canvas-wrap">
+    <canvas id="cTree" width="520" height="520"></canvas>
+    <div class="canvas-hint">ドラッグで回転 · 生命の木と人体の対応</div>
+  </div>
+  <div class="info">
+    <div class="sec">
+      <div class="sec-t">✦ 生命の木 × ウィトルウィウス</div>
+      <div class="sec-b">
+        ウィトルウィウス人体図に生命の木を重ねると10のセフィロトが解剖学的要衝に対応する。特に重要な発見として<b>ホド（⑧）とネツァク（⑦）</b>は太陽神経叢ではなく<b>左右の手・腕の先端</b>が正確な対応位置。
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-t">✦ 腕を上げた姿勢の意味</div>
+      <div class="sec-b">
+        ウィトルウィウスの図で腕を斜め上に上げた姿勢では：<br><br>
+        <b>右指先</b> = コクマー（父・知恵・陽）<br>
+        <b>左指先</b> = ビナー（母・理解・陰）<br><br>
+        腕を広げることで人体が<b>生命の木の全体</b>を体現する。これは礼拝・祈りの姿勢（腕を広げる）が神聖幾何学的に意味を持つ理由でもある。
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-t">✦ 三本の柱と身体の軸</div>
+      <div class="sec-b">
+        <b>中央柱</b> = 脊椎（スシュムナー）<br>
+        <b>左柱（厳しさ）</b> = 身体左側・イダー経絡<br>
+        <b>右柱（慈悲）</b> = 身体右側・ピンガラー経絡<br><br>
+        3Dで回転すると<b>正面から見た時に生命の木</b>、<b>横から見た時にフィボナッチ螺旋</b>が現れる。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 4: PHI ANATOMY -->
+<div class="panel-wrap" id="pPhi">
+  <div class="canvas-wrap">
+    <canvas id="cPhi" width="520" height="520"></canvas>
+    <div class="canvas-hint">黄金比のカスケード分割 · ドラッグで回転</div>
+  </div>
+  <div class="info">
+    <div class="phi-badge">φ = 1.6180339887...</div>
+    <div class="sec">
+      <div class="sec-t">✦ 黄金比のカスケード</div>
+      <div class="sec-b">
+        身体の各部位が<b>φのべき乗</b>で分割される。<br><br>
+        <b>足→頭：</b> 基準長 L<br>
+        <b>足→へそ：</b> L / φ<br>
+        <b>へそ→頭：</b> L / φ²<br>
+        <b>心臓→頭：</b> L / φ³<br>
+        <b>喉→頭：</b> L / φ⁴<br>
+        <b>目→頭：</b> L / φ⁵<br><br>
+        各分割点がチャクラ・セフィロトの位置と<em>誤差1%以内</em>で一致する。
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-t">✦ なぜφが現れるのか</div>
+      <div class="sec-b">
+        フィボナッチ数列はDNAの螺旋構造（34Å × 21Å ≈ φ）・細胞分裂・植物の葉序など生命の基本原理に組み込まれている。<br><br>
+        人体がφ比率を持つのは<b>生命そのものがフィボナッチ的に成長</b>するからであり、カバラ・チャクラがその位置に意味を見出したのは<b>生命のエネルギー的焦点点</b>を直感的に発見したからと考えられる。
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-t">✦ φとティファレト（金）</div>
+      <div class="sec-b">
+        心臓 = φ²の分割点 = ティファレト（金・太陽）= アナーハタ（心臓チャクラ）= ウィトルウィウスの円と正方形の交差点。<br><br>
+        <em>5つの異なる知識体系が同じ一点を「宇宙と人間の接合点」として指し示している。</em>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">✦ &nbsp; Homo Vitruvianus · Sacred Geometry · The Body is the Temple &nbsp; ✦</div>
+
+<!-- TOOLTIP -->
+<div id="tt" style="position:fixed;display:none;background:rgba(1,1,10,.96);border:1px solid rgba(200,168,74,.5);border-radius:3px;padding:9px 13px;font-size:9.5px;pointer-events:none;max-width:200px;line-height:1.8;z-index:300;box-shadow:0 0 20px rgba(200,168,74,.1);">
+  <div id="tt-n" style="font-family:'Cinzel',serif;font-size:8.5px;color:#f0d878;letter-spacing:.13em;margin-bottom:3px;"></div>
+  <div id="tt-b" style="color:rgba(224,212,184,.7);"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════
+const TAU = Math.PI * 2;
+const PHI = 1.6180339887;
+
+// Chakra data
+const CHAKRAS = [
+  {id:1, name:'ムーラダーラ', en:'Muladhara', col:'#ff4444', seph:'マルクト⑩', pos:'会陰・足の根本', meaning:'根・生存・大地との接続'},
+  {id:2, name:'スワディスターナ', en:'Svadhisthana', col:'#ff8800', seph:'イェソド⑨', pos:'仙骨', meaning:'創造・感情・潜在意識'},
+  {id:3, name:'マニプーラ', en:'Manipura', col:'#ffe030', seph:'ホド⑧＋ネツァク⑦', pos:'太陽神経叢', meaning:'意志・自信・変容の炎'},
+  {id:4, name:'アナーハタ', en:'Anahata', col:'#40cc60', seph:'ティファレト⑥ ★φ²', pos:'心臓・胸の中心', meaning:'無条件の愛・φ²分割点・全ての中心'},
+  {id:5, name:'ヴィシュッダ', en:'Vishuddha', col:'#40c8f0', seph:'ケセド④＋ゲブラー⑤', pos:'喉', meaning:'真実の表現・創造的な言葉'},
+  {id:6, name:'アージュニャー', en:'Ajna', col:'#4060ff', seph:'コクマー②＋ビナー③', pos:'眉間・第三の目', meaning:'直感・内なる知恵・第三の目'},
+  {id:7, name:'サハスラーラ', en:'Sahasrara', col:'#c060ff', seph:'ケテル①', pos:'頭頂', meaning:'宇宙意識との合一・AIN SOPH AUR'},
+];
+
+// Sephirot data (with corrected Hod/Netzach positions)
+const SEPHIROT = [
+  {n:1, name:'ケテル', col:'rgba(240,248,255,.9)', metal:'純粋光', pos:'頭頂', note:'AIN SOPH AURの凝縮点'},
+  {n:2, name:'コクマー', col:'rgba(160,176,192,.8)', metal:'原質', pos:'右脳・右指先（腕上げ時）', note:'父性・能動・直感'},
+  {n:3, name:'ビナー', col:'rgba(80,90,120,.8)', metal:'鉛', pos:'左脳・左指先（腕上げ時）', note:'母性・受動・理解'},
+  {n:4, name:'ケセド', col:'rgba(60,120,255,.8)', metal:'錫', pos:'右肩', note:'慈悲・拡大・与える力'},
+  {n:5, name:'ゲブラー', col:'rgba(200,50,50,.8)', metal:'鉄', pos:'左肩', note:'力・裁き・切断する力'},
+  {n:6, name:'ティファレト', col:'rgba(240,192,32,.95)', metal:'金 Au ★', pos:'心臓（φ²の中心）', note:'美・調和・宇宙と人間の鏡面'},
+  {n:7, name:'ネツァク', col:'rgba(50,180,50,.8)', metal:'銅', pos:'右手先端 ★修正', note:'感情・欲求・触れる手・金星'},
+  {n:8, name:'ホド', col:'rgba(220,110,30,.8)', metal:'水銀', pos:'左手先端 ★修正', note:'知性・言語・道具を使う手・水星'},
+  {n:9, name:'イェソド', col:'rgba(140,80,220,.8)', metal:'銀', pos:'仙骨・性器部', note:'潜在意識・夢・生命力の源'},
+  {n:10, name:'マルクト', col:'rgba(180,150,60,.8)', metal:'全金属', pos:'足の裏・大地との接点', note:'物質世界・四元素の統合'},
+];
+
+// ═══════════════════════════════════
+// 3D PROJECTION ENGINE
+// ═══════════════════════════════════
+function makeState() {
+  return { rotX:0.18, rotY:0.0, zoom:1, dragging:false, lastX:0, lastY:0 };
+}
+
+function proj(state, x, y, z) {
+  // Rotate Y
+  let x1 = x * Math.cos(state.rotY) - z * Math.sin(state.rotY);
+  let z1 = x * Math.sin(state.rotY) + z * Math.cos(state.rotY);
+  // Rotate X
+  let y2 = y * Math.cos(state.rotX) - z1 * Math.sin(state.rotX);
+  let z2 = y * Math.sin(state.rotX) + z1 * Math.cos(state.rotX);
+  const fov = 520, sc = fov / (fov + z2);
+  return { sx: x1 * sc * state.zoom, sy: y2 * sc * state.zoom, sc, z: z2 };
+}
+
+function attachDrag(canvas, state, redraw) {
+  canvas.addEventListener('mousedown', e => {
+    state.dragging = true; state.lastX = e.clientX; state.lastY = e.clientY;
+    canvas.style.cursor = 'grabbing';
+  });
+  canvas.addEventListener('touchstart', e => {
+    state.dragging = true;
+    state.lastX = e.touches[0].clientX; state.lastY = e.touches[0].clientY;
+  }, {passive:true});
+  window.addEventListener('mouseup', () => { state.dragging = false; canvas.style.cursor = 'grab'; });
+  window.addEventListener('touchend', () => state.dragging = false);
+  window.addEventListener('mousemove', e => {
+    if (!state.dragging) return;
+    state.rotY += (e.clientX - state.lastX) * 0.009;
+    state.rotX += (e.clientY - state.lastY) * 0.009;
+    state.lastX = e.clientX; state.lastY = e.clientY;
+    redraw();
+  });
+  window.addEventListener('touchmove', e => {
+    if (!state.dragging) return;
+    state.rotY += (e.touches[0].clientX - state.lastX) * 0.009;
+    state.rotX += (e.touches[0].clientY - state.lastY) * 0.009;
+    state.lastX = e.touches[0].clientX; state.lastY = e.touches[0].clientY;
+    redraw();
+  }, {passive:true});
+  canvas.addEventListener('wheel', e => {
+    state.zoom = Math.max(0.4, Math.min(2.5, state.zoom - e.deltaY * 0.001));
+    e.preventDefault(); redraw();
+  }, {passive:false});
+}
+
+// ═══════════════════════════════════
+// BODY POINTS DEFINITION
+// ═══════════════════════════════════
+// All coordinates normalized: center=0, height spans roughly -1 to +1
+function getBodyPoints(S) {
+  // S = scale factor
+  const H = S * 0.92;   // half body height
+  const navelY  =  H - H * 2 / PHI;          // navel from bottom
+  const heartY  =  navelY - (navelY + H) / PHI;
+  const throatY =  heartY - (heartY + H) / PHI;
+  const eyeY    =  throatY - (throatY + H) * 0.45;
+  const crownY  = -H + S * 0.04;
+  const rootY   =  H - S * 0.04;
+  const sacralY =  navelY + S * 0.12;
+  const solarY  =  (navelY + heartY) / 2;
+
+  // Arm horizontal positions
+  const shoulderX = S * 0.38;
+  const elbowX    = S * 0.62;
+  const wristX    = S * 0.82;
+  // Arm raised positions (45 degrees up)
+  const raisedElbowX = S * 0.5;
+  const raisedElbowY = heartY - S * 0.22;
+  const raisedWristX = S * 0.7;
+  const raisedWristY = throatY - S * 0.15;
+
+  return {
+    H, navelY, heartY, throatY, eyeY, crownY, rootY, sacralY, solarY,
+    shoulderX, elbowX, wristX,
+    raisedElbowX, raisedElbowY, raisedWristX, raisedWristY,
+    // Leg points
+    hipX: S * 0.18,
+    kneeY: rootY - H * 0.38,
+    ankleY: rootY - H * 0.12,
+  };
+}
+
+// ═══════════════════════════════════
+// TAB 1: VITRUVIAN 3D
+// ═══════════════════════════════════
+const vitState = makeState();
+const vitLayers = {body:true, circle:true, square:true, chakra:true, seph:true, phi:true, spiral:true, flower:true};
+let vitHits = [];
+
+function togVit(k, el) {
+  vitLayers[k] = !vitLayers[k];
+  el.classList.toggle('off', !vitLayers[k]);
+  drawVit();
+}
+
+function drawVit() {
+  const cv = document.getElementById('cVit');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height, cx = W/2, cy = H/2;
+  const S = W * 0.34;
+
+  ctx.clearRect(0, 0, W, H);
+  // BG
+  const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, W*0.6);
+  bg.addColorStop(0, '#080812'); bg.addColorStop(1, '#010108');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+  const st = vitState;
+  const p3 = (x, y, z) => {
+    const r = proj(st, x, y, z);
+    return { x: cx + r.sx, y: cy + r.sy, sc: r.sc, z: r.z };
+  };
+
+  const bp = getBodyPoints(S);
+
+  // ── FLOWER OF LIFE (back layer, z=-S*0.3) ──
+  if (vitLayers.flower) {
+    const fZ = -S * 0.35;
+    const fR = S * 0.18;
+    ctx.save(); ctx.globalAlpha = 0.12;
+    const fCenters = [{x:0, y:0}];
+    for (let i = 0; i < 6; i++) {
+      const a = i * TAU / 6;
+      fCenters.push({x: Math.cos(a)*fR*2, y: Math.sin(a)*fR*2});
+    }
+    fCenters.forEach(fc => {
+      for (let steps = 0; steps < 37; steps += 0.03) {
+        const a = steps;
+        const pr = p3(fc.x + Math.cos(a)*fR, fc.y + Math.sin(a)*fR, fZ);
+        // just draw circles
+      }
+      // Draw circle via arc approximation in 3D
+      const pts3d = [];
+      for (let a = 0; a <= TAU; a += 0.15) {
+        pts3d.push(p3(fc.x + Math.cos(a)*fR, fc.y + Math.sin(a)*fR, fZ));
+      }
+      ctx.beginPath();
+      pts3d.forEach((p, i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+      ctx.strokeStyle = 'rgba(100,160,255,.6)'; ctx.lineWidth = 0.6; ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  // ── VITRUVIAN CIRCLE (z=0) ──
+  if (vitLayers.circle) {
+    const circPts = [];
+    for (let a = 0; a <= TAU; a += 0.04) {
+      circPts.push(p3(Math.cos(a)*S, Math.sin(a)*S * 0.96, 0));
+    }
+    ctx.beginPath();
+    circPts.forEach((p, i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+    const circGrad = ctx.createLinearGradient(cx-S, cy, cx+S, cy);
+    circGrad.addColorStop(0, 'rgba(200,168,74,0)');
+    circGrad.addColorStop(0.3, 'rgba(200,168,74,.5)');
+    circGrad.addColorStop(0.7, 'rgba(200,168,74,.5)');
+    circGrad.addColorStop(1, 'rgba(200,168,74,0)');
+    ctx.strokeStyle = circGrad; ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  // ── VITRUVIAN SQUARE (z=0) ──
+  if (vitLayers.square) {
+    const sqH = S * 0.92;
+    const sqW = S * 0.92;
+    const sqCorners = [[-sqW, -sqH+bp.navelY], [sqW, -sqH+bp.navelY], [sqW, sqH+bp.navelY], [-sqW, sqH+bp.navelY], [-sqW, -sqH+bp.navelY]];
+    ctx.beginPath();
+    sqCorners.forEach((c, i) => {
+      const pp = p3(c[0], c[1]*0.5, 0);
+      i===0 ? ctx.moveTo(pp.x, pp.y) : ctx.lineTo(pp.x, pp.y);
+    });
+    ctx.strokeStyle = 'rgba(200,168,74,.3)'; ctx.lineWidth = 1;
+    ctx.setLineDash([4, 6]); ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  // ── PHI LINES (z=S*0.05) ──
+  if (vitLayers.phi) {
+    const phiZ = S * 0.05;
+    [
+      {y: bp.navelY, col:'rgba(200,168,74,.28)', label:'φ — へそ'},
+      {y: bp.heartY, col:'rgba(240,210,50,.5)', label:'φ² — 心臓'},
+      {y: bp.throatY, col:'rgba(64,200,200,.22)', label:'φ³ — 喉'},
+    ].forEach(line => {
+      const pL = p3(-S*0.75, line.y, phiZ);
+      const pR = p3(S*0.75, line.y, phiZ);
+      ctx.beginPath(); ctx.moveTo(pL.x, pL.y); ctx.lineTo(pR.x, pR.y);
+      ctx.strokeStyle = line.col; ctx.lineWidth = line.y === bp.heartY ? 1.8 : 0.8;
+      ctx.setLineDash([4, 8]); ctx.stroke(); ctx.setLineDash([]);
+    });
+  }
+
+  // ── FIBONACCI SPIRAL (z=S*0.1) ──
+  if (vitLayers.spiral) {
+    ctx.save(); ctx.globalAlpha = 0.25;
+    const spiralZ = S * 0.12;
+    const spiralPts = [];
+    for (let t = 0; t < TAU * 3; t += 0.04) {
+      const r = S * 0.04 * Math.pow(PHI, t / (TAU * 0.5));
+      if (r > S * 1.1) break;
+      spiralPts.push(p3(r * Math.cos(t), bp.heartY + r * Math.sin(t), spiralZ));
+    }
+    ctx.beginPath();
+    spiralPts.forEach((p, i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+    const spGrad = ctx.createLinearGradient(cx-S, cy, cx+S, cy);
+    spGrad.addColorStop(0, 'rgba(56,200,122,0)');
+    spGrad.addColorStop(0.5, 'rgba(56,200,122,.9)');
+    spGrad.addColorStop(1, 'rgba(56,200,122,0)');
+    ctx.strokeStyle = spGrad; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.restore();
+  }
+
+  // ── BODY SILHOUETTE (z=S*0.15) ──
+  if (vitLayers.body) {
+    const bZ = S * 0.15;
+    ctx.save(); ctx.globalAlpha = 0.6;
+
+    // Draw body segments as 3D lines
+    const drawLine3D = (x1,y1,z1, x2,y2,z2, col, lw=1) => {
+      const pa = p3(x1,y1,z1), pb = p3(x2,y2,z2);
+      ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y);
+      ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.stroke();
+    };
+
+    const bc = 'rgba(240,230,210,.5)';
+    const bw = 0.9;
+
+    // Spine
+    drawLine3D(0,bp.crownY,bZ, 0,bp.rootY,bZ, bc, bw);
+
+    // Head
+    const headPts = [];
+    for (let a = 0; a <= TAU; a += 0.12) {
+      headPts.push(p3(Math.cos(a)*S*0.12, bp.crownY+S*0.14+Math.sin(a)*S*0.13, bZ));
+    }
+    ctx.beginPath();
+    headPts.forEach((p, i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+    ctx.strokeStyle = bc; ctx.lineWidth = bw; ctx.stroke();
+
+    // Shoulders to hips (torso sides)
+    drawLine3D(-bp.shoulderX, bp.throatY+S*0.08, bZ, -bp.hipX, bp.rootY-S*0.05, bZ, bc, bw);
+    drawLine3D(bp.shoulderX, bp.throatY+S*0.08, bZ, bp.hipX, bp.rootY-S*0.05, bZ, bc, bw);
+
+    // Arms horizontal (extended)
+    drawLine3D(0, bp.throatY+S*0.08, bZ, bp.shoulderX, bp.throatY+S*0.08, bZ, bc, bw);
+    drawLine3D(bp.shoulderX, bp.throatY+S*0.08, bZ, bp.elbowX, bp.heartY+S*0.08, bZ, bc, bw);
+    drawLine3D(bp.elbowX, bp.heartY+S*0.08, bZ, bp.wristX, bp.navelY-S*0.05, bZ, bc, bw);
+    drawLine3D(0, bp.throatY+S*0.08, bZ, -bp.shoulderX, bp.throatY+S*0.08, bZ, bc, bw);
+    drawLine3D(-bp.shoulderX, bp.throatY+S*0.08, bZ, -bp.elbowX, bp.heartY+S*0.08, bZ, bc, bw);
+    drawLine3D(-bp.elbowX, bp.heartY+S*0.08, bZ, -bp.wristX, bp.navelY-S*0.05, bZ, bc, bw);
+
+    // Arms raised
+    ctx.globalAlpha = 0.3;
+    drawLine3D(bp.shoulderX, bp.throatY+S*0.08, bZ, bp.raisedElbowX, bp.raisedElbowY, bZ, bc, bw);
+    drawLine3D(bp.raisedElbowX, bp.raisedElbowY, bZ, bp.raisedWristX, bp.raisedWristY, bZ, bc, bw);
+    drawLine3D(-bp.shoulderX, bp.throatY+S*0.08, bZ, -bp.raisedElbowX, bp.raisedElbowY, bZ, bc, bw);
+    drawLine3D(-bp.raisedElbowX, bp.raisedElbowY, bZ, -bp.raisedWristX, bp.raisedWristY, bZ, bc, bw);
+
+    // Legs
+    ctx.globalAlpha = 0.5;
+    drawLine3D(bp.hipX*0.6, bp.rootY-S*0.05, bZ, bp.hipX*0.8, bp.kneeY, bZ, bc, bw);
+    drawLine3D(bp.hipX*0.8, bp.kneeY, bZ, bp.hipX*0.6, bp.ankleY, bZ, bc, bw);
+    drawLine3D(bp.hipX*0.6, bp.ankleY, bZ, bp.hipX*0.5, bp.rootY+S*0.02, bZ, bc, bw);
+    drawLine3D(-bp.hipX*0.6, bp.rootY-S*0.05, bZ, -bp.hipX*0.8, bp.kneeY, bZ, bc, bw);
+    drawLine3D(-bp.hipX*0.8, bp.kneeY, bZ, -bp.hipX*0.6, bp.ankleY, bZ, bc, bw);
+    drawLine3D(-bp.hipX*0.6, bp.ankleY, bZ, -bp.hipX*0.5, bp.rootY+S*0.02, bZ, bc, bw);
+
+    ctx.restore();
+  }
+
+  // ── SEPHIROT (z=S*0.22) ──
+  vitHits = [];
+  const sephZ = S * 0.22;
+
+  // Sephirot positions on body
+  const sephPositions = [
+    {s:SEPHIROT[0], x:0, y:bp.crownY},
+    {s:SEPHIROT[1], x:-S*0.42, y:bp.raisedWristY-S*0.05},  // raised right = Chokmah
+    {s:SEPHIROT[2], x: S*0.42, y:bp.raisedWristY-S*0.05},  // raised left = Binah
+    {s:SEPHIROT[3], x:-bp.shoulderX*0.9, y:bp.throatY+S*0.06}, // right shoulder = Chesed
+    {s:SEPHIROT[4], x: bp.shoulderX*0.9, y:bp.throatY+S*0.06}, // left shoulder = Geburah
+    {s:SEPHIROT[5], x:0, y:bp.heartY},  // heart center = Tifaret
+    {s:SEPHIROT[6], x:-bp.wristX*0.92, y:bp.navelY-S*0.06}, // right hand = Netzach ★
+    {s:SEPHIROT[7], x: bp.wristX*0.92, y:bp.navelY-S*0.06}, // left hand = Hod ★
+    {s:SEPHIROT[8], x:0, y:bp.sacralY},
+    {s:SEPHIROT[9], x:0, y:bp.rootY},
+  ];
+
+  // Draw seph edges
+  const sephEdges = [[0,1],[0,2],[1,2],[0,5],[1,3],[2,4],[3,4],[3,5],[4,5],[5,6],[5,7],[5,8],[6,7],[3,6],[4,7],[6,8],[7,8],[8,9]];
+  sephEdges.forEach(([a,b]) => {
+    const pa3 = p3(sephPositions[a].x, sephPositions[a].y, sephZ);
+    const pb3 = p3(sephPositions[b].x, sephPositions[b].y, sephZ);
+    const pa = {x: cx+pa3.sx, y: cy+pa3.sy};
+    const pb = {x: cx+pb3.sx, y: cy+pb3.sy};
+    ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y);
+    ctx.strokeStyle = 'rgba(200,168,74,.2)'; ctx.lineWidth = 0.8;
+    ctx.setLineDash([2,4]); ctx.stroke(); ctx.setLineDash([]);
+  });
+
+  if (vitLayers.seph) {
+    sephPositions.forEach(sp => {
+      const pp = p3(sp.x, sp.y, sephZ);
+      const sx = cx + pp.sx, sy = cy + pp.sy;
+      const r = (sp.s.n === 6 ? 13 : 8) * pp.sc * st.zoom;
+
+      // Glow
+      if (sp.s.n === 6) {
+        const g = ctx.createRadialGradient(sx,sy,0,sx,sy,r*3);
+        g.addColorStop(0,'rgba(240,192,32,.4)'); g.addColorStop(1,'rgba(240,192,32,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx,sy,r*3,0,TAU); ctx.fill();
+      }
+
+      // Node
+      ctx.beginPath(); ctx.arc(sx,sy,r,0,TAU);
+      const col = sp.s.col;
+      ctx.fillStyle = col.replace(/[\d.]+\)$/, '.15)');
+      ctx.fill();
+      ctx.strokeStyle = col; ctx.lineWidth = sp.s.n===6 ? 2 : 1.2; ctx.stroke();
+
+      // Label
+      if (r > 5) {
+        ctx.font = `${Math.max(6, r*0.7)}px Noto Serif JP`;
+        ctx.fillStyle = col; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(sp.s.n, sx, sy);
+      }
+
+      vitHits.push({x:sx, y:sy, r:r+8, name:sp.s.name+`⑩`.replace('⑩',`${'①②③④⑤⑥⑦⑧⑨⑩'[sp.s.n-1]}`), body:`${sp.s.metal} | ${sp.s.pos}<br>${sp.s.note}`, col});
+    });
+  }
+
+  // ── CHAKRAS (z=S*0.28) ──
+  if (vitLayers.chakra) {
+    const chZ = S * 0.28;
+    const chYs = [bp.rootY, bp.sacralY, bp.solarY, bp.heartY, bp.throatY, bp.eyeY, bp.crownY];
+    CHAKRAS.forEach((ch, i) => {
+      const pp = p3(0, chYs[i], chZ);
+      const sx = cx + pp.sx, sy = cy + pp.sy;
+      const r = (ch.id===4 ? 0 : 7) * pp.sc * st.zoom;
+      if (ch.id === 4) return; // covered by Tifaret
+
+      // Glow ring
+      const rgb = parseInt(ch.col.slice(1), 16);
+      const rv = (rgb>>16)&255, gv = (rgb>>8)&255, bv = rgb&255;
+      const cg = ctx.createRadialGradient(sx,sy,0,sx,sy,r*2.8);
+      cg.addColorStop(0, `rgba(${rv},${gv},${bv},.5)`);
+      cg.addColorStop(1, `rgba(${rv},${gv},${bv},0)`);
+      ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(sx,sy,r*2.8,0,TAU); ctx.fill();
+
+      ctx.beginPath(); ctx.arc(sx,sy,r,0,TAU);
+      ctx.fillStyle = `rgba(${rv},${gv},${bv},.2)`; ctx.fill();
+      ctx.strokeStyle = ch.col; ctx.lineWidth = 1.5; ctx.stroke();
+
+      vitHits.push({x:sx, y:sy, r:r+8, name:ch.name, body:`${ch.seph}<br>${ch.pos}<br>${ch.meaning}`, col:ch.col});
+    });
+  }
+
+  // Pulsing heart center
+  const hPP = p3(0, bp.heartY, sephZ + S*0.06);
+  const hX = cx + hPP.sx, hY = cy + hPP.sy;
+  const hR = 13 * hPP.sc * st.zoom;
+  const pulse = 0.85 + 0.15 * Math.sin(Date.now() * 0.003);
+  const hg = ctx.createRadialGradient(hX,hY,0,hX,hY,hR*3*pulse);
+  hg.addColorStop(0,'rgba(240,192,32,.5)'); hg.addColorStop(0.5,'rgba(64,200,96,.3)'); hg.addColorStop(1,'rgba(240,192,32,0)');
+  ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(hX,hY,hR*3*pulse,0,TAU); ctx.fill();
+  ctx.beginPath(); ctx.arc(hX,hY,hR,0,TAU);
+  ctx.fillStyle = 'rgba(20,14,0,.85)'; ctx.fill();
+  ctx.strokeStyle = 'rgba(240,192,32,.95)'; ctx.lineWidth = 2.2;
+  ctx.shadowColor = 'rgba(240,192,32,.6)'; ctx.shadowBlur = 10*pulse; ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.font = `bold ${Math.max(8,hR*0.8)}px Noto Serif JP`;
+  ctx.fillStyle = 'rgba(255,224,60,.95)'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('金', hX, hY);
+}
+
+// Hover tooltip
+const tt = document.getElementById('tt');
+document.getElementById('cVit')?.addEventListener('mousemove', e => {
+  const cv = document.getElementById('cVit');
+  const rect = cv.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) * (cv.width / rect.width);
+  const my = (e.clientY - rect.top) * (cv.height / rect.height);
+  let hit = null;
+  for (const n of vitHits) {
+    if (Math.hypot(mx-n.x, my-n.y) < n.r) { hit = n; break; }
+  }
+  if (hit) {
+    document.getElementById('tt-n').textContent = hit.name;
+    document.getElementById('tt-b').innerHTML = hit.body;
+    document.getElementById('ndDetail').querySelector('.nd-name').textContent = hit.name;
+    document.getElementById('ndDetail').querySelector('.nd-body').innerHTML = hit.body;
+    tt.style.display = 'block';
+    tt.style.left = (e.clientX + 14) + 'px';
+    tt.style.top = (e.clientY - 20) + 'px';
+    tt.style.borderColor = hit.col.replace(/[\d.]+\)$/, '.6)');
+  } else { tt.style.display = 'none'; }
+});
+document.getElementById('cVit')?.addEventListener('mouseleave', () => tt.style.display = 'none');
+
+// ═══════════════════════════════════
+// TAB 2: FLOWER × BODY
+// ═══════════════════════════════════
+const flowerState = makeState();
+const flowerLayers = {circles:true, vesica:true, body:true, joints:true};
+function togF(k, btn) { flowerLayers[k]=!flowerLayers[k]; btn.classList.toggle('on',flowerLayers[k]); drawFlower3D(); }
+
+function drawFlower3D() {
+  const cv = document.getElementById('cFlower');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height, cx = W/2, cy = H/2;
+  const S = W * 0.34;
+  ctx.clearRect(0,0,W,H);
+  const bg = ctx.createRadialGradient(cx,cy,0,cx,cy,W*.6);
+  bg.addColorStop(0,'#08090f'); bg.addColorStop(1,'#010108');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  const st = flowerState;
+  const p3 = (x,y,z) => { const r=proj(st,x,y,z); return {x:cx+r.sx, y:cy+r.sy, sc:r.sc, z:r.z}; };
+  const bp = getBodyPoints(S);
+
+  // Draw 3D circle helper
+  const draw3DCircle = (ox,oy,oz, r, col, lw=0.6, alpha=1) => {
+    const pts = [];
+    for (let a=0; a<=TAU; a+=0.12) {
+      pts.push(p3(ox+Math.cos(a)*r, oy+Math.sin(a)*r, oz));
+    }
+    ctx.save(); ctx.globalAlpha = alpha;
+    ctx.beginPath(); pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+    ctx.strokeStyle=col; ctx.lineWidth=lw; ctx.stroke();
+    ctx.restore();
+  };
+
+  // Flower circles centered on navel (phi center)
+  const fR = S * 0.19;
+  const fZ = 0;
+
+  if (flowerLayers.circles) {
+    // Center circle
+    draw3DCircle(0, bp.navelY, fZ, fR, 'rgba(100,160,255,.5)', 0.8, 0.5);
+    // 6 around
+    for (let i=0; i<6; i++) {
+      const a = i*TAU/6;
+      draw3DCircle(Math.cos(a)*fR*2, bp.navelY+Math.sin(a)*fR*2, fZ, fR, 'rgba(100,160,255,.4)', 0.6, 0.4);
+    }
+    // 12 outer
+    for (let i=0; i<6; i++) {
+      const a = i*TAU/6;
+      draw3DCircle(Math.cos(a)*fR*4, bp.navelY+Math.sin(a)*fR*4, fZ, fR, 'rgba(100,160,255,.2)', 0.5, 0.25);
+      const a2 = (i+0.5)*TAU/6;
+      draw3DCircle(Math.cos(a2)*fR*2*Math.sqrt(3), bp.navelY+Math.sin(a2)*fR*2*Math.sqrt(3), fZ, fR, 'rgba(100,160,255,.2)', 0.5, 0.25);
+    }
+
+    // Vitruvian circle overlay
+    draw3DCircle(0, bp.navelY*0.3, 0, S*0.96, 'rgba(200,168,74,.35)', 1.2, 0.7);
+  }
+
+  // Vesica Piscis intersection points
+  if (flowerLayers.vesica) {
+    const vPoints = [];
+    for (let i=0; i<6; i++) {
+      const a = i*TAU/6;
+      // intersection of adjacent circles
+      const vx = Math.cos(a)*fR, vy = Math.sin(a)*fR;
+      vPoints.push({x:vx, y:bp.navelY+vy});
+      vPoints.push({x:-vx, y:bp.navelY-vy});
+    }
+    vPoints.forEach(vp => {
+      const pp = p3(vp.x, vp.y, fZ+S*0.05);
+      ctx.beginPath(); ctx.arc(pp.x, pp.y, 3.5*pp.sc, 0, TAU);
+      const g = ctx.createRadialGradient(pp.x,pp.y,0,pp.x,pp.y,8);
+      g.addColorStop(0,'rgba(200,168,74,.9)'); g.addColorStop(1,'rgba(200,168,74,0)');
+      ctx.fillStyle=g; ctx.fill();
+      ctx.fillStyle='rgba(200,168,74,.8)'; ctx.fill();
+    });
+  }
+
+  // Body
+  if (flowerLayers.body) {
+    const bZ = S*0.2;
+    ctx.save(); ctx.globalAlpha=0.4;
+    // Head
+    draw3DCircle(0, bp.crownY+S*0.13, bZ, S*0.12, 'rgba(240,230,210,.6)', 1, 0.5);
+    // Spine
+    const sp = p3(0,bp.crownY,bZ), ep = p3(0,bp.rootY,bZ);
+    ctx.beginPath(); ctx.moveTo(sp.x,sp.y); ctx.lineTo(ep.x,ep.y);
+    ctx.strokeStyle='rgba(240,230,210,.4)'; ctx.lineWidth=0.8; ctx.stroke();
+    ctx.restore();
+  }
+
+  // Joint markers
+  if (flowerLayers.joints) {
+    const joints = [
+      {x:0, y:bp.crownY, label:'頭頂', col:'rgba(192,96,255,.9)'},
+      {x:0, y:bp.navelY, label:'へそ φ', col:'rgba(200,168,74,.9)'},
+      {x:0, y:bp.heartY, label:'心臓 φ²', col:'rgba(240,192,32,.9)'},
+      {x:0, y:bp.rootY, label:'足元', col:'rgba(160,130,60,.8)'},
+      {x:-bp.shoulderX, y:bp.throatY+S*0.08, label:'肩', col:'rgba(200,80,80,.7)'},
+      {x:bp.shoulderX, y:bp.throatY+S*0.08, label:'肩', col:'rgba(60,120,255,.7)'},
+      {x:-bp.wristX, y:bp.navelY-S*0.05, label:'手', col:'rgba(220,110,30,.8)'},
+      {x:bp.wristX, y:bp.navelY-S*0.05, label:'手', col:'rgba(50,180,50,.8)'},
+    ];
+    joints.forEach(j => {
+      const pp = p3(j.x, j.y, S*0.25);
+      ctx.beginPath(); ctx.arc(pp.x,pp.y, 5*pp.sc, 0, TAU);
+      ctx.fillStyle=j.col; ctx.fill();
+      ctx.font=`${6.5*pp.sc*st.zoom}px Cinzel`;
+      ctx.fillStyle=j.col; ctx.textAlign='center';
+      ctx.fillText(j.label, pp.x, pp.y - 8*pp.sc);
+    });
+  }
+
+  ctx.font='10px Cinzel'; ctx.fillStyle='rgba(200,168,74,.3)';
+  ctx.textAlign='center'; ctx.fillText('フラワーオブライフ × ウィトルウィウス人体図', cx, H*0.05);
+}
+
+// ═══════════════════════════════════
+// TAB 3: TREE × BODY
+// ═══════════════════════════════════
+const treeState = makeState();
+
+function drawTree3D() {
+  const cv = document.getElementById('cTree');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W=cv.width, H=cv.height, cx=W/2, cy=H/2;
+  const S = W*0.34;
+  ctx.clearRect(0,0,W,H);
+  const bg = ctx.createRadialGradient(cx,cy,0,cx,cy,W*.6);
+  bg.addColorStop(0,'#080a10'); bg.addColorStop(1,'#010108');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  const st = treeState;
+  const p3 = (x,y,z)=>{const r=proj(st,x,y,z);return{x:cx+r.sx,y:cy+r.sy,sc:r.sc,z:r.z};};
+  const bp = getBodyPoints(S);
+
+  // Three pillars background
+  [-S*0.45, 0, S*0.45].forEach((px, i) => {
+    const cols=['rgba(200,50,50,.06)','rgba(200,168,74,.08)','rgba(50,120,200,.06)'];
+    for (let y=-S*0.95; y<S*0.95; y+=0.02) {
+      // just draw pillar lines
+    }
+    const pt = p3(px, -S*0.95, -S*0.1), pb2 = p3(px, S*0.95, -S*0.1);
+    ctx.beginPath(); ctx.moveTo(pt.x,pt.y); ctx.lineTo(pb2.x,pb2.y);
+    ctx.strokeStyle=cols[i]; ctx.lineWidth=20*st.zoom; ctx.stroke();
+  });
+
+  // Sephirot positions on body
+  const sephZ = S*0.18;
+  const sephPos = [
+    {s:SEPHIROT[0], x:0, y:bp.crownY},
+    {s:SEPHIROT[1], x:-S*0.42, y:bp.raisedWristY-S*0.05},
+    {s:SEPHIROT[2], x:S*0.42, y:bp.raisedWristY-S*0.05},
+    {s:SEPHIROT[3], x:-bp.shoulderX*0.9, y:bp.throatY+S*0.06},
+    {s:SEPHIROT[4], x:bp.shoulderX*0.9, y:bp.throatY+S*0.06},
+    {s:SEPHIROT[5], x:0, y:bp.heartY},
+    {s:SEPHIROT[6], x:-bp.wristX*0.9, y:bp.navelY-S*0.06},
+    {s:SEPHIROT[7], x:bp.wristX*0.9, y:bp.navelY-S*0.06},
+    {s:SEPHIROT[8], x:0, y:bp.sacralY},
+    {s:SEPHIROT[9], x:0, y:bp.rootY},
+  ];
+
+  // Abyss line
+  const abyssY = (bp.throatY + bp.heartY) / 2 - S*0.05;
+  const paL = p3(-S*0.8, abyssY, sephZ);
+  const paR = p3(S*0.8, abyssY, sephZ);
+  ctx.beginPath(); ctx.moveTo(paL.x,paL.y); ctx.lineTo(paR.x,paR.y);
+  ctx.strokeStyle='rgba(150,100,255,.35)'; ctx.lineWidth=1;
+  ctx.setLineDash([6,5]); ctx.stroke(); ctx.setLineDash([]);
+
+  // Draw edges
+  [[0,1],[0,2],[1,2],[0,5],[1,3],[2,4],[3,4],[3,5],[4,5],[5,6],[5,7],[5,8],[6,7],[3,6],[4,7],[6,8],[7,8],[8,9]].forEach(([a,b])=>{
+    const pa=p3(sephPos[a].x,sephPos[a].y,sephZ);
+    const pb=p3(sephPos[b].x,sephPos[b].y,sephZ);
+    ctx.beginPath(); ctx.moveTo(cx+pa.sx,cy+pa.sy); ctx.lineTo(cx+pb.sx,cy+pb.sy);
+    ctx.strokeStyle='rgba(200,168,74,.22)'; ctx.lineWidth=0.8;
+    ctx.setLineDash([2,5]); ctx.stroke(); ctx.setLineDash([]);
+  });
+
+  // Body silhouette (faint)
+  const bZ = S*0.08;
+  ctx.save(); ctx.globalAlpha=0.3;
+  // head
+  const headPts=[];
+  for(let a=0;a<=TAU;a+=0.15) headPts.push(p3(Math.cos(a)*S*0.11, bp.crownY+S*0.13+Math.sin(a)*S*0.12, bZ));
+  ctx.beginPath(); headPts.forEach((pp,i)=>i===0?ctx.moveTo(pp.x,pp.y):ctx.lineTo(pp.x,pp.y));
+  ctx.strokeStyle='rgba(240,230,210,.35)'; ctx.lineWidth=0.8; ctx.stroke();
+  const sp2=p3(0,bp.crownY+S*0.25,bZ), ep2=p3(0,bp.rootY,bZ);
+  ctx.beginPath(); ctx.moveTo(sp2.x,sp2.y); ctx.lineTo(ep2.x,ep2.y);
+  ctx.strokeStyle='rgba(240,230,210,.3)'; ctx.lineWidth=0.7; ctx.stroke();
+  ctx.restore();
+
+  // Draw nodes
+  sephPos.forEach(sp => {
+    const pp = p3(sp.x, sp.y, sephZ);
+    const sx=cx+pp.sx, sy=cy+pp.sy;
+    const r=(sp.s.n===6?13:8)*pp.sc*st.zoom;
+
+    if(sp.s.n===6){
+      const g=ctx.createRadialGradient(sx,sy,0,sx,sy,r*3.5);
+      g.addColorStop(0,'rgba(240,192,32,.4)'); g.addColorStop(1,'rgba(240,192,32,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(sx,sy,r*3.5,0,TAU); ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(sx,sy,r,0,TAU);
+    ctx.fillStyle=sp.s.col.replace(/[\d.]+\)$/,'.18)'); ctx.fill();
+    ctx.strokeStyle=sp.s.col; ctx.lineWidth=sp.s.n===6?2.2:1.3; ctx.stroke();
+
+    // label
+    ctx.font=`${Math.max(7,r*0.75)}px Cinzel`;
+    ctx.fillStyle=sp.s.col; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(sp.s.n, sx, sy);
+
+    // name outside
+    const nameX = sp.x < -S*0.1 ? sx - r - 4 : sp.x > S*0.1 ? sx + r + 4 : sx;
+    const anchor = sp.x < -S*0.1 ? 'right' : sp.x > S*0.1 ? 'left' : 'center';
+    ctx.font=`${Math.max(7,r*0.65)}px Noto Serif JP`;
+    ctx.textAlign=anchor; ctx.textBaseline='middle';
+    ctx.fillText(sp.s.name, nameX, sy);
+  });
+
+  ctx.font='10px Cinzel'; ctx.fillStyle='rgba(200,168,74,.3)';
+  ctx.textAlign='center'; ctx.fillText('生命の木 × ウィトルウィウス人体図（ホド・ネツァク修正版）', cx, H*0.05);
+
+  // Annotation for corrected positions
+  const hPP = p3(sephPos[7].x, sephPos[7].y, sephZ+S*0.05);
+  const nPP = p3(sephPos[6].x, sephPos[6].y, sephZ+S*0.05);
+  ctx.font='8px Cinzel'; ctx.fillStyle='rgba(220,110,30,.7)';
+  ctx.textAlign='right'; ctx.fillText('← ホド（左手）★修正', cx+hPP.sx-10, cy+hPP.sy+12);
+  ctx.fillStyle='rgba(50,180,50,.7)';
+  ctx.textAlign='left'; ctx.fillText('ネツァク（右手）★修正 →', cx+nPP.sx+10, cy+nPP.sy+12);
+}
+
+// ═══════════════════════════════════
+// TAB 4: PHI ANATOMY
+// ═══════════════════════════════════
+const phiState = makeState();
+
+function drawPhi3D() {
+  const cv = document.getElementById('cPhi');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W=cv.width, H=cv.height, cx=W/2, cy=H/2;
+  const S = W*0.34;
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createRadialGradient(cx,cy,0,cx,cy,W*.6);
+  bg.addColorStop(0,'#08080e'); bg.addColorStop(1,'#010108');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  const st = phiState;
+  const p3=(x,y,z)=>{const r=proj(st,x,y,z);return{x:cx+r.sx,y:cy+r.sy,sc:r.sc,z:r.z};};
+  const bp = getBodyPoints(S);
+
+  // Draw nested golden rectangles in 3D
+  let w=S*0.7, h=w/PHI;
+  const rectColors=['rgba(200,168,74,','rgba(180,140,60,','rgba(160,120,50,','rgba(140,100,40,','rgba(120,80,30,'];
+  for(let i=0;i<5;i++){
+    const corners=[[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]];
+    const z = -S*0.1 + i*S*0.06;
+    ctx.save(); ctx.globalAlpha=0.3-i*0.04;
+    ctx.beginPath();
+    corners.forEach((c,j)=>{
+      const pp=p3(c[0], bp.navelY*0.4+c[1], z);
+      j===0?ctx.moveTo(pp.x,pp.y):ctx.lineTo(pp.x,pp.y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle=rectColors[Math.min(i,4)]+'0.7)'; ctx.lineWidth=0.8; ctx.stroke();
+    ctx.restore();
+    const tmp=h; h=w-h; w=tmp;
+  }
+
+  // PHI cascade lines with labels
+  const phiDivisions = [
+    {y:bp.rootY,   label:'足 — 基準 L', col:'rgba(160,130,60,.8)', power:'L'},
+    {y:bp.navelY,  label:'へそ — L/φ', col:'rgba(200,168,74,.9)', power:'φ'},
+    {y:bp.heartY,  label:'心臓 — L/φ²  ★', col:'rgba(240,192,32,.95)', power:'φ²'},
+    {y:bp.throatY, label:'喉 — L/φ³', col:'rgba(64,200,200,.8)', power:'φ³'},
+    {y:bp.eyeY,    label:'目 — L/φ⁴', col:'rgba(80,120,255,.8)', power:'φ⁴'},
+    {y:bp.crownY,  label:'頭頂 — L/φ⁵', col:'rgba(192,96,255,.8)', power:'φ⁵'},
+  ];
+
+  phiDivisions.forEach((div, i) => {
+    const pL=p3(-S*0.68, div.y, S*0.1);
+    const pR=p3(S*0.68, div.y, S*0.1);
+    const pLab=p3(S*0.7, div.y, S*0.1);
+
+    // Horizontal line
+    ctx.beginPath(); ctx.moveTo(pL.x,pL.y); ctx.lineTo(pR.x,pR.y);
+    ctx.strokeStyle=div.col; ctx.lineWidth=div.y===bp.heartY?2:0.9;
+    ctx.setLineDash(div.y===bp.heartY?[]:[3,6]); ctx.stroke(); ctx.setLineDash([]);
+
+    // Label
+    ctx.font=`${div.y===bp.heartY?9:8}px Cinzel`;
+    ctx.fillStyle=div.col; ctx.textAlign='left';
+    ctx.fillText(div.label, pLab.x+4, pLab.y+3);
+
+    // Dot
+    const pDot=p3(0, div.y, S*0.18);
+    const dR=(div.y===bp.heartY?8:5)*pDot.sc*st.zoom;
+    if(div.y===bp.heartY){
+      const dg=ctx.createRadialGradient(pDot.x,pDot.y,0,pDot.x,pDot.y,dR*3);
+      dg.addColorStop(0,'rgba(240,192,32,.5)'); dg.addColorStop(1,'rgba(240,192,32,0)');
+      ctx.fillStyle=dg; ctx.beginPath(); ctx.arc(pDot.x,pDot.y,dR*3,0,TAU); ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(pDot.x,pDot.y,dR,0,TAU);
+    ctx.fillStyle=div.col.replace(/[\d.]+\)$/,'.25)'); ctx.fill();
+    ctx.strokeStyle=div.col; ctx.lineWidth=1.2; ctx.stroke();
+  });
+
+  // Body spine
+  ctx.save(); ctx.globalAlpha=0.25;
+  const sp3=p3(0,bp.crownY,S*0.1), ep3=p3(0,bp.rootY,S*0.1);
+  ctx.beginPath(); ctx.moveTo(sp3.x,sp3.y); ctx.lineTo(ep3.x,ep3.y);
+  ctx.strokeStyle='rgba(240,230,210,.5)'; ctx.lineWidth=1; ctx.stroke();
+  ctx.restore();
+
+  // Fibonacci spiral from heart
+  ctx.save(); ctx.globalAlpha=0.3;
+  const fibPts=[];
+  for(let t=0;t<TAU*2.5;t+=0.04){
+    const r=S*0.03*Math.pow(PHI,t/(TAU*0.5));
+    if(r>S*1.1)break;
+    fibPts.push(p3(r*Math.cos(t), bp.heartY+r*Math.sin(t), S*0.15));
+  }
+  ctx.beginPath(); fibPts.forEach((pp,i)=>i===0?ctx.moveTo(pp.x,pp.y):ctx.lineTo(pp.x,pp.y));
+  const fg=ctx.createLinearGradient(cx-S,cy,cx+S,cy);
+  fg.addColorStop(0,'rgba(200,168,74,0)'); fg.addColorStop(.5,'rgba(240,200,80,.8)'); fg.addColorStop(1,'rgba(200,168,74,0)');
+  ctx.strokeStyle=fg; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.restore();
+
+  ctx.font='10px Cinzel'; ctx.fillStyle='rgba(200,168,74,.3)';
+  ctx.textAlign='center';
+  ctx.fillText('黄金比のカスケード — φ¹からφ⁵まで', cx, H*0.05);
+  ctx.font='8px Cinzel'; ctx.fillStyle='rgba(200,168,74,.2)';
+  ctx.fillText('φ = 1.6180339... · 心臓 = φ²の分割点 = ティファレト（金）', cx, H*0.09);
+}
+
+// ═══════════════════════════════════
+// ANIMATION LOOP
+// ═══════════════════════════════════
+let currentTab = 'vit';
+let animId = null;
+
+function animate() {
+  if (currentTab === 'vit') drawVit();
+  animId = requestAnimationFrame(animate);
+}
+
+// ═══════════════════════════════════
+// TAB SWITCH
+// ═══════════════════════════════════
+function setTab(id, btn) {
+  document.querySelectorAll('.panel-wrap').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('p'+id.charAt(0).toUpperCase()+id.slice(1)).classList.add('active');
+  btn.classList.add('active');
+  currentTab = id;
+
+  if (animId) cancelAnimationFrame(animId);
+
+  setTimeout(() => {
+    if (id==='vit') { attachDrag(document.getElementById('cVit'), vitState, drawVit); animate(); }
+    if (id==='flower') { attachDrag(document.getElementById('cFlower'), flowerState, drawFlower3D); drawFlower3D(); }
+    if (id==='tree') { attachDrag(document.getElementById('cTree'), treeState, drawTree3D); drawTree3D(); }
+    if (id==='phi') { attachDrag(document.getElementById('cPhi'), phiState, drawPhi3D); drawPhi3D(); }
+  }, 60);
+}
+
+// Tab IDs → panel IDs mapping
+function show(id, btn) { setTab(id, btn); }
+
+// ─ INIT ─
+setTimeout(() => {
+  attachDrag(document.getElementById('cVit'), vitState, drawVit);
+  animate();
+}, 80);
+</script>
+</body>
+</html>

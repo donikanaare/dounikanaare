@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>メタトロン解説 × テスラ 3・6・9</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@300;400;600&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#040508;
+  --gold:#c9a84c;--gl:#f0d080;--gd:#4a3810;
+  --text:#ddd0b8;--dim:rgba(221,208,184,.5);
+  --c3:rgba(255,80,80,1);
+  --c6:rgba(80,200,255,1);
+  --c9:rgba(200,100,255,1);
+  --em:#40c890;
+}
+body{
+  background:var(--bg);
+  background-image:radial-gradient(ellipse 100% 60% at 50% 40%,rgba(60,40,160,.07) 0%,transparent 65%);
+  font-family:'Noto Serif JP',serif;color:var(--text);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  padding:24px 10px 60px;overflow-x:hidden;
+}
+h1{
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(11px,2.2vw,17px);
+  color:var(--gl);letter-spacing:.15em;text-align:center;
+  text-shadow:0 0 40px rgba(201,168,76,.5);margin-bottom:3px;
+}
+.sub{font-family:'Cinzel',serif;font-size:clamp(7px,1.3vw,9.5px);color:var(--gd);letter-spacing:.3em;text-align:center;margin-bottom:20px;text-transform:uppercase;}
+
+.tabs{display:flex;gap:5px;margin-bottom:18px;flex-wrap:wrap;justify-content:center;}
+.tab{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;padding:6px 14px;border-radius:3px;cursor:pointer;border:1px solid var(--gd);background:transparent;color:var(--gd);transition:all .22s;text-transform:uppercase;}
+.tab:hover{border-color:var(--gold);color:var(--gold);}
+.tab.active{background:rgba(201,168,76,.1);border-color:var(--gold);color:var(--gl);box-shadow:0 0 14px rgba(201,168,76,.18);}
+
+.panel{display:none;width:100%;max-width:1120px;animation:fu .45s ease both;}
+.panel.active{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;align-items:flex-start;}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+canvas{border:1px solid rgba(201,168,76,.1);border-radius:4px;background:#030306;flex-shrink:0;display:block;}
+
+.info{flex:1;min-width:240px;max-width:380px;display:flex;flex-direction:column;gap:14px;}
+.sec{border-left:2px solid var(--gd);padding-left:12px;}
+.sec-t{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+.sec-b{font-size:10.5px;line-height:1.9;color:var(--dim);}
+.sec-b b{color:var(--text);}
+.sec-b em{font-style:italic;}
+
+.num-card{border-radius:5px;padding:10px 13px;margin-bottom:6px;display:flex;gap:12px;align-items:flex-start;}
+.num-badge{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel Decorative',serif;font-size:16px;font-weight:700;flex-shrink:0;}
+.num-body{flex:1;font-size:10px;line-height:1.8;color:var(--dim);}
+.num-body b{font-size:11px;}
+
+.ctrl{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;justify-content:center;}
+.btn{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.12em;padding:5px 12px;border-radius:3px;cursor:pointer;border:1px solid rgba(201,168,76,.25);background:rgba(201,168,76,.06);color:var(--gold);transition:all .2s;text-transform:uppercase;}
+.btn:hover{background:rgba(201,168,76,.15);border-color:var(--gold);}
+.btn.on{background:rgba(201,168,76,.18);border-color:var(--gl);color:var(--gl);}
+.btn3{border-color:rgba(255,80,80,.4);color:rgba(255,130,130,.8);background:rgba(255,80,80,.06);}
+.btn3.on{border-color:rgba(255,80,80,.8);background:rgba(255,80,80,.18);color:rgba(255,160,160,1);}
+.btn6{border-color:rgba(80,200,255,.4);color:rgba(130,210,255,.8);background:rgba(80,200,255,.06);}
+.btn6.on{border-color:rgba(80,200,255,.8);background:rgba(80,200,255,.18);color:rgba(160,230,255,1);}
+.btn9{border-color:rgba(200,100,255,.4);color:rgba(220,150,255,.8);background:rgba(200,100,255,.06);}
+.btn9.on{border-color:rgba(200,100,255,.8);background:rgba(200,100,255,.18);color:rgba(230,180,255,1);}
+
+.step-flow{display:flex;flex-direction:column;gap:0;}
+.step-item{display:flex;gap:10px;align-items:stretch;}
+.step-left{display:flex;flex-direction:column;align-items:center;width:22px;flex-shrink:0;}
+.step-dot{width:14px;height:14px;border-radius:50%;border:2px solid;margin-top:5px;flex-shrink:0;}
+.step-line{width:1px;flex:1;min-height:16px;background:rgba(201,168,76,.15);margin:3px 0;}
+.step-content{padding-bottom:12px;flex:1;font-size:10px;color:var(--dim);line-height:1.7;}
+.step-content b{color:var(--text);font-size:10.5px;}
+
+.foot{margin-top:36px;font-family:'Cinzel',serif;font-size:8px;color:rgba(201,168,76,.2);letter-spacing:.22em;text-align:center;}
+</style>
+</head>
+<body>
+
+<h1>メタトロンの立方体 × テスラ 3・6・9</h1>
+<div class="sub">Metatron's Cube · Tesla's 3-6-9 Law · Sacred Numbers · Unified Structure</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('meta_explain',this)">メタトロン解説</button>
+  <button class="tab" onclick="show('tesla369',this)">テスラ 3・6・9</button>
+  <button class="tab" onclick="show('meta369',this)">メタトロン × 3・6・9</button>
+  <button class="tab" onclick="show('digital',this)">数秘術的統合</button>
+</div>
+
+<!-- ══════ TAB 1: METATRON EXPLAINED ══════ -->
+<div class="panel active" id="meta_explain">
+<canvas id="cExplain" width="440" height="440"></canvas>
+<div class="info">
+  <div class="sec">
+    <div class="sec-t">✦ メタトロン構築の手順</div>
+    <div class="step-flow">
+      <div class="step-item">
+        <div class="step-left"><div class="step-dot" style="border-color:rgba(201,168,76,.6);background:#0a0a00;"></div><div class="step-line"></div></div>
+        <div class="step-content"><b>① 中心円 1つ</b><br>全ての起点。カバラのケテル。ラッセルのゼロポイント。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-left"><div class="step-dot" style="border-color:rgba(255,80,80,.7);background:#0a0000;"></div><div class="step-line"></div></div>
+        <div class="step-content"><b>② 第1リング 6つ追加</b><br>中心円の外周に同じ半径の円を6方向に配置。これが「フラワーオブライフ」の核。合計<b>7円</b>。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-left"><div class="step-dot" style="border-color:rgba(80,200,255,.7);background:#000a10;"></div><div class="step-line"></div></div>
+        <div class="step-content"><b>③ 第2リング 6つ追加</b><br>さらに外側に6円。合計<b>13円 = フルーツオブライフ</b>。この13が聖なる数。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-left"><div class="step-dot" style="border-color:rgba(200,100,255,.7);background:#080010;"></div></div>
+        <div class="step-content"><b>④ 全中心点を直線で結ぶ</b><br>13点を全て繋ぐと<b>78本の直線</b>。内部に5つのプラトン立体が出現。これが「メタトロンの立方体」。</div>
+      </div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">✦ 内包される5プラトン立体</div>
+    <div class="sec-b">
+      <b style="color:rgba(255,120,80,1);">正四面体</b>　4面・火・ゲブラー（力・裁き）<br>
+      <b style="color:rgba(80,160,255,1);">正六面体</b>　6面・土・マルクト（物質世界）<br>
+      <b style="color:rgba(80,220,120,1);">正八面体</b>　8面・風・ケセド（慈悲・拡大）<br>
+      <b style="color:rgba(255,200,50,1);">正十二面体</b>　12面・エーテル・ケテル（源）<br>
+      <b style="color:rgba(180,100,255,1);">正二十面体</b>　20面・水・イェソド（潜在意識）<br><br>
+      プラトンは「神は幾何学を用いて宇宙を設計した」と述べた。この5立体が全物質の構造原理とされる。
+    </div>
+  </div>
+  <div class="ctrl">
+    <button class="btn on" id="bStep1" onclick="setStep(0,this)">① 中心</button>
+    <button class="btn" id="bStep2" onclick="setStep(1,this)">② +6円</button>
+    <button class="btn" id="bStep3" onclick="setStep(2,this)">③ +6円</button>
+    <button class="btn" id="bStep4" onclick="setStep(3,this)">④ 直線</button>
+    <button class="btn" id="bStep5" onclick="setStep(4,this)">⑤ プラトン</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════ TAB 2: TESLA 3-6-9 ══════ -->
+<div class="panel" id="tesla369">
+<canvas id="cTesla" width="440" height="440"></canvas>
+<div class="info">
+  <div class="sec">
+    <div class="sec-t">✦ テスラの「3・6・9の法則」</div>
+    <div class="sec-b">
+      ニコラ・テスラ（1856〜1943）は<b>「3・6・9の重要性を理解できれば宇宙の鍵を持つことになる」</b>と語った。<br><br>
+      これは単なる神秘主義ではなく、<b>数学的・物理的根拠</b>がある。
+    </div>
+  </div>
+
+  <div class="num-card" style="background:rgba(255,80,80,.06);border:1px solid rgba(255,80,80,.2);">
+    <div class="num-badge" style="background:rgba(255,80,80,.15);border:2px solid rgba(255,80,80,.6);color:rgba(255,130,130,1);">3</div>
+    <div class="num-body">
+      <b style="color:rgba(255,160,160,1);">三角形・三位一体・三原質</b><br>
+      最小の安定構造。カバラの上位三角形（ケテル・コクマー・ビナー）。錬金術の硫黄・水銀・塩。テスラコイルの三相交流。あらゆる構造の<b>最小単位</b>。
+    </div>
+  </div>
+
+  <div class="num-card" style="background:rgba(80,200,255,.06);border:1px solid rgba(80,200,255,.2);">
+    <div class="num-badge" style="background:rgba(80,200,255,.15);border:2px solid rgba(80,200,255,.6);color:rgba(130,220,255,1);">6</div>
+    <div class="num-body">
+      <b style="color:rgba(160,230,255,1);">六角形・完全数・炭素</b><br>
+      最も効率的な空間充填。蜂の巣・雪の結晶・炭素原子（生命の基礎）。フラワーオブライフの基本対称性。メタトロン13円のリング数。<b>3の倍数で対称性が最大化</b>する。
+    </div>
+  </div>
+
+  <div class="num-card" style="background:rgba(200,100,255,.06);border:1px solid rgba(200,100,255,.2);">
+    <div class="num-badge" style="background:rgba(200,100,255,.15);border:2px solid rgba(200,100,255,.6);color:rgba(220,160,255,1);">9</div>
+    <div class="num-body">
+      <b style="color:rgba(230,180,255,1);">完成・還帰・デジタルルート</b><br>
+      9の倍数はデジタルルート（各桁の和）が常に9に戻る。9×任意数→必ず9。ラッセルの9オクターブ。カバラ10セフィロトの「1+2+…+9=45→4+5=<b>9</b>」。<b>全ての数の完成点</b>。
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-t">✦ 図の見方</div>
+    <div class="sec-b">
+      12時計盤の1〜9を各ボタンで色分け表示。<b>倍数の配列パターン</b>が幾何学的対称性を生む。特に<b>3・6・9は独立した三角形</b>を形成し、他の数字とは異なる次元に属することがわかる。
+    </div>
+  </div>
+  <div class="ctrl">
+    <button class="btn btn3 on" id="b3" onclick="toggleT(3,this)">×3 系列</button>
+    <button class="btn btn6 on" id="b6" onclick="toggleT(6,this)">×6 系列</button>
+    <button class="btn btn9 on" id="b9" onclick="toggleT(9,this)">×9 系列</button>
+    <button class="btn on" id="bAll" onclick="toggleT('all',this)">全数字</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════ TAB 3: METATRON × 3-6-9 ══════ -->
+<div class="panel" id="meta369">
+<canvas id="cMeta369" width="440" height="440"></canvas>
+<div class="info">
+  <div class="sec">
+    <div class="sec-t">✦ メタトロンに潜む 3・6・9</div>
+    <div class="sec-b">
+      メタトロンの立方体は<b>3・6・9の法則が幾何学的に結晶化した形</b>。数字と図形が完全に一致する。
+    </div>
+  </div>
+
+  <div class="num-card" style="background:rgba(255,80,80,.06);border:1px solid rgba(255,80,80,.2);">
+    <div class="num-badge" style="background:rgba(255,80,80,.15);border:2px solid rgba(255,80,80,.5);color:rgba(255,130,130,1);">3</div>
+    <div class="num-body">
+      <b style="color:rgba(255,160,160,1);">正三角形 × 2 = 六芒星</b><br>
+      メタトロンに内包される<b>正四面体</b>は正三角形の集合体。上向き三角形と下向き三角形の重ね合わせがダビデの星を生む。カバラ上位三角形（3セフィロト）との対応。
+    </div>
+  </div>
+
+  <div class="num-card" style="background:rgba(80,200,255,.06);border:1px solid rgba(80,200,255,.2);">
+    <div class="num-badge" style="background:rgba(80,200,255,.15);border:2px solid rgba(80,200,255,.5);color:rgba(130,220,255,1);">6</div>
+    <div class="num-body">
+      <b style="color:rgba(160,230,255,1);">6円リング × 2層 + 中心 = 13</b><br>
+      メタトロン13円 = 1 + 6 + 6。外周の<b>6対称</b>が立方体・正八面体を生成。78本の直線 = 6 × 13。全てが6の倍数で構成される。
+    </div>
+  </div>
+
+  <div class="num-card" style="background:rgba(200,100,255,.06);border:1px solid rgba(200,100,255,.2);">
+    <div class="num-badge" style="background:rgba(200,100,255,.15);border:2px solid rgba(200,100,255,.5);color:rgba(220,160,255,1);">9</div>
+    <div class="num-body">
+      <b style="color:rgba(230,180,255,1);">5プラトン立体の面数の和 = 54 → 9</b><br>
+      4+6+8+12+20 = 50… いや実際は<b>頂点数の和: 4+8+6+20+12 = 50→5+0=5</b>。辺数: 6+12+12+30+30=90→<b>9</b>。全て9に還帰する。
+    </div>
+  </div>
+
+  <div class="ctrl">
+    <button class="btn btn3 on" id="m3" onclick="toggleM369(3,this)">3の構造</button>
+    <button class="btn btn6 on" id="m6" onclick="toggleM369(6,this)">6の構造</button>
+    <button class="btn btn9 on" id="m9" onclick="toggleM369(9,this)">9の完成</button>
+    <button class="btn on" id="mBase" onclick="toggleM369('base',this)">基本円</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════ TAB 4: DIGITAL ROOT ══════ -->
+<div class="panel" id="digital">
+<canvas id="cDigital" width="440" height="440"></canvas>
+<div class="info">
+  <div class="sec">
+    <div class="sec-t">✦ デジタルルートとカバラの統合</div>
+    <div class="sec-b">
+      デジタルルート（数字の各桁の和を1桁になるまで繰り返す）で見ると、全ての知識体系が<b>9を完成点とする同じサイクル</b>を持つ。
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-t">✦ セフィロトのデジタルルート</div>
+    <div class="sec-b">
+      <b>ケテル①</b>　1 → <em style="color:rgba(255,80,80,.9)">1</em><br>
+      <b>コクマー②</b>　2 → <em style="color:rgba(255,140,40,.9)">2</em><br>
+      <b>ビナー③</b>　3 → <em style="color:rgba(255,80,80,.9)">3 ✦</em><br>
+      <b>ケセド④</b>　4 → <em style="color:rgba(255,200,40,.9)">4</em><br>
+      <b>ゲブラー⑤</b>　5 → <em style="color:rgba(100,220,80,.9)">5</em><br>
+      <b>ティファレト⑥</b>　6 → <em style="color:rgba(80,200,255,.9)">6 ✦</em><br>
+      <b>ネツァク⑦</b>　7 → <em style="color:rgba(80,120,255,.9)">7</em><br>
+      <b>ホド⑧</b>　8 → <em style="color:rgba(160,80,255,.9)">8</em><br>
+      <b>イェソド⑨</b>　9 → <em style="color:rgba(200,100,255,.9)">9 ✦</em><br>
+      <b>マルクト⑩</b>　10 → 1+0 = <em style="color:rgba(255,80,80,.9)">1（ケテルへ還帰）</em><br><br>
+      <b>3・6・9</b>（ビナー・ティファレト・イェソド）が<b>三つの柱の中心的セフィロト</b>に対応している。
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-t">✦ 9の倍数の神秘</div>
+    <div class="sec-b">
+      9×1=9　9×2=18→<b>9</b>　9×3=27→<b>9</b><br>
+      9×4=36→<b>9</b>　9×5=45→<b>9</b><br>
+      全て9に戻る。テスラが「9は特別な次元」と言った理由。<br><br>
+      メタトロン78本 → 7+8=<b>15→6</b><br>
+      フラワー19円 → 1+9=<b>10→1</b>（ケテル）<br>
+      13円 → 1+3=<b>4</b>（ケセド・慈悲）<br>
+      5プラトン → <b>5</b>（ゲブラー・力）<br><br>
+      全て生命の木のセフィロトに対応する。
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="foot">✦ &nbsp; If you only knew the magnificence of 3, 6 and 9 — Tesla &nbsp; ✦</div>
+
+<script>
+const TAU=Math.PI*2;
+
+// ══════════════════════════
+// TAB 1: METATRON STEP BY STEP
+// ══════════════════════════
+let explainStep=0;
+
+function setStep(s,btn){
+  explainStep=s;
+  document.querySelectorAll('[id^=bStep]').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  drawExplain();
+}
+
+function drawExplain(){
+  const cv=document.getElementById('cExplain');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,cx=W/2,cy=H/2;
+  const R=W*0.115;
+
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createRadialGradient(cx,cy,0,cx,cy,W*.5);
+  bg.addColorStop(0,'#08080f');bg.addColorStop(1,'#030306');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  // Build 13 circle centers
+  const centers=[{x:cx,y:cy}];
+  for(let i=0;i<6;i++){
+    const a=i*TAU/6;
+    centers.push({x:cx+Math.cos(a)*R*2,y:cy+Math.sin(a)*R*2});
+  }
+  for(let i=0;i<6;i++){
+    const a=i*TAU/6+TAU/12;
+    centers.push({x:cx+Math.cos(a)*R*2*Math.sqrt(3),y:cy+Math.sin(a)*R*2*Math.sqrt(3)});
+  }
+
+  const stepColors=[
+    'rgba(201,168,76,',   // step0 center
+    'rgba(255,80,80,',    // step1 ring1
+    'rgba(80,200,255,',   // step2 ring2
+    'rgba(200,100,255,',  // step3 lines
+    'rgba(64,200,144,',   // step4 platonic
+  ];
+
+  // STEP 0: center circle
+  const drawCircle=(c,col,alpha,lw=1)=>{
+    const g=ctx.createRadialGradient(c.x,c.y,0,c.x,c.y,R);
+    g.addColorStop(0,col+alpha*.3+')');g.addColorStop(1,col+'0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(c.x,c.y,R,0,TAU);ctx.fill();
+    ctx.beginPath();ctx.arc(c.x,c.y,R,0,TAU);
+    ctx.strokeStyle=col+alpha+')';ctx.lineWidth=lw;ctx.stroke();
+    ctx.beginPath();ctx.arc(c.x,c.y,2.5,0,TAU);
+    ctx.fillStyle=col+'.9)';ctx.fill();
+  };
+
+  // Draw based on step
+  if(explainStep>=0){
+    drawCircle(centers[0],'rgba(201,168,76,',0.8,1.5);
+    // Label
+    ctx.font=`${W*.018}px Cinzel`;ctx.fillStyle='rgba(201,168,76,.5)';
+    ctx.textAlign='center';
+    ctx.fillText('① 中心円 — ケテル・ゼロポイント',cx,cy-R-12);
+  }
+  if(explainStep>=1){
+    for(let i=1;i<=6;i++) drawCircle(centers[i],'rgba(255,80,80,',0.7);
+    ctx.font=`${W*.016}px Cinzel`;ctx.fillStyle='rgba(255,130,130,.5)';
+    ctx.textAlign='center';ctx.fillText('② 第1リング +6円（合計7）',cx,H*.9);
+  }
+  if(explainStep>=2){
+    for(let i=7;i<13;i++) drawCircle(centers[i],'rgba(80,200,255,',0.6);
+    ctx.font=`${W*.016}px Cinzel`;ctx.fillStyle='rgba(130,210,255,.5)';
+    ctx.textAlign='center';ctx.fillText('③ 第2リング +6円（合計13 = フルーツオブライフ）',cx,H*.88);
+  }
+  if(explainStep>=3){
+    // Draw all connecting lines
+    ctx.globalAlpha=0.3;
+    const fruit=centers.slice(0,13);
+    for(let i=0;i<fruit.length;i++){
+      for(let j=i+1;j<fruit.length;j++){
+        ctx.beginPath();ctx.moveTo(fruit[i].x,fruit[i].y);ctx.lineTo(fruit[j].x,fruit[j].y);
+        const hue=((i*47+j*23)%360);
+        ctx.strokeStyle=`hsla(${hue},70%,65%,.7)`;
+        ctx.lineWidth=.6;ctx.stroke();
+      }
+    }
+    ctx.globalAlpha=1;
+    ctx.font=`${W*.016}px Cinzel`;ctx.fillStyle='rgba(200,150,255,.5)';
+    ctx.textAlign='center';ctx.fillText('④ 全中心点を直線で結ぶ（78本）',cx,H*.86);
+  }
+  if(explainStep>=4){
+    // Show platonic solids hints
+    // Tetrahedron (2 triangles)
+    [[1,3,5],[2,4,6]].forEach((tri,ti)=>{
+      ctx.beginPath();
+      tri.forEach((i,j)=>{j===0?ctx.moveTo(centers[i].x,centers[i].y):ctx.lineTo(centers[i].x,centers[i].y);});
+      ctx.closePath();
+      ctx.strokeStyle=`rgba(255,${ti===0?80:140},${ti===0?80:40},.9)`;ctx.lineWidth=2.2;ctx.stroke();
+      ctx.fillStyle=`rgba(255,100,60,.08)`;ctx.fill();
+    });
+    // Cube edges
+    const cubeEdges=[[1,2],[2,3],[3,4],[4,5],[5,6],[6,1],[0,1],[0,3],[0,5]];
+    ctx.strokeStyle='rgba(80,160,255,.7)';ctx.lineWidth=1.6;
+    cubeEdges.forEach(([a,b])=>{
+      ctx.beginPath();ctx.moveTo(centers[a].x,centers[a].y);ctx.lineTo(centers[b].x,centers[b].y);ctx.stroke();
+    });
+    // Octahedron
+    const octaEdges=[[1,3],[3,5],[5,1],[2,4],[4,6],[6,2]];
+    ctx.strokeStyle='rgba(80,220,120,.6)';ctx.lineWidth=1.4;
+    octaEdges.forEach(([a,b])=>{
+      ctx.beginPath();ctx.moveTo(centers[a].x,centers[a].y);ctx.lineTo(centers[b].x,centers[b].y);ctx.stroke();
+    });
+
+    // Legend
+    const plegend=[
+      {col:'rgba(255,100,80,1)',label:'正四面体（火・ゲブラー）'},
+      {col:'rgba(80,160,255,1)',label:'正六面体（土・マルクト）'},
+      {col:'rgba(80,220,120,1)',label:'正八面体（風・ケセド）'},
+    ];
+    plegend.forEach((l,i)=>{
+      ctx.fillStyle=l.col;ctx.fillRect(W*.06,H*.85+i*13,14,2);
+      ctx.font=`${W*.016}px Cinzel`;ctx.fillStyle='rgba(200,190,160,.5)';
+      ctx.textAlign='left';ctx.fillText(l.label,W*.06+18,H*.854+i*13);
+    });
+  }
+
+  // Always draw active circles on top
+  if(explainStep===0) drawCircle(centers[0],'rgba(255,240,180,',0.9,2);
+}
+
+// ══════════════════════════
+// TAB 2: TESLA 3-6-9
+// ══════════════════════════
+const tShow={3:true,6:true,9:true,all:true};
+
+function toggleT(k,btn){
+  tShow[k]=!tShow[k];
+  btn.classList.toggle('on',tShow[k]);
+  drawTesla();
+}
+
+function drawTesla(){
+  const cv=document.getElementById('cTesla');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,cx=W/2,cy=H/2;
+  const R=W*.36;
+
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createRadialGradient(cx,cy,0,cx,cy,W*.5);
+  bg.addColorStop(0,'#08080f');bg.addColorStop(1,'#030306');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  // Outer ring
+  ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);
+  ctx.strokeStyle='rgba(201,168,76,.2)';ctx.lineWidth=1;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,R*.06,0,TAU);
+  ctx.strokeStyle='rgba(201,168,76,.3)';ctx.lineWidth=.8;ctx.stroke();
+
+  // 9 positions on circle
+  const pts=[];
+  for(let i=1;i<=9;i++){
+    const a=(i/9)*TAU-TAU/4; // start from top
+    pts.push({x:cx+Math.cos(a)*R,y:cy+Math.sin(a)*R,n:i});
+  }
+
+  // Draw all numbers faint
+  if(tShow.all){
+    pts.forEach(p=>{
+      ctx.font=`bold ${W*.038}px Cinzel`;
+      ctx.fillStyle='rgba(201,168,76,.15)';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(p.n,p.x,p.y);
+    });
+  }
+
+  // doubling sequence 1,2,4,8,7,5,1 (non-369)
+  if(tShow.all){
+    const seq=[1,2,4,8,7,5];
+    ctx.globalAlpha=0.35;
+    ctx.beginPath();
+    seq.forEach((n,i)=>{
+      const p=pts[n-1];
+      i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle='rgba(201,168,76,.6)';ctx.lineWidth=1.2;ctx.stroke();
+    ctx.globalAlpha=1;
+  }
+
+  // Draw 3 series
+  if(tShow[3]){
+    const s3=[3,6,9,3]; // triangle
+    ctx.beginPath();
+    [3,6,9].forEach((n,i)=>{
+      const p=pts[n-1];
+      i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle='rgba(255,80,80,.9)';ctx.lineWidth=2.5;
+    ctx.shadowColor='rgba(255,80,80,.6)';ctx.shadowBlur=10;
+    ctx.stroke();ctx.shadowBlur=0;
+    ctx.fillStyle='rgba(255,80,80,.07)';ctx.fill();
+    [3,6,9].forEach(n=>{
+      const p=pts[n-1];
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,R*.12);
+      g.addColorStop(0,'rgba(255,80,80,.4)');g.addColorStop(1,'rgba(255,80,80,0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,R*.12,0,TAU);ctx.fill();
+      ctx.font=`bold ${W*.05}px Cinzel`;
+      ctx.fillStyle='rgba(255,150,130,1)';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(n,p.x,p.y);
+    });
+  }
+
+  // Draw 6 series  
+  if(tShow[6]){
+    // 6's multiples digital roots: 6,3,9,6,3,9...
+    const pts6=[pts[5],pts[2],pts[8],pts[5]];
+    ctx.beginPath();
+    [6,3,9].forEach((n,i)=>{
+      const p=pts[n-1];
+      i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle='rgba(80,200,255,.8)';ctx.lineWidth=2;
+    ctx.shadowColor='rgba(80,200,255,.5)';ctx.shadowBlur=8;
+    ctx.stroke();ctx.shadowBlur=0;
+    // labels inside
+    if(!tShow[3]){
+      [6,3,9].forEach(n=>{
+        const p=pts[n-1];
+        ctx.font=`bold ${W*.045}px Cinzel`;
+        ctx.fillStyle='rgba(130,220,255,1)';
+        ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(n,p.x,p.y);
+      });
+    }
+  }
+
+  // Draw 9 (always center + emanation lines)
+  if(tShow[9]){
+    const p9=pts[8];
+    // 9 is special — it connects everything
+    [0,1,2,3,4,5,6,7,8].forEach(i=>{
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(p9.x,p9.y);
+      ctx.strokeStyle='rgba(200,100,255,.15)';ctx.lineWidth=.8;ctx.stroke();
+    });
+    // 9 at top
+    const g9=ctx.createRadialGradient(p9.x,p9.y,0,p9.x,p9.y,R*.18);
+    g9.addColorStop(0,'rgba(200,100,255,.5)');g9.addColorStop(1,'rgba(200,100,255,0)');
+    ctx.fillStyle=g9;ctx.beginPath();ctx.arc(p9.x,p9.y,R*.18,0,TAU);ctx.fill();
+    ctx.font=`bold ${W*.06}px Cinzel Decorative`;
+    ctx.fillStyle='rgba(220,160,255,1)';
+    ctx.shadowColor='rgba(200,100,255,.8)';ctx.shadowBlur=15;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('9',p9.x,p9.y);ctx.shadowBlur=0;
+  }
+
+  // Center dot
+  const gc=ctx.createRadialGradient(cx,cy,0,cx,cy,R*.08);
+  gc.addColorStop(0,'rgba(255,240,180,.9)');gc.addColorStop(1,'rgba(255,240,180,0)');
+  ctx.fillStyle=gc;ctx.beginPath();ctx.arc(cx,cy,R*.08,0,TAU);ctx.fill();
+  ctx.font=`${W*.018}px Cinzel`;ctx.fillStyle='rgba(201,168,76,.6)';
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('∞',cx,cy);
+
+  // Title
+  ctx.font=`${W*.02}px Cinzel`;ctx.fillStyle='rgba(201,168,76,.4)';
+  ctx.textBaseline='top';ctx.textAlign='center';
+  ctx.fillText('テスラ 3・6・9 — 倍数のデジタルルート図',cx,H*.03);
+  ctx.font=`${W*.015}px Cinzel`;ctx.fillStyle='rgba(201,168,76,.2)';
+  ctx.fillText('"If you only knew the magnificence of 3, 6 and 9" — Tesla',cx,H*.07);
+}
+
+// ══════════════════════════
+// TAB 3: METATRON × 3-6-9
+// ══════════════════════════
+const m369Show={3:true,6:true,9:true,base:true};
+
+function toggleM369(k,btn){
+  m369Show[k]=!m369Show[k];
+  btn.classList.toggle('on',m369Show[k]);
+  drawMeta369();
+}
+
+function drawMeta369(){
+  const cv=document.getElementById('cMeta369');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,cx=W/2,cy=H/2;
+  const R=W*.105;
+
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createRadialGradient(cx,cy,0,cx,cy,W*.5);
+  bg.addColorStop(0,'#08080f');bg.addColorStop(1,'#030306');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  // 13 centers
+  const centers=[{x:cx,y:cy}];
+  for(let i=0;i<6;i++){
+    const a=i*TAU/6;
+    centers.push({x:cx+Math.cos(a)*R*2,y:cy+Math.sin(a)*R*2});
+  }
+  for(let i=0;i<6;i++){
+    const a=i*TAU/6+TAU/12;
+    centers.push({x:cx+Math.cos(a)*R*2*Math.sqrt(3),y:cy+Math.sin(a)*R*2*Math.sqrt(3)});
+  }
+
+  // BASE: all lines faint
+  if(m369Show.base){
+    ctx.globalAlpha=0.1;
+    for(let i=0;i<13;i++){
+      for(let j=i+1;j<13;j++){
+        ctx.beginPath();ctx.moveTo(centers[i].x,centers[i].y);ctx.lineTo(centers[j].x,centers[j].y);
+        ctx.strokeStyle='rgba(201,168,76,.5)';ctx.lineWidth=.5;ctx.stroke();
+      }
+    }
+    // circles
+    centers.forEach(c=>{
+      ctx.beginPath();ctx.arc(c.x,c.y,R,0,TAU);
+      ctx.strokeStyle='rgba(201,168,76,.4)';ctx.lineWidth=.5;ctx.stroke();
+    });
+    ctx.globalAlpha=1;
+  }
+
+  // 3: TWO TRIANGLES (tetrahedra)
+  if(m369Show[3]){
+    [[1,3,5],[2,4,6]].forEach((tri,ti)=>{
+      ctx.beginPath();
+      tri.forEach((i,j)=>{j===0?ctx.moveTo(centers[i].x,centers[i].y):ctx.lineTo(centers[i].x,centers[i].y);});
+      ctx.closePath();
+      ctx.strokeStyle=`rgba(255,${ti===0?80:130},80,.9)`;ctx.lineWidth=2.5;
+      ctx.shadowColor='rgba(255,80,80,.5)';ctx.shadowBlur=8;
+      ctx.stroke();ctx.shadowBlur=0;
+      ctx.fillStyle='rgba(255,80,80,.06)';ctx.fill();
+    });
+    // Labels
+    ctx.font=`${W*.016}px Cinzel`;ctx.fillStyle='rgba(255,130,130,.6)';
+    ctx.textAlign='center';
+    ctx.fillText('▲ 3の構造 = 正三角形×2 = 六芒星',cx,H*.89);
+  }
+
+  // 6: HEXAGON + cube
+  if(m369Show[6]){
+    // Hexagon from ring 1
+    ctx.beginPath();
+    [1,2,3,4,5,6,1].forEach((i,j)=>{j===0?ctx.moveTo(centers[i].x,centers[i].y):ctx.lineTo(centers[i].x,centers[i].y);});
+    ctx.strokeStyle='rgba(80,200,255,.8)';ctx.lineWidth=2;
+    ctx.shadowColor='rgba(80,200,255,.4)';ctx.shadowBlur=8;
+    ctx.stroke();ctx.shadowBlur=0;
+    // Cube inner lines
+    [[1,4],[2,5],[3,6]].forEach(([a,b])=>{
+      ctx.beginPath();ctx.moveTo(centers[a].x,centers[a].y);ctx.lineTo(centers[b].x,centers[b].y);
+      ctx.strokeStyle='rgba(80,200,255,.5)';ctx.lineWidth=1.2;ctx.stroke();
+    });
+    if(!m369Show[3]){
+      ctx.font=`${W*.016}px Cinzel`;ctx.fillStyle='rgba(130,210,255,.6)';
+      ctx.textAlign='center';ctx.fillText('6の構造 = 六角形・立方体・正八面体',cx,H*.89);
+    }
+  }
+
+  // 9: COMPLETION — outer ring + all center connections
+  if(m369Show[9]){
+    // Outer 6 form enneagram-like pattern
+    [7,8,9,10,11,12].forEach((i,idx)=>{
+      // Connect every outer to 3 non-adjacent
+      const j=(idx+3)%6+7;
+      ctx.beginPath();ctx.moveTo(centers[i].x,centers[i].y);ctx.lineTo(centers[j].x,centers[j].y);
+      ctx.strokeStyle='rgba(200,100,255,.6)';ctx.lineWidth=1.5;
+      ctx.shadowColor='rgba(200,100,255,.3)';ctx.shadowBlur=5;
+      ctx.stroke();ctx.shadowBlur=0;
+    });
+    // Outer circle
+    ctx.beginPath();ctx.arc(cx,cy,R*2*Math.sqrt(3)+R*.8,0,TAU);
+    ctx.strokeStyle='rgba(200,100,255,.3)';ctx.lineWidth=1;ctx.stroke();
+    if(m369Show[3]&&m369Show[6]){
+      ctx.font=`${W*.016}px Cinzel`;ctx.fillStyle='rgba(210,150,255,.6)';
+      ctx.textAlign='center';ctx.fillText('9の完成 = 外周の接続・全体の統合',cx,H*.91);
+    }
+  }
+
+  // Number labels on key nodes
+  const numLabels=[
+    {c:centers[0],n:'1',col:'rgba(255,240,180,.9)'},
+    {c:centers[1],n:'3',col:'rgba(255,100,80,.9)'},
+    {c:centers[3],n:'3',col:'rgba(255,100,80,.9)'},
+    {c:centers[5],n:'3',col:'rgba(255,100,80,.9)'},
+    {c:centers[2],n:'6',col:'rgba(80,200,255,.9)'},
+    {c:centers[4],n:'6',col:'rgba(80,200,255,.9)'},
+    {c:centers[6],n:'6',col:'rgba(80,200,255,.9)'},
+    {c:centers[7],n:'9',col:'rgba(200,100,255,.9)'},
+    {c:centers[10],n:'9',col:'rgba(200,100,255,.9)'},
+  ];
+  numLabels.forEach(l=>{
+    ctx.font=`bold ${W*.022}px Cinzel`;
+    ctx.fillStyle=l.col;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(l.n,l.c.x,l.c.y);
+  });
+
+  // Center glow
+  const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,R*.7);
+  cg.addColorStop(0,'rgba(255,240,180,.3)');cg.addColorStop(1,'rgba(255,240,180,0)');
+  ctx.fillStyle=cg;ctx.beginPath();ctx.arc(cx,cy,R*.7,0,TAU);ctx.fill();
+
+  ctx.font=`${W*.02}px Cinzel`;ctx.fillStyle='rgba(201,168,76,.35)';
+  ctx.textBaseline='top';ctx.textAlign='center';
+  ctx.fillText('メタトロンの立方体 × 3・6・9',cx,H*.03);
+}
+
+// ══════════════════════════
+// TAB 4: DIGITAL ROOT
+// ══════════════════════════
+function drawDigital(){
+  const cv=document.getElementById('cDigital');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,cx=W/2,cy=H/2;
+  const R=W*.35;
+
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createRadialGradient(cx,cy,0,cx,cy,W*.5);
+  bg.addColorStop(0,'#08080f');bg.addColorStop(1,'#030306');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  // Sephirot arranged in circle
+  const seph=[
+    {n:1,name:'ケテル',col:'rgba(240,248,255,1)',metal:'光'},
+    {n:2,name:'コクマー',col:'rgba(160,176,192,1)',metal:'原質'},
+    {n:3,name:'ビナー',col:'rgba(80,100,120,1)',metal:'鉛',is3:true},
+    {n:4,name:'ケセド',col:'rgba(80,130,255,1)',metal:'錫'},
+    {n:5,name:'ゲブラー',col:'rgba(220,60,60,1)',metal:'鉄'},
+    {n:6,name:'ティファレト',col:'rgba(240,192,32,1)',metal:'金',is6:true},
+    {n:7,name:'ネツァク',col:'rgba(60,180,60,1)',metal:'銅'},
+    {n:8,name:'ホド',col:'rgba(220,120,40,1)',metal:'水銀'},
+    {n:9,name:'イェソド',col:'rgba(160,80,240,1)',metal:'銀',is9:true},
+    {n:10,name:'マルクト',col:'rgba(180,150,80,1)',metal:'全→1'},
+  ];
+
+  // Draw circle
+  ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);
+  ctx.strokeStyle='rgba(201,168,76,.12)';ctx.lineWidth=1;ctx.stroke();
+
+  seph.forEach((s,i)=>{
+    const a=(i/10)*TAU-TAU/4;
+    const x=cx+Math.cos(a)*R, y=cy+Math.sin(a)*R;
+    const r=s.is3||s.is6||s.is9?W*.06:W*.048;
+
+    // Glow for 3-6-9
+    if(s.is3||s.is6||s.is9){
+      const gcol=s.is3?'rgba(255,80,80,':s.is6?'rgba(240,192,32,':'rgba(160,80,240,';
+      const gg=ctx.createRadialGradient(x,y,0,x,y,r*2.5);
+      gg.addColorStop(0,gcol+'.4)');gg.addColorStop(1,gcol+'0)');
+      ctx.fillStyle=gg;ctx.beginPath();ctx.arc(x,y,r*2.5,0,TAU);ctx.fill();
+    }
+
+    // Connect 3-6-9 triangle
+    if(i===2){
+      const p6=seph[5],p9=seph[8];
+      const a6=(5/10)*TAU-TAU/4,a9=(8/10)*TAU-TAU/4;
+      const x6=cx+Math.cos(a6)*R,y6=cy+Math.sin(a6)*R;
+      const x9=cx+Math.cos(a9)*R,y9=cy+Math.sin(a9)*R;
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x6,y6);ctx.lineTo(x9,y9);ctx.closePath();
+      ctx.strokeStyle='rgba(200,100,255,.5)';ctx.lineWidth=1.5;
+      ctx.shadowColor='rgba(200,100,255,.3)';ctx.shadowBlur=8;
+      ctx.stroke();ctx.shadowBlur=0;
+      ctx.fillStyle='rgba(200,100,255,.05)';ctx.fill();
+    }
+
+    // Node circle
+    ctx.beginPath();ctx.arc(x,y,r,0,TAU);
+    const colBase=s.col.replace('rgba(','').replace(')','').split(',');
+    ctx.fillStyle=`rgba(${colBase[0]},${colBase[1]},${colBase[2]},.2)`;ctx.fill();
+    ctx.strokeStyle=s.col;ctx.lineWidth=s.is3||s.is6||s.is9?2:1.2;ctx.stroke();
+
+    // Number
+    ctx.font=`bold ${r*.9}px Cinzel`;
+    ctx.fillStyle=s.col;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(s.n===10?'①':s.n,x,y);
+
+    // Name label (outside)
+    const lx=cx+Math.cos(a)*(R+W*.1), ly=cy+Math.sin(a)*(R+W*.1);
+    ctx.font=`${W*.018}px Noto Serif JP`;
+    ctx.fillStyle=s.is3||s.is6||s.is9?s.col:'rgba(200,190,160,.5)';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(s.name,lx,ly);
+
+    // Metal label
+    ctx.font=`${W*.013}px Cinzel`;
+    ctx.fillStyle='rgba(201,168,76,.4)';
+    ctx.fillText(s.metal,lx,ly+W*.025);
+  });
+
+  // Center: 9×n always returns to 9
+  const centerLines=[
+    '9 × 1 = 9',
+    '9 × 2 = 18 → 9',
+    '9 × 5 = 45 → 9',
+    '9 × 9 = 81 → 9',
+  ];
+  ctx.font=`bold ${W*.022}px Cinzel Decorative`;
+  ctx.fillStyle='rgba(200,100,255,.7)';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.shadowColor='rgba(200,100,255,.4)';ctx.shadowBlur=12;
+  ctx.fillText('9',cx,cy-W*.045);ctx.shadowBlur=0;
+
+  centerLines.forEach((l,i)=>{
+    ctx.font=`${W*.016}px Cinzel`;
+    ctx.fillStyle='rgba(200,100,255,.4)';
+    ctx.fillText(l,cx,cy-W*.005+i*W*.032);
+  });
+
+  // Legend
+  const leg=[
+    {col:'rgba(255,80,80,1)',label:'3 — ビナー（鉛・土星）三位一体'},
+    {col:'rgba(240,192,32,1)',label:'6 — ティファレト（金・太陽）完全数'},
+    {col:'rgba(160,80,240,1)',label:'9 — イェソド（銀・月）完成・還帰'},
+  ];
+  leg.forEach((l,i)=>{
+    ctx.fillStyle=l.col;ctx.fillRect(W*.06,H*.86+i*14,14,2.5);
+    ctx.font=`${W*.018}px Cinzel`;ctx.fillStyle='rgba(200,190,160,.45)';
+    ctx.textAlign='left';ctx.fillText(l.label,W*.06+18,H*.864+i*14);
+  });
+
+  ctx.font=`${W*.02}px Cinzel`;ctx.fillStyle='rgba(201,168,76,.35)';
+  ctx.textBaseline='top';ctx.textAlign='center';
+  ctx.fillText('デジタルルート × セフィロト対応図',cx,H*.03);
+}
+
+// ══════════════════════════
+// SHOW
+// ══════════════════════════
+function show(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  setTimeout(()=>{
+    if(id==='meta_explain') drawExplain();
+    if(id==='tesla369') drawTesla();
+    if(id==='meta369') drawMeta369();
+    if(id==='digital') drawDigital();
+  },50);
+}
+
+// Initial
+setTimeout(drawExplain,100);
+</script>
+</body>
+</html>

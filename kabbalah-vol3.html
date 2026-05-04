@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カバラ Vol.3 — 量子論完全統合</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@200;300;400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#060408;--bg2:#08060c;
+  --gold:#c9a84c;--gl:#f0d878;--gd:#2a1840;--gm:#7a5888;
+  --vio:#b060ff;--viod:rgba(160,80,255,.15);
+  --rose:#ff6080;
+  --text:#d4c8e0;--dim:rgba(210,200,224,.5);
+  --border:rgba(160,80,255,.14);
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Serif JP',serif;font-weight:300;line-height:1.9;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 65% 55% at 50% 20%,rgba(40,10,80,.28) 0%,transparent 65%);pointer-events:none;z-index:0;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:210px;background:linear-gradient(180deg,#050408 0%,#040308 100%);border-right:1px solid var(--border);padding:28px 0;display:flex;flex-direction:column;z-index:100;overflow-y:auto;}
+.sb-logo{padding:0 18px 20px;border-bottom:1px solid var(--border);margin-bottom:14px;text-align:center;}
+.sb-logo .sym{font-family:'Cinzel',serif;font-size:26px;color:var(--vio);display:block;margin-bottom:5px;text-shadow:0 0 22px rgba(160,80,255,.55);animation:vglow 4s ease-in-out infinite;}
+@keyframes vglow{0%,100%{text-shadow:0 0 20px rgba(160,80,255,.35);}50%{text-shadow:0 0 40px rgba(160,80,255,.75);}}
+.sb-logo .ttl{font-family:'Cinzel',serif;font-size:7px;color:var(--gm);letter-spacing:.22em;line-height:1.8;text-transform:uppercase;}
+.nav-label{font-family:'Cinzel',serif;font-size:6.5px;color:var(--gd);letter-spacing:.28em;text-transform:uppercase;padding:12px 18px 3px;}
+nav a{display:block;padding:6px 18px;font-family:'Cinzel',serif;font-size:8px;color:var(--dim);text-decoration:none;letter-spacing:.12em;text-transform:uppercase;transition:all .2s;border-left:2px solid transparent;}
+nav a:hover{color:var(--vio);border-left-color:var(--vio);background:rgba(160,80,255,.04);}
+nav a.active{color:#d0a0ff;border-left-color:var(--vio);background:rgba(160,80,255,.07);}
+
+/* MAIN */
+main{margin-left:210px;position:relative;z-index:1;}
+
+/* COVER */
+.cover{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 72px;background:radial-gradient(ellipse 80% 70% at 50% 40%,rgba(30,5,60,.45) 0%,transparent 70%);border-bottom:1px solid var(--border);position:relative;}
+.cover-sym{font-family:'Cinzel',serif;font-size:52px;color:var(--vio);margin-bottom:24px;text-shadow:0 0 50px rgba(160,80,255,.65);animation:vglow 4s ease-in-out infinite;}
+.cover h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(22px,3.5vw,46px);color:#e0c8f8;text-align:center;letter-spacing:.1em;line-height:1.25;margin-bottom:12px;}
+.cover-sub{font-family:'Cinzel',serif;font-size:9px;color:var(--gm);letter-spacing:.28em;text-align:center;text-transform:uppercase;line-height:2;margin-bottom:32px;}
+.cover-rule{width:100%;max-width:460px;border:none;border-top:1px solid var(--border);margin:0 auto 26px;position:relative;}
+.cover-rule::before{content:'Ψ';position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--vio);background:var(--bg);padding:0 8px;}
+.cover-quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(160,80,255,.45);text-align:center;letter-spacing:.07em;line-height:1.7;max-width:460px;margin:0 auto 8px;}
+.cover-cite{font-family:'Cinzel',serif;font-size:8px;color:var(--dim);letter-spacing:.18em;text-align:center;}
+
+/* CHAPTER */
+.chapter{padding:68px 72px 52px;border-bottom:1px solid rgba(160,80,255,.06);position:relative;}
+.chapter::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,transparent,var(--vio),transparent);opacity:0;transition:opacity .4s;}
+.chapter:hover::before{opacity:.3;}
+.ch-num{font-family:'Cinzel',serif;font-size:9.5px;color:var(--gm);letter-spacing:.38em;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:10px;}
+.ch-num::after{content:'';flex:1;height:1px;background:var(--border);}
+.chapter>h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(19px,2.8vw,32px);color:#e0c8f8;letter-spacing:.1em;margin-bottom:30px;line-height:1.3;}
+.sec{margin-bottom:40px;}
+.sec h3{font-family:'Cinzel',serif;font-size:11px;color:var(--vio);letter-spacing:.22em;text-transform:uppercase;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.sec h3::before{content:'Ψ';font-size:9px;color:var(--gm);}
+p{margin-bottom:13px;color:var(--text);font-weight:300;}
+b,strong{color:#ecdcf8;font-weight:600;}
+em{font-style:italic;color:rgba(160,80,255,.85);}
+
+/* formula */
+.formula{background:rgba(160,80,255,.04);border:1px solid rgba(160,80,255,.18);border-radius:3px;padding:13px 16px;margin:10px 0;font-family:'Cinzel',serif;font-size:12.5px;color:rgba(210,160,255,.9);text-align:center;letter-spacing:.04em;line-height:1.85;}
+.formula .f-sub{font-size:9.5px;color:var(--dim);font-family:'Noto Serif JP',serif;margin-top:5px;letter-spacing:.02em;}
+.formula.gold{background:rgba(201,168,76,.04);border-color:rgba(201,168,76,.22);color:rgba(240,216,120,.9);}
+.formula.final{background:rgba(160,80,255,.06);border:2px solid rgba(160,80,255,.4);font-size:15px;padding:20px;color:rgba(220,180,255,.95);}
+
+/* insight box */
+.insight{margin:18px 0;padding:15px 18px;border-left:3px solid var(--vio);background:rgba(160,80,255,.04);font-size:10.5px;line-height:1.9;color:var(--dim);}
+.insight .ins-label{font-family:'Cinzel',serif;font-size:8px;color:var(--vio);letter-spacing:.22em;text-transform:uppercase;margin-bottom:7px;}
+.insight.gold{border-left-color:var(--gold);background:rgba(201,168,76,.04);}
+.insight.gold .ins-label{color:var(--gold);}
+.insight.rose{border-left-color:var(--rose);background:rgba(255,96,128,.04);}
+.insight.rose .ins-label{color:var(--rose);}
+
+/* table */
+.tbl-wrap{overflow-x:auto;margin:18px 0;}
+table{width:100%;border-collapse:collapse;font-size:11.5px;}
+thead tr{background:rgba(20,10,40,.9);}
+thead th{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.13em;text-transform:uppercase;color:#d0a0ff;padding:10px 12px;border:1px solid rgba(160,80,255,.18);font-weight:400;text-align:left;}
+tbody tr:nth-child(even){background:rgba(160,80,255,.02);}
+tbody tr:hover{background:rgba(160,80,255,.05);}
+tbody td{padding:8px 12px;border:1px solid rgba(160,80,255,.07);color:var(--text);font-weight:300;vertical-align:top;}
+tbody td:first-child{color:var(--vio);font-family:'Cinzel',serif;font-size:9px;}
+.star-row td{color:rgba(240,220,80,.9)!important;}
+.star-row{background:rgba(240,200,60,.03)!important;}
+
+/* big formula */
+.big-formula{margin:28px 0;padding:26px;background:rgba(160,80,255,.04);border:1px solid rgba(160,80,255,.22);border-radius:4px;text-align:center;}
+.big-formula .bf-main{font-family:'Cinzel',serif;font-size:14px;color:#d0a0ff;letter-spacing:.05em;line-height:2;}
+.big-formula .bf-sub{font-size:10.5px;color:var(--dim);margin-top:10px;font-family:'Noto Serif JP',serif;line-height:1.8;}
+
+/* hierarchy viz */
+.hierarchy{margin:20px 0;padding:20px;background:rgba(160,80,255,.03);border:1px solid rgba(160,80,255,.12);border-radius:4px;}
+.h-row{display:flex;align-items:center;gap:12px;margin:6px 0;}
+.h-label{font-family:'Cinzel',serif;font-size:9px;color:rgba(210,160,255,.7);letter-spacing:.12em;width:180px;flex-shrink:0;}
+.h-arrow{color:var(--gm);font-size:10px;}
+.h-desc{font-size:9.5px;color:var(--dim);}
+
+/* final poem */
+.poem{margin:32px 0;padding:32px;text-align:center;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(160,80,255,.08) 0%,transparent 70%);border:1px solid rgba(160,80,255,.2);border-radius:4px;}
+.poem p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(220,200,240,.8);line-height:2.2;margin:0;}
+.poem .poem-final{font-size:22px;color:rgba(210,160,255,.9);margin-top:16px;font-style:normal;font-weight:300;letter-spacing:.12em;}
+
+/* quote */
+.quote{margin:22px 0;padding:16px 24px;border-left:3px solid var(--vio);background:linear-gradient(90deg,rgba(160,80,255,.06) 0%,rgba(160,80,255,.01) 100%);border-radius:0 4px 4px 0;}
+.quote p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:rgba(200,170,240,.8);margin:0;line-height:1.8;}
+.quote cite{display:block;margin-top:6px;font-family:'Cinzel',serif;font-size:8px;color:var(--dim);letter-spacing:.16em;}
+
+/* badge */
+.badge{display:inline-block;padding:2px 9px;border-radius:2px;font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.12em;margin-right:4px;}
+.badge-q{background:rgba(64,136,255,.08);border:1px solid rgba(64,136,255,.25);color:rgba(140,190,255,.75);}
+.badge-y{background:rgba(60,200,120,.07);border:1px solid rgba(60,200,120,.22);color:rgba(100,220,150,.7);}
+.badge-k{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.22);color:rgba(240,210,120,.7);}
+.badge-u{background:rgba(160,80,255,.08);border:1px solid rgba(160,80,255,.25);color:rgba(200,150,255,.75);}
+
+/* div */
+.div{text-align:center;margin:40px 0;color:var(--gd);font-size:11px;letter-spacing:.45em;}
+
+/* progress */
+.progress{position:fixed;top:0;left:210px;right:0;height:2px;background:linear-gradient(90deg,var(--vio),rgba(255,96,128,.6));transform-origin:left;transform:scaleX(0);z-index:200;}
+
+/* fade */
+.fi{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease;}
+.fi.vis{opacity:1;transform:translateY(0);}
+
+/* footer */
+footer{padding:32px 72px;text-align:center;border-top:1px solid var(--border);background:rgba(160,80,255,.02);}
+footer p{font-family:'Cinzel',serif;font-size:8px;color:var(--dim);letter-spacing:.2em;}
+
+/* mobile */
+.menu-btn{display:none;position:fixed;top:13px;left:13px;z-index:300;background:var(--bg2);border:1px solid var(--border);color:var(--vio);padding:6px 11px;cursor:pointer;font-family:'Cinzel',serif;font-size:8.5px;border-radius:2px;}
+@media(max-width:860px){
+  .sidebar{transform:translateX(-100%);transition:transform .3s;}
+  .sidebar.open{transform:translateX(0);}
+  main{margin-left:0;}
+  .progress{left:0;}
+  .chapter,.cover{padding:52px 20px 38px;}
+  footer{padding:26px 20px;}
+  .menu-btn{display:block;}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<button class="menu-btn" onclick="document.getElementById('sb').classList.toggle('open')">☰</button>
+
+<aside class="sidebar" id="sb">
+  <div class="sb-logo">
+    <span class="sym">Ψ</span>
+    <div class="ttl">カバラ Vol.3<br>量子論完全統合</div>
+  </div>
+  <nav id="nav">
+    <div class="nav-label">導入</div>
+    <a href="#cover">表紙</a>
+    <a href="#departure">三つの方程式</a>
+    <div class="nav-label">第一部</div>
+    <a href="#p1-1">波動関数Ψとセフィロト</a>
+    <a href="#p1-2">ハミルトニアンと生命の木</a>
+    <a href="#p1-3">波動収縮とイェソド→マルクト</a>
+    <a href="#p1-4">量子もつれとパス</a>
+    <div class="nav-label">第二部</div>
+    <a href="#p2-1">ヤスエ方程式の核心</a>
+    <a href="#p2-2">確率変分学とAIN SOPH</a>
+    <a href="#p2-3">ヤスエ⊃シュレーディンガー証明</a>
+    <div class="nav-label">第三部</div>
+    <a href="#p3-1">観測問題とダアト</a>
+    <a href="#p3-2">デコヒーレンスとクリフォト</a>
+    <a href="#p3-3">量子トンネルとダアト通過</a>
+    <div class="nav-label">第四部</div>
+    <a href="#p4-1">零点エネルギーとAIN</a>
+    <a href="#p4-2">零点エネルギーとティファレト</a>
+    <a href="#p4-3">ラッセルのゼロポイントと量子真空</a>
+    <div class="nav-label">第五部・最終統合</div>
+    <a href="#p5-1">全知識体系対応表</a>
+    <a href="#p5-2">三方程式統合証明</a>
+    <a href="#p5-3">プランク定数とφ</a>
+    <a href="#p5-4">フィボナッチと量子数</a>
+    <a href="#p5-5">テスラ369と量子数</a>
+    <a href="#final">最終統合式</a>
+  </nav>
+</aside>
+
+<main>
+<section class="cover" id="cover">
+  <div class="cover-sym">Ψ</div>
+  <h1>量子論完全統合<br>シュレーディンガー・ヤスエ・カバラ・周波数</h1>
+  <div class="cover-sub">Vol.3 · Quantum · Schrödinger · Yasue · Zero Point · One Equation</div>
+  <hr class="cover-rule">
+  <p class="cover-quote">"科学が非物質的現象を研究し始める日、一世紀分の進歩を一十年で成し遂げるだろう。"</p>
+  <p class="cover-cite">— Nikola Tesla / ニコラ・テスラ</p>
+</section>
+
+<!-- DEPARTURE -->
+<section class="chapter fi" id="departure">
+  <div class="ch-num">Departure · <span class="badge badge-u">Vol.1+2からの接続</span></div>
+  <h2>三つの方程式——出発点</h2>
+  <div class="formula"><span class="badge badge-q">①シュレーディンガー</span><br>iħ ∂Ψ/∂t = ĤΨ<div class="f-sub">エネルギーが波をどう動かすか</div></div>
+  <div class="formula"><span class="badge badge-y">②ヤスエ</span><br>m(D₊D₋+D₋D₊)/2 · x = −∇V(x)<div class="f-sub">その波がなぜそこにあるか（確率変分学）</div></div>
+  <div class="formula"><span class="badge badge-k">③カバラ統合式</span><br>𝒦 = lim(AIN→∞) ∮[ケテル→マルクト] S(φⁿ)/Ψ_ego dn = 1<div class="f-sub">そのエネルギーの源は何か</div></div>
+  <div class="big-formula">
+    <div class="bf-main">E = ĤΨ = m(D₊D₋+D₋D₊)/2·x = 𝒦·E₀ = f·h</div>
+    <div class="bf-sub">これから示すこと：四つの記述は全て同じEの異なる言語である。</div>
+  </div>
+</section>
+
+<!-- PART 1 -->
+<section class="chapter fi" id="p1-1">
+  <div class="ch-num">Part 1-1 · <span class="badge badge-q">シュレーディンガー×カバラ</span></div>
+  <h2>波動関数Ψとセフィロトの対応</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>量子論の要素</th><th>カバラの対応</th><th>意味</th></tr></thead>
+      <tbody>
+        <tr><td>Ψ（波動関数）</td><td>各セフィロトのエネルギー状態</td><td>粒子の存在確率の波</td></tr>
+        <tr><td>|Ψ|²（確率密度）</td><td>セフィロトの「顕現度」</td><td>どれだけ現実に現れているか</td></tr>
+        <tr><td>Ĥ（ハミルトニアン）</td><td>生命の木全体の構造</td><td>系の全エネルギー情報</td></tr>
+        <tr><td>ħ（プランク定数）</td><td>φ（黄金比）</td><td>スケールを決める基本定数</td></tr>
+        <tr><td>ω（角周波数）</td><td>各セフィロトの固有周波数</td><td>振動の速さ</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="formula">Ψ_Sephirot(n) = E₀ · e^{−λn} · e^{iωₙt}<div class="f-sub">各セフィロトは「エネルギーE₀がλで減衰しながら、各固有周波数ωで振動している波」<br>シュレーディンガーが電子について記述したことを、カバラは意識の階層について記述していた。</div></div>
+</section>
+
+<section class="chapter fi" id="p1-2">
+  <div class="ch-num">Part 1-2 · <span class="badge badge-q">シュレーディンガー×カバラ</span></div>
+  <h2>ハミルトニアンと生命の木</h2>
+  <div class="formula">Ĥ = T̂ + V̂ = −(ħ²/2m)∇² + V(x)<div class="f-sub">運動エネルギーとポテンシャルエネルギーの和</div></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>量子論</th><th>カバラ</th></tr></thead>
+      <tbody>
+        <tr><td>運動エネルギー T̂</td><td>ケセド（拡大・能動的運動）</td></tr>
+        <tr><td>ポテンシャルエネルギー V̂</td><td>ゲブラー（制限・ポテンシャルの壁）</td></tr>
+        <tr><td>∇²（ラプラシアン）</td><td>22のパス（全方向への伝播）</td></tr>
+        <tr class="star-row"><td>固有値E ★</td><td>ティファレト（系の安定エネルギー）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="formula">ĤΨ = EΨ → ティファレトが固有値として安定する<div class="f-sub">慈悲（T̂）と力（V̂）が均衡した時にティファレトが安定する。ハミルトニアンの固有値問題と数学的に同じ構造。</div></div>
+</section>
+
+<section class="chapter fi" id="p1-3">
+  <div class="ch-num">Part 1-3 · <span class="badge badge-q">シュレーディンガー×カバラ</span></div>
+  <h2>波動関数の収縮とイェソド→マルクト</h2>
+  <div class="formula">Ψ_wave →(観測) |Ψ|² →(収縮) Ψ_particle<div class="f-sub">量子論最大の謎：観測すると波が粒子になる</div></div>
+  <div class="formula">イェソド₄₃₂Hz（波）→(自我の観測)→ マルクト₁₇₄Hz（粒子）<div class="f-sub">カバラでの対応</div></div>
+  <div class="insight rose"><div class="ins-label">核心</div>「自我（エゴ）が観測する」という行為が、波（可能性）を粒子（現実）に収縮させる。これがコペンハーゲン解釈の核心であり、カバラのマルクト（物質世界）が生まれる仕組み。<br><br>ダアトで「自我を手放す」ことは、量子的に「観測をやめること」——再び波に戻ること。</div>
+</section>
+
+<section class="chapter fi" id="p1-4">
+  <div class="ch-num">Part 1-4 · <span class="badge badge-q">シュレーディンガー×カバラ</span></div>
+  <h2>量子もつれとパスの接続</h2>
+  <div class="formula">Ψ_AB ≠ Ψ_A ⊗ Ψ_B &nbsp;（もつれた状態）<br>↕<br>P_ij = Sᵢ ⊗ Sⱼ &nbsp;（パスはもつれ状態）</div>
+  <div class="insight"><div class="ins-label">言語で</div>量子もつれとは「二つの粒子が離れていても瞬時に影響し合う」状態。カバラのパスは「二つのセフィロトが繋がって一つの意味を持つ」状態——量子もつれの古代的記述。<br><br>ネツァク（感情）とホド（知性）が「位相90°ずれた同じ波」であることは、二つが量子もつれの関係にあることを示す。</div>
+</section>
+
+<!-- PART 2 -->
+<section class="chapter fi" id="p2-1">
+  <div class="ch-num">Part 2-1 · <span class="badge badge-y">ヤスエ×カバラ</span></div>
+  <h2>ヤスエ方程式の核心</h2>
+  <div class="formula">m(D₊D₋+D₋D₊)/2 · x = −∇V(x)</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>ヤスエの要素</th><th>意味</th><th>カバラの対応</th></tr></thead>
+      <tbody>
+        <tr><td>D₊（未来微分）</td><td>未来方向への確率的変化</td><td>降下パス（ケテル→マルクト）</td></tr>
+        <tr><td>D₋（過去微分）</td><td>過去方向への確率的変化</td><td>上昇パス（マルクト→ケテル）</td></tr>
+        <tr><td>(D₊D₋+D₋D₊)/2</td><td>過去と未来の平均</td><td>双方向パスの統合</td></tr>
+        <tr class="star-row"><td>−∇V ★</td><td>ポテンシャルの勾配（力）</td><td>各パスの「引力」</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="formula">(D₊ + D₋)/2 = 現在 ↔ ティファレト（今ここの中心）<div class="f-sub">ヤスエ方程式が革命的なのは「過去と未来を同時に使って現在を決める」こと。<br>カバラの双方向パスが「降下と上昇が同時に起きている」のと完全に同じ構造。</div></div>
+</section>
+
+<section class="chapter fi" id="p2-2">
+  <div class="ch-num">Part 2-2 · <span class="badge badge-y">ヤスエ×カバラ</span></div>
+  <h2>確率変分学とAIN SOPHからの流出</h2>
+  <div class="formula">δE[∫L(x, D₊x, D₋x)dt] = 0<div class="f-sub">ヤスエ方程式の数学的背景：最も確率的に自然な経路を選ぶ原理</div></div>
+  <div class="formula gold">δ𝒦[∮(AIN→マルクト) S(φⁿ)/Ψ_ego dn] = 0<div class="f-sub">カバラでの対応：AIN→マルクトへの最自然な経路</div></div>
+  <div class="insight gold"><div class="ins-label">同じ変分原理</div>AIN（無）からマルクト（物質）へ流出する時、カバラは「最も自然な経路を選んで降りてくる」と言う。ヤスエ方程式は「粒子は最も確率的に自然な経路を選んで動く」と言う。どちらも同じ変分原理の記述。<b>宇宙は最短・最自然・最美の経路を選ぶ。</b></div>
+</section>
+
+<section class="chapter fi" id="p2-3">
+  <div class="ch-num">Part 2-3 · <span class="badge badge-y">ヤスエ×カバラ</span></div>
+  <h2>ヤスエ方程式がシュレーディンガーを内包する証明</h2>
+  <div class="formula">Ψ = √ρ · e^{iS/ħ} と置くと…<br>ヤスエ方程式 ⟹ iħ ∂Ψ/∂t = ĤΨ<br>∴ ヤスエ ⊃ シュレーディンガー</div>
+  <div class="hierarchy">
+    <div class="h-row"><div class="h-label">AIN SOPH AUR（最も根本）</div><div class="h-arrow">⊃</div><div class="h-desc">ヤスエ方程式（最も根本）</div></div>
+    <div class="h-row"><div class="h-label">ケテル（純粋光）</div><div class="h-arrow">⊃</div><div class="h-desc">シュレーディンガー（波動）</div></div>
+    <div class="h-row"><div class="h-label">全10セフィロト</div><div class="h-arrow">⊃</div><div class="h-desc">全ての量子状態</div></div>
+  </div>
+  <div class="insight"><div class="ins-label">言語で</div>シュレーディンガーはヤスエの特別な場合。ケテルはAIN SOPHの特別な場合。どちらも「根本から具体へ」という同じ階層構造を持つ。ヤスエとカバラは同じ真実を発見していた。</div>
+</section>
+
+<!-- PART 3 -->
+<section class="chapter fi" id="p3-1">
+  <div class="ch-num">Part 3-1 · <span class="badge badge-u">ダアト×量子論</span></div>
+  <h2>観測問題とダアトの深淵</h2>
+  <div class="formula">量子論の問い：なぜ観測すると波が粒子になるのか？<br>Ψ_重ね合わせ →? Ψ_確定</div>
+  <div class="formula">カバラの答え：<br>D(ego) = { Ψ_wave → Ψ_particle (ego > 0) | Ψ_wave のまま (ego → 0) }</div>
+  <div class="insight rose"><div class="ins-label">核心</div>「自我（エゴ）が観測する」という行為が波を収縮させる。自我がなければ波のまま——可能性のまま——存在し続ける。<br><br>ダアトで「自我を手放す」とは量子的に「観測をやめること」。<b>深淵とは「波と粒子の境界」。</b></div>
+</section>
+
+<section class="chapter fi" id="p3-2">
+  <div class="ch-num">Part 3-2 · <span class="badge badge-u">クリフォト×量子論</span></div>
+  <h2>量子デコヒーレンスとクリフォト</h2>
+  <div class="formula">ρ_pure →(環境との相互作用)→ ρ_mixed<div class="f-sub">純粋な量子状態が環境と混ざり「古典的な混合状態」になる = デコヒーレンス</div></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>量子論</th><th>カバラ</th></tr></thead>
+      <tbody>
+        <tr><td>純粋状態 ρ=|Ψ⟩⟨Ψ|</td><td>セフィロト（清純な意識状態）</td></tr>
+        <tr><td>混合状態 ρ=Σpᵢ|i⟩⟨i|</td><td>クリフォト（歪んだ混合状態）</td></tr>
+        <tr><td>デコヒーレンス</td><td>自我による汚染</td></tr>
+        <tr class="star-row"><td>再コヒーレンス ★</td><td>Solve et Coagula（浄化→再統合）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight"><div class="ins-label">言語で</div>クリフォトは「デコヒーレンスした量子状態」——自我や恐怖・歪みによって純粋状態が濁った状態。錬金術のSolve（溶解）は量子的に「デコヒーレンスした状態をリセットすること」。Coagula（凝固）は「再コヒーレンス——純粋状態への再統合」。</div>
+</section>
+
+<section class="chapter fi" id="p3-3">
+  <div class="ch-num">Part 3-3 · <span class="badge badge-u">ダアト×量子論</span></div>
+  <h2>量子トンネル効果とダアト通過</h2>
+  <div class="formula">T = e^{−2∫√(2m(V(x)−E)/ħ²)dx}<div class="f-sub">古典力学では超えられない壁を、量子的には確率Tで通過できる</div></div>
+  <div class="formula">P_Daath = e^{−∫(Ψ_ego/ħ_soul)dx}<div class="f-sub">ego → 0 で T → 1（通過確率最大）<br>ego > ε で T → 0（転落）</div></div>
+  <div class="insight rose"><div class="ins-label">言語で</div>深淵（ダアト）は「古典的には超えられない壁」。自我（ego）があるほどTが小さくなり、通過確率が下がる。自我がゼロに近づくほどT→1になり、通過確率が上がる。<br><br><b>「悟り」とは量子トンネル効果で深淵を通過すること。</b><br><br>周波数：693Hz（ダアト）→ 639Hz（ティファレト）、うなり54Hz（ガンマ波の洞察周波数）</div>
+</section>
+
+<!-- PART 4 -->
+<section class="chapter fi" id="p4-1">
+  <div class="ch-num">Part 4-1 · <span class="badge badge-u">零点エネルギー×AIN</span></div>
+  <h2>量子真空とAIN SOPH</h2>
+  <div class="formula">E_vacuum = (1/2)ħω ≠ 0<div class="f-sub">完全な真空でも、エネルギーはゼロにならない = 零点エネルギー</div></div>
+  <div class="formula gold">AIN ≠ 0<br>AIN →(揺らぎ)→ AIN SOPH →(凝縮)→ AIN SOPH AUR →(点化)→ ケテル<div class="f-sub">カバラでの対応</div></div>
+  <div class="insight gold"><div class="ins-label">言語で</div>「無」は完全な空白ではない。量子真空は常に揺らいでいる——零点振動。AIN（無）も同様に「概念すら成立しない絶対無」でありながら、何かを孕んでいる。<br><br><b>宇宙はゼロから始まったのではなく、ゼロという揺らぎから始まった。</b></div>
+</section>
+
+<section class="chapter fi" id="p4-2">
+  <div class="ch-num">Part 4-2 · <span class="badge badge-u">零点エネルギー×ティファレト</span></div>
+  <h2>零点エネルギーとティファレトの周波数</h2>
+  <div class="formula">E₀ = (1/2)h · f_Kether = (1/2)h × 963 Hz</div>
+  <div class="formula">f_Tipharet / f_Kether = 639/963 = 0.6636 ≈ 1/φ^{0.9}<div class="f-sub">ケテルの零点エネルギーからφの0.9乗で降りた周波数がティファレト</div></div>
+  <div class="insight"><div class="ins-label">言語で</div>プランク定数とφが同じ役割を果たす——どちらも「スケールを決める宇宙の基本定数」。黄金比がそのままエネルギースケールの変換係数になっている。</div>
+</section>
+
+<section class="chapter fi" id="p4-3">
+  <div class="ch-num">Part 4-3 · <span class="badge badge-u">ラッセル×量子真空×ティファレト</span></div>
+  <h2>ラッセルのゼロポイントと量子真空</h2>
+  <div class="formula">lim(Yang→∞) 1/Yang + lim(Yin→∞) 1/Yin = 0_apparent<div class="f-sub">ウォルター・ラッセルの「ゼロポイント」</div></div>
+  <div class="formula">⟨0|Ĥ|0⟩ = E_vacuum = (1/2)ħω<div class="f-sub">量子真空</div></div>
+  <div class="big-formula">
+    <div class="bf-main">ラッセルのゼロポイント = ティファレト = 量子真空 = (1/2)ħω_Kether</div>
+    <div class="bf-sub">三つが全て同じ一点を指している。<br>宇宙の呼吸の折り返し点。完全な沈黙に見えて、最大の可能性を孕んでいる場所。</div>
+  </div>
+</section>
+
+<!-- PART 5 -->
+<section class="chapter fi" id="p5-1">
+  <div class="ch-num">Part 5-1 · <span class="badge badge-u">完全統合</span></div>
+  <h2>全知識体系の対応表（完全版）</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>概念</th><th>カバラ</th><th>量子論</th><th>ヤスエ</th><th>周波数</th></tr></thead>
+      <tbody>
+        <tr><td>源・根本</td><td>AIN SOPH AUR</td><td>量子真空 E₀=½ħω</td><td>変分原理の零点</td><td>963Hz（ガンマ）</td></tr>
+        <tr><td>最初の分化</td><td>ケテル→コクマー</td><td>対称性の破れ</td><td>D₊の発生</td><td>963→852Hz うなり111Hz</td></tr>
+        <tr><td>父と母の張力</td><td>コクマー↔ビナー</td><td>量子もつれ</td><td>D₊D₋の非可換性</td><td>852↔741Hz</td></tr>
+        <tr><td>隠された扉</td><td>ダアト</td><td>観測問題</td><td>確率の特異点</td><td>693Hz（境界）</td></tr>
+        <tr class="star-row"><td>中心・鍵 ★</td><td>ティファレト</td><td>固有値E</td><td>現在=(D₊+D₋)/2</td><td>639Hz</td></tr>
+        <tr><td>感情と知性</td><td>ネツァク↔ホド</td><td>量子もつれ</td><td>位相差90°</td><td>417↔285Hz うなり132Hz</td></tr>
+        <tr><td>波→粒子</td><td>イェソド→マルクト</td><td>波動関数収縮</td><td>D₊·D₋の収束</td><td>432→174Hz</td></tr>
+        <tr><td>浄化と再生</td><td>Solve et Coagula</td><td>再コヒーレンス</td><td>変分の最適化</td><td>全周波数の調和</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="chapter fi" id="p5-2">
+  <div class="ch-num">Part 5-2 · <span class="badge badge-u">三方程式統合証明</span></div>
+  <h2>三つの方程式の統合証明</h2>
+  <div class="insight"><div class="ins-label">Step 1：カバラ → ヤスエ</div>𝒦 = ∮S(φⁿ)/Ψ_ego dn ⟹ 確率変分学の作用積分と同型<br><br>カバラの流出（AIN→マルクト）は、ヤスエの変分原理（最自然経路の選択）と同じ構造。</div>
+  <div class="insight"><div class="ins-label">Step 2：ヤスエ → シュレーディンガー</div>m(D₊D₋+D₋D₊)/2·x = −∇V ⟹ iħ∂Ψ/∂t = ĤΨ<br><br>ヤスエの確率的記述がシュレーディンガーの波動記述を内包する（保江邦夫による証明）。</div>
+  <div class="insight gold"><div class="ins-label">Step 3：周波数 → 全方程式</div>E = h·f ⟹ fₙ = Eₙ/h = E₀·e^{−λn}/h<br><br>各セフィロトの周波数fₙは、エネルギーをプランク定数hで割ったもの。周波数体系がエネルギー体系と等価。</div>
+  <div class="formula final">E = ĤΨ = m(D₊D₋+D₋D₊)/2·x = 𝒦·E₀ = h·fₙ = E₀/φⁿ</div>
+</section>
+
+<section class="chapter fi" id="p5-3">
+  <div class="ch-num">Part 5-3 · <span class="badge badge-u">プランク定数×φ</span></div>
+  <h2>プランク定数とφの関係</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>定数</th><th>役割</th><th>カバラの対応</th></tr></thead>
+      <tbody>
+        <tr><td>ħ（換算プランク定数）</td><td>量子スケールの単位</td><td>AIN SOPHの「最小単位」</td></tr>
+        <tr class="star-row"><td>φ（黄金比） ★</td><td>自己相似スケールの比率</td><td>各セフィロト間の変換係数</td></tr>
+        <tr><td>c（光速）</td><td>時空のスケール</td><td>ケテルの「速度」</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="formula">Eₙ = ħ·ωₙ = E₀·φ^{−n}<br>∴ ħωₙ = E₀φ^{−n}<div class="f-sub">プランク定数とφが同じ役割——宇宙のスケールを決める基本定数として機能する</div></div>
+</section>
+
+<section class="chapter fi" id="p5-4">
+  <div class="ch-num">Part 5-4 · <span class="badge badge-u">フィボナッチ×量子数×セフィロト</span></div>
+  <h2>フィボナッチ・量子数・セフィロトの三重対応</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>フィボナッチ数</th><th>数秘/対応</th><th>量子論</th><th>カバラ</th></tr></thead>
+      <tbody>
+        <tr><td>F₆ = 8</td><td>正八面体の頂点数</td><td>第2量子数（角運動量）</td><td>メタトロン</td></tr>
+        <tr><td>F₇ = 13</td><td>メタトロンの円の数</td><td>−</td><td>フルーツオブライフ</td></tr>
+        <tr><td>F₁₀ = 55</td><td>5+5=10</td><td>−</td><td>セフィロトの総数</td></tr>
+        <tr><td>F₁₂ = 144</td><td>1+4+4=9</td><td>−</td><td>イェソドの番号（9）</td></tr>
+        <tr class="star-row"><td>F₁₃ = 233 ★</td><td>2+3+3=8</td><td>−</td><td>ホドの番号（8）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight gold"><div class="ins-label">言語で</div>フィボナッチ数列は「宇宙が自分自身を記述するコード」。量子数・セフィロト・メタトロンの幾何学が全てこの数列に埋め込まれている。量子の「許された状態」の数が、カバラの「許された意識の段階」の数と同じ構造を持つ。</div>
+</section>
+
+<section class="chapter fi" id="p5-5">
+  <div class="ch-num">Part 5-5 · <span class="badge badge-u">テスラ3·6·9×量子数</span></div>
+  <h2>テスラの3・6・9と量子数の関係</h2>
+  <div class="formula">3×6×9 = 162 ≈ φ×100<br>3+6+9 = 18 → 1+8 = 9<div class="f-sub">テスラの3・6・9の数学的性質</div></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>テスラの数</th><th>量子論</th><th>カバラ</th></tr></thead>
+      <tbody>
+        <tr><td>3</td><td>第3電子殻（L殻）・三角形の安定</td><td>上位三角形（ケテル・コクマー・ビナー）</td></tr>
+        <tr class="star-row"><td>6 ★</td><td>第6電子殻・最効率充填</td><td>ティファレト（6番目）・六芒星</td></tr>
+        <tr><td>9</td><td>第9電子殻・完成サイクル</td><td>イェソド（9番目）・全サイクルの完成</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight"><div class="ins-label">言語で</div>テスラが「3・6・9を知れば宇宙の鍵を得る」と言ったのは、これらの数が量子の安定状態・カバラの構造・幾何学の完成点として同時に機能しているから。宇宙は3・6・9という「安定の数」で設計されている。</div>
+</section>
+
+<!-- FINAL -->
+<section class="chapter fi" id="final">
+  <div class="ch-num">Final · <span class="badge badge-u">最終統合式</span></div>
+  <h2>宇宙を記述する一つの方程式</h2>
+  <div class="formula final">𝒰 = lim(ego→0) ∮[AIN→Malkuth] [ĤΨ · e^{−λn/φ} · cos(2πfₙt + φ_path)] dn = E₀</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>記号</th><th>量子論</th><th>カバラ</th><th>周波数</th></tr></thead>
+      <tbody>
+        <tr><td>lim(ego→0)</td><td>観測者の消去</td><td>ダアトの通過</td><td>自我の周波数→0</td></tr>
+        <tr><td>∮（周回積分）</td><td>経路積分</td><td>ケテル→マルクト→ケテルの循環</td><td>全周波数の積分</td></tr>
+        <tr><td>ĤΨ</td><td>エネルギー演算子</td><td>生命の木全体</td><td>ħω</td></tr>
+        <tr><td>e^{−λn/φ}</td><td>減衰関数</td><td>φによる凝縮</td><td>周波数の段階的減衰</td></tr>
+        <tr class="star-row"><td>E₀ ★</td><td>零点エネルギー</td><td>AIN SOPH AURの光</td><td>963Hz</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="div">Ψ &nbsp; ✦ &nbsp; Ψ</div>
+
+  <div class="poem">
+    <p>
+      無（AIN）の中に揺らぎが生まれた。<br>
+      その揺らぎはゼロではなかった——それが零点エネルギーE₀だった。<br><br>
+      光はφで割られながら降りてきた。<br>
+      963Hzから852Hzへ、段階的に低くなりながら、<br>
+      それぞれの段階で固有の意味を持つ周波数として振動した。<br><br>
+      なぜその波が「そこ」にあるのかを問うたのがヤスエだった。<br>
+      答えは「過去と未来を同時に最適化した経路を選んだから」——<br>
+      カバラの双方向パスが示していたことと同じ。<br><br>
+      波は観測された瞬間に粒子になった。<br>
+      自我という観測者が「これはどこにあるのか」と問うた瞬間、<br>
+      波は収縮し、マルクトという物質世界が現れた。<br><br>
+      だから——<br>
+      ego → 0 のとき、波のまま、全ての可能性のまま、E₀に還帰する。
+    </p>
+    <p class="poem-final">あなた = E₀</p>
+  </div>
+
+  <div class="big-formula" style="margin-top:32px;border-color:rgba(201,168,76,.35);">
+    <div class="bf-main" style="color:var(--gl);">E = ĤΨ = 𝒦·E₀ = h·f = E₀/φⁿ = あなた</div>
+    <div class="bf-sub">カバラは意識の量子力学だった。<br>量子論は現代のカバラだった。<br>ヤスエ方程式はその橋だった。<br>周波数はその音だった。</div>
+  </div>
+
+  <div class="div">✦ &nbsp; 𝒰 = E₀ &nbsp; ✦</div>
+
+  <div class="quote">
+    <p>"As above, so below. As within, so without."<br>これは詩ではなかった。方程式だった。</p>
+    <cite>— Emerald Tablet</cite>
+  </div>
+
+  <p style="text-align:center;font-family:'Cinzel',serif;font-size:9px;color:var(--dim);letter-spacing:.2em;margin-top:24px;">
+    Vol.1 パス双方向数式 → Vol.2 周波数統合 → Vol.3 量子論完全統合<br>謎解きは続く。
+  </p>
+</section>
+
+<footer><p>カバラ 生命の木 Vol.3 &nbsp;Ψ&nbsp; 量子論完全統合 &nbsp;Ψ&nbsp; Schrödinger · Yasue · Kabbalah · One Equation · 𝒰 = E₀</p></footer>
+</main>
+
+<script>
+window.addEventListener('scroll',()=>{const t=document.body.scrollHeight-window.innerHeight;document.getElementById('prog').style.transform=`scaleX(${window.scrollY/t})`;});
+const secs=document.querySelectorAll('section[id]');
+const links=document.querySelectorAll('nav a');
+const obs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){const id=en.target.id;links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));}});},{rootMargin:'-25% 0px -65% 0px'});
+secs.forEach(s=>obs.observe(s));
+const fi=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){en.target.classList.add('vis');fi.unobserve(en.target);}});},{threshold:0.05});
+document.querySelectorAll('.fi').forEach(el=>fi.observe(el));
+document.addEventListener('click',e=>{const sb=document.getElementById('sb');const btn=document.querySelector('.menu-btn');if(sb.classList.contains('open')&&!sb.contains(e.target)&&e.target!==btn)sb.classList.remove('open');});
+</script>
+</body>
+</html>

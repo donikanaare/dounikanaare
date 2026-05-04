@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カバラ Vol.2 — 周波数統合</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@200;300;400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#04060e;
+  --bg2:#060810;
+  --gold:#c9a84c;--gl:#f0d878;--gd:#2a3010;--gm:#6a7828;
+  --cyan:#40d8f0;--cyand:rgba(64,216,240,.15);
+  --text:#d4ddb4;--dim:rgba(210,220,180,.5);
+  --border:rgba(64,216,240,.12);
+}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Noto Serif JP',serif;
+  font-weight:300;line-height:1.9;overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 60% 50% at 50% 25%,rgba(20,40,80,.25) 0%,transparent 65%);
+  pointer-events:none;z-index:0;
+}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:210px;background:linear-gradient(180deg,#040608 0%,#030508 100%);border-right:1px solid var(--border);padding:28px 0;display:flex;flex-direction:column;z-index:100;overflow-y:auto;}
+.sb-logo{padding:0 18px 20px;border-bottom:1px solid var(--border);margin-bottom:14px;text-align:center;}
+.sb-logo .sym{font-family:'Cinzel',serif;font-size:26px;color:var(--cyan);display:block;margin-bottom:5px;text-shadow:0 0 24px rgba(64,216,240,.5);animation:cglow 4s ease-in-out infinite;}
+@keyframes cglow{0%,100%{text-shadow:0 0 20px rgba(64,216,240,.3);}50%{text-shadow:0 0 40px rgba(64,216,240,.7);}}
+.sb-logo .ttl{font-family:'Cinzel',serif;font-size:7px;color:var(--gm);letter-spacing:.22em;line-height:1.8;text-transform:uppercase;}
+.nav-label{font-family:'Cinzel',serif;font-size:6.5px;color:var(--gd);letter-spacing:.28em;text-transform:uppercase;padding:12px 18px 3px;}
+nav a{display:block;padding:6px 18px;font-family:'Cinzel',serif;font-size:8px;color:var(--dim);text-decoration:none;letter-spacing:.12em;text-transform:uppercase;transition:all .2s;border-left:2px solid transparent;}
+nav a:hover{color:var(--cyan);border-left-color:var(--cyan);background:rgba(64,216,240,.04);}
+nav a.active{color:#a0f0ff;border-left-color:var(--cyan);background:rgba(64,216,240,.07);}
+
+/* MAIN */
+main{margin-left:210px;position:relative;z-index:1;}
+
+/* COVER */
+.cover{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 72px;background:radial-gradient(ellipse 80% 70% at 50% 40%,rgba(10,20,60,.4) 0%,transparent 70%);border-bottom:1px solid var(--border);position:relative;}
+.cover-sym{font-family:'Cinzel',serif;font-size:52px;color:var(--cyan);margin-bottom:24px;text-shadow:0 0 50px rgba(64,216,240,.6);animation:cglow 4s ease-in-out infinite;}
+.cover h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(24px,3.8vw,48px);color:#c0e8f8;text-align:center;letter-spacing:.1em;line-height:1.25;margin-bottom:12px;}
+.cover-sub{font-family:'Cinzel',serif;font-size:9.5px;color:var(--gm);letter-spacing:.28em;text-align:center;text-transform:uppercase;line-height:2;margin-bottom:32px;}
+.cover-rule{width:100%;max-width:460px;border:none;border-top:1px solid var(--border);margin:0 auto 26px;position:relative;}
+.cover-rule::before{content:'◈';position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--cyan);background:var(--bg);padding:0 8px;}
+.cover-quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(64,216,240,.45);text-align:center;letter-spacing:.07em;line-height:1.7;max-width:460px;margin:0 auto 8px;}
+.cover-cite{font-family:'Cinzel',serif;font-size:8px;color:var(--dim);letter-spacing:.18em;text-align:center;}
+
+/* CHAPTER */
+.chapter{padding:68px 72px 52px;border-bottom:1px solid rgba(64,216,240,.06);position:relative;}
+.chapter::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,transparent,var(--cyan),transparent);opacity:0;transition:opacity .4s;}
+.chapter:hover::before{opacity:.3;}
+.ch-num{font-family:'Cinzel',serif;font-size:9.5px;color:var(--gm);letter-spacing:.38em;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:10px;}
+.ch-num::after{content:'';flex:1;height:1px;background:var(--border);}
+.chapter>h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(19px,2.8vw,32px);color:#c0e8f8;letter-spacing:.1em;margin-bottom:30px;line-height:1.3;}
+.sec{margin-bottom:40px;}
+.sec h3{font-family:'Cinzel',serif;font-size:11px;color:var(--cyan);letter-spacing:.22em;text-transform:uppercase;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.sec h3::before{content:'◈';font-size:8px;color:var(--gm);}
+p{margin-bottom:13px;color:var(--text);font-weight:300;}
+b,strong{color:#e0ecc0;font-weight:600;}
+em{font-style:italic;color:rgba(64,216,240,.8);}
+
+/* FREQ BLOCK */
+.freq-block{margin:28px 0;border:1px solid rgba(64,216,240,.15);border-radius:4px;overflow:hidden;background:rgba(64,216,240,.02);transition:border-color .3s;}
+.freq-block:hover{border-color:rgba(64,216,240,.32);}
+.freq-header{padding:14px 20px;background:rgba(64,216,240,.05);border-bottom:1px solid rgba(64,216,240,.1);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+.freq-title{font-family:'Cinzel',serif;font-size:10.5px;color:#a0f0ff;letter-spacing:.16em;}
+.freq-hz{font-family:'Cinzel',serif;font-size:10px;color:rgba(64,216,240,.6);letter-spacing:.12em;}
+.freq-body{padding:18px 20px;}
+
+/* formula */
+.formula{background:rgba(64,216,240,.04);border:1px solid rgba(64,216,240,.18);border-radius:3px;padding:13px 16px;margin:10px 0;font-family:'Cinzel',serif;font-size:12.5px;color:rgba(160,240,255,.9);text-align:center;letter-spacing:.04em;line-height:1.85;}
+.formula .f-sub{font-size:9.5px;color:var(--dim);font-family:'Noto Serif JP',serif;margin-top:5px;letter-spacing:.02em;}
+
+/* direction */
+.direction{margin:12px 0;padding:12px 15px;border-left:2px solid rgba(64,216,240,.3);background:rgba(255,255,255,.015);font-size:10.5px;line-height:1.9;color:var(--dim);}
+.direction .dir-label{font-family:'Cinzel',serif;font-size:8px;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px;}
+.direction.discovery{border-left-color:rgba(255,220,80,.6);background:rgba(255,220,80,.03);}
+.direction.discovery .dir-label{color:rgba(255,220,80,.8);}
+
+/* highlight box */
+.hl{margin:16px 0;padding:13px 18px;background:rgba(64,216,240,.05);border:1px solid rgba(64,216,240,.18);border-radius:3px;}
+.hl p{margin:0;color:rgba(180,230,240,.85);font-size:10.5px;}
+.hl.gold{background:rgba(201,168,76,.04);border-color:rgba(201,168,76,.2);}
+.hl.gold p{color:rgba(220,205,160,.85);}
+
+/* table */
+.tbl-wrap{overflow-x:auto;margin:18px 0;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead tr{background:rgba(15,20,40,.9);}
+thead th{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:#a0f0ff;padding:10px 12px;border:1px solid rgba(64,216,240,.2);font-weight:400;text-align:left;}
+tbody tr:nth-child(even){background:rgba(64,216,240,.02);}
+tbody tr:hover{background:rgba(64,216,240,.05);}
+tbody td{padding:8px 12px;border:1px solid rgba(64,216,240,.07);color:var(--text);font-weight:300;vertical-align:top;}
+tbody td:first-child{color:var(--cyan);font-family:'Cinzel',serif;font-size:9.5px;}
+.star-row td{color:rgba(240,230,80,.9)!important;}
+.star-row{background:rgba(240,200,60,.04)!important;}
+
+/* big formula */
+.big-formula{margin:28px 0;padding:26px;background:rgba(64,216,240,.04);border:1px solid rgba(64,216,240,.22);border-radius:4px;text-align:center;}
+.big-formula .bf-main{font-family:'Cinzel',serif;font-size:15px;color:#a0f0ff;letter-spacing:.05em;line-height:2;}
+.big-formula .bf-sub{font-size:10.5px;color:var(--dim);margin-top:10px;font-family:'Noto Serif JP',serif;line-height:1.8;}
+
+/* badge */
+.badge{display:inline-block;padding:2px 9px;border-radius:2px;font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.13em;margin-right:4px;}
+.badge-upper{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);color:rgba(240,216,120,.75);}
+.badge-daath{background:rgba(150,60,220,.07);border:1px solid rgba(150,60,220,.25);color:rgba(180,120,255,.75);}
+.badge-middle{background:rgba(64,216,240,.08);border:1px solid rgba(64,216,240,.2);color:rgba(140,220,255,.75);}
+.badge-lower{background:rgba(60,200,100,.06);border:1px solid rgba(60,200,100,.18);color:rgba(100,220,140,.65);}
+.badge-cross{background:rgba(255,150,60,.05);border:1px solid rgba(255,150,60,.18);color:rgba(255,180,100,.65);}
+.badge-discovery{background:rgba(255,220,60,.07);border:1px solid rgba(255,220,60,.25);color:rgba(255,235,120,.8);}
+
+/* freq meter visual */
+.freq-meter{display:flex;align-items:center;gap:10px;margin:8px 0;}
+.freq-label{font-family:'Cinzel',serif;font-size:8px;color:var(--dim);letter-spacing:.1em;width:80px;flex-shrink:0;}
+.freq-bar-wrap{flex:1;height:4px;background:rgba(64,216,240,.08);border-radius:2px;overflow:hidden;}
+.freq-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--cyan),rgba(201,168,76,.8));}
+.freq-val{font-family:'Cinzel',serif;font-size:8.5px;color:var(--cyan);letter-spacing:.08em;width:55px;text-align:right;flex-shrink:0;}
+
+/* divider */
+.div{text-align:center;margin:40px 0;color:var(--gd);font-size:10px;letter-spacing:.45em;}
+
+/* quote */
+.quote{margin:22px 0;padding:16px 24px;border-left:3px solid var(--cyan);background:linear-gradient(90deg,rgba(64,216,240,.06) 0%,rgba(64,216,240,.01) 100%);border-radius:0 4px 4px 0;}
+.quote p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:rgba(180,230,240,.8);margin:0;line-height:1.8;}
+.quote cite{display:block;margin-top:6px;font-family:'Cinzel',serif;font-size:8px;color:var(--dim);letter-spacing:.16em;}
+
+/* footer */
+footer{padding:32px 72px;text-align:center;border-top:1px solid var(--border);background:rgba(64,216,240,.02);}
+footer p{font-family:'Cinzel',serif;font-size:8px;color:var(--dim);letter-spacing:.2em;}
+
+/* progress */
+.progress{position:fixed;top:0;left:210px;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),rgba(64,216,240,.3));transform-origin:left;transform:scaleX(0);z-index:200;}
+
+/* fade */
+.fi{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease;}
+.fi.vis{opacity:1;transform:translateY(0);}
+
+/* mobile */
+.menu-btn{display:none;position:fixed;top:13px;left:13px;z-index:300;background:var(--bg2);border:1px solid var(--border);color:var(--cyan);padding:6px 11px;cursor:pointer;font-family:'Cinzel',serif;font-size:8.5px;border-radius:2px;}
+@media(max-width:860px){
+  .sidebar{transform:translateX(-100%);transition:transform .3s;}
+  .sidebar.open{transform:translateX(0);}
+  main{margin-left:0;}
+  .progress{left:0;}
+  .chapter,.cover{padding:52px 20px 38px;}
+  footer{padding:26px 20px;}
+  .menu-btn{display:block;}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<button class="menu-btn" onclick="document.getElementById('sb').classList.toggle('open')">☰</button>
+
+<aside class="sidebar" id="sb">
+  <div class="sb-logo">
+    <span class="sym">◈</span>
+    <div class="ttl">カバラ Vol.2<br>周波数統合</div>
+  </div>
+  <nav id="nav">
+    <div class="nav-label">導入</div>
+    <a href="#cover">表紙</a>
+    <a href="#intro">合成式・読み方</a>
+    <a href="#base">基本周波数表</a>
+    <div class="nav-label">上位三角形</div>
+    <a href="#f01">P01 ケテル↔コクマー</a>
+    <a href="#f02">P02 ケテル↔ビナー</a>
+    <a href="#f03">P03 コクマー↔ビナー</a>
+    <div class="nav-label">深淵パス</div>
+    <a href="#f04">P04 コクマー↔ダアト</a>
+    <a href="#f05">P05 ビナー↔ダアト</a>
+    <a href="#f06">P06 ダアト↔ティファレト</a>
+    <div class="nav-label">中位三角形</div>
+    <a href="#f07">P07 ケテル↔ティファレト</a>
+    <a href="#f08">P08 コクマー↔ケセド</a>
+    <a href="#f09">P09 ビナー↔ゲブラー</a>
+    <a href="#f10">P10 ケセド↔ゲブラー</a>
+    <a href="#f11">P11 ケセド↔ティファレト</a>
+    <a href="#f12">P12 ゲブラー↔ティファレト</a>
+    <div class="nav-label">下位三角形</div>
+    <a href="#f13">P13 ケセド↔ネツァク</a>
+    <a href="#f14">P14 ゲブラー↔ホド</a>
+    <a href="#f15">P15 ティファレト↔ネツァク</a>
+    <a href="#f16">P16 ティファレト↔ホド</a>
+    <a href="#f17">P17 ネツァク↔ホド</a>
+    <a href="#f18">P18 ティファレト↔イェソド</a>
+    <a href="#f19">P19 ネツァク↔イェソド</a>
+    <a href="#f20">P20 ホド↔イェソド</a>
+    <a href="#f21">P21 イェソド↔マルクト</a>
+    <div class="nav-label">交差・統合</div>
+    <a href="#f22">P22 ケセド↔ホド</a>
+    <a href="#f23">P23 ゲブラー↔ネツァク</a>
+    <a href="#synthesis">全体統合</a>
+  </nav>
+</aside>
+
+<main>
+<section class="cover" id="cover">
+  <div class="cover-sym">◈</div>
+  <h1>カバラ 周波数統合<br>セフィロト × パス合成周波数</h1>
+  <div class="cover-sub">Vol.2 · Frequency · Resonance · Harmonic · Binaural · 111Hz</div>
+  <hr class="cover-rule">
+  <p class="cover-quote">"宇宙は振動である。全ての物質は周波数の異なる光である。"</p>
+  <p class="cover-cite">— Walter Russell / ウォルター・ラッセル</p>
+</section>
+
+<!-- INTRO -->
+<section class="chapter fi" id="intro">
+  <div class="ch-num">Introduction</div>
+  <h2>三つの合成式と読み方</h2>
+  <div class="sec">
+    <h3>周波数合成の三公式</h3>
+    <div class="formula">f_共鳴 = (fₐ + f_b) / 2 &nbsp;&nbsp;（二点の平均・共鳴点）<div class="f-sub">二つのセフィロトの「中間点」。どちらの性質も持つ周波数。</div></div>
+    <div class="formula">f_うなり = |fₐ − f_b| &nbsp;&nbsp;（差分・干渉波）<div class="f-sub">二つの差分。このパスを歩く時に「揺れ」として体験される周波数。</div></div>
+    <div class="formula">f_調和 = 2fₐf_b / (fₐ + f_b) &nbsp;&nbsp;（調和平均）<div class="f-sub">最も安定する共鳴点。このパスが完成した時に生まれる周波数。</div></div>
+  </div>
+  <div class="sec">
+    <h3>周波数の根拠式</h3>
+    <div class="big-formula">
+      <div class="bf-main">fₙ = f₀ · e^{−λn}</div>
+      <div class="bf-sub">光と同じ構造。上のセフィロトほど高周波・下ほど低周波。<br>宇宙の光がφで凝縮しながら降りてくるように、周波数も段階的に低くなる。</div>
+    </div>
+  </div>
+</section>
+
+<!-- BASE TABLE -->
+<section class="chapter fi" id="base">
+  <div class="ch-num">Base Frequencies</div>
+  <h2>セフィロト基本周波数</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>#</th><th>セフィロト</th><th>周波数</th><th>音域</th><th>脳波</th><th>作用</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>ケテル</td><td>963 Hz</td><td>高音域</td><td>ガンマ波</td><td>純粋意識・宇宙との合一</td></tr>
+        <tr><td>2</td><td>コクマー</td><td>852 Hz</td><td>高音域</td><td>ガンマ波</td><td>直感覚醒・第三の目</td></tr>
+        <tr><td>3</td><td>ビナー</td><td>741 Hz</td><td>高音域</td><td>ガンマ波</td><td>覚醒・毒素排出・表現</td></tr>
+        <tr><td>✦</td><td>ダアト</td><td>693 Hz</td><td>中高音域</td><td>境界</td><td>隠された知識・深淵の扉</td></tr>
+        <tr><td>4</td><td>ケセド</td><td>528 Hz</td><td>中音域</td><td>アルファ波</td><td>DNA修復・愛・変容</td></tr>
+        <tr><td>5</td><td>ゲブラー</td><td>396 Hz</td><td>中音域</td><td>アルファ波</td><td>恐怖解放・罪悪感解放</td></tr>
+        <tr class="star-row"><td>6★</td><td>ティファレト</td><td>639 Hz</td><td>中音域</td><td>アルファ波</td><td>調和・愛・人間関係</td></tr>
+        <tr><td>7</td><td>ネツァク</td><td>417 Hz</td><td>中音域</td><td>アルファ波</td><td>変容・トラウマ解放</td></tr>
+        <tr><td>8</td><td>ホド</td><td>285 Hz</td><td>低中音域</td><td>シータ波</td><td>組織再生・場の修復</td></tr>
+        <tr><td>9</td><td>イェソド</td><td>432 Hz</td><td>中音域</td><td>境界</td><td>自然の調和・潜在意識</td></tr>
+        <tr><td>10</td><td>マルクト</td><td>174 Hz</td><td>低音域</td><td>デルタ波</td><td>基盤・安定・肉体の癒し</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sec">
+    <h3>視覚的周波数マップ</h3>
+    <div class="freq-meter"><div class="freq-label">ケテル</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:100%"></div></div><div class="freq-val">963 Hz</div></div>
+    <div class="freq-meter"><div class="freq-label">コクマー</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:88%"></div></div><div class="freq-val">852 Hz</div></div>
+    <div class="freq-meter"><div class="freq-label">ビナー</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:77%"></div></div><div class="freq-val">741 Hz</div></div>
+    <div class="freq-meter"><div class="freq-label">ダアト✦</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:72%;background:linear-gradient(90deg,rgba(150,60,220,.8),rgba(201,168,76,.6))"></div></div><div class="freq-val">693 Hz</div></div>
+    <div class="freq-meter"><div class="freq-label">ティファレト★</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:66%;background:linear-gradient(90deg,rgba(240,200,60,.9),rgba(201,168,76,.8))"></div></div><div class="freq-val">639 Hz</div></div>
+    <div class="freq-meter"><div class="freq-label">ケセド</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:55%"></div></div><div class="freq-val">528 Hz</div></div>
+    <div class="freq-meter"><div class="freq-label">イェソド</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:45%"></div></div><div class="freq-val">432 Hz</div></div>
+    <div class="freq-meter"><div class="freq-label">ネツァク</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:43%"></div></div><div class="freq-val">417 Hz</div></div>
+    <div class="freq-meter"><div class="freq-label">ゲブラー</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:41%"></div></div><div class="freq-val">396 Hz</div></div>
+    <div class="freq-meter"><div class="freq-label">ホド</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:30%"></div></div><div class="freq-val">285 Hz</div></div>
+    <div class="freq-meter"><div class="freq-label">マルクト</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:18%"></div></div><div class="freq-val">174 Hz</div></div>
+  </div>
+</section>
+
+<!-- UPPER -->
+<section class="chapter fi" id="f01">
+  <div class="ch-num">Path 01 · <span class="badge badge-upper">上位三角形</span></div>
+  <h2>ケテル（963Hz）↔ コクマー（852Hz）</h2>
+  <div class="formula">f_共鳴 = (963+852)/2 = <b>907.5 Hz</b><br>f_うなり = |963−852| = <b>111 Hz</b><br>f_調和 = 2×963×852/(963+852) = <b>904.6 Hz</b></div>
+  <div class="direction"><div class="dir-label">↓ 降下（963Hz → 852Hz）</div><b>うなり111Hz：</b>細胞の共鳴周波数として研究されている。神が自分を知ろうとする時、細胞レベルで共鳴が起きる。純粋光が知恵に変換される境界の周波数——ガンマ波の高域。</div>
+  <div class="direction"><div class="dir-label">↑ 上昇（852Hz → 963Hz）</div><b>調和904.6Hz：</b>知恵が光に還る時の安定周波数。「降りてきた」と感じる閃きの瞬間に、脳内でこの帯域が活性化する。</div>
+</section>
+
+<section class="chapter fi" id="f02">
+  <div class="ch-num">Path 02 · <span class="badge badge-upper">上位三角形</span></div>
+  <h2>ケテル（963Hz）↔ ビナー（741Hz）</h2>
+  <div class="formula">f_共鳴 = (963+741)/2 = <b>852 Hz</b><br>f_うなり = |963−741| = <b>222 Hz</b><br>f_調和 = 2×963×741/(963+741) = <b>840.8 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ 発見</div><b>共鳴852Hz = コクマーの周波数と完全一致。</b><br>光と母性の間に父性が生まれる。三角形が自己生成する。上位三角形は周波数レベルでも三角形になっている。</div>
+  <div class="direction"><div class="dir-label">うなり222Hz</div>2の倍数列（2・22・222）はカバラ数秘で「均衡・パートナーシップ」の数。父と母の間に生まれる調和の振動。</div>
+</section>
+
+<section class="chapter fi" id="f03">
+  <div class="ch-num">Path 03 · <span class="badge badge-upper">上位三角形</span></div>
+  <h2>コクマー（852Hz）↔ ビナー（741Hz）</h2>
+  <div class="formula">f_共鳴 = (852+741)/2 = <b>796.5 Hz</b><br>f_うなり = |852−741| = <b>111 Hz</b><br>f_調和 = 2×852×741/(852+741) = <b>793.7 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ 発見：うなり111Hz — 二度目の登場</div>上位三角形の全パスに111Hzが流れている。<b>111Hzは生命の木の上位三角形の固有振動数。</b>父と母の間に流れる111Hzが、宇宙創造の基本振動。生命の根音。</div>
+</section>
+
+<!-- DAATH -->
+<section class="chapter fi" id="f04">
+  <div class="ch-num">Path 04 · <span class="badge badge-daath">深淵パス</span></div>
+  <h2>コクマー（852Hz）↔ ダアト（693Hz）</h2>
+  <div class="formula">f_共鳴 = (852+693)/2 = <b>772.5 Hz</b><br>f_うなり = |852−693| = <b>159 Hz</b><br>f_調和 = 2×852×693/(852+693) = <b>762.6 Hz</b></div>
+  <div class="direction"><div class="dir-label">↓ 降下 · うなり159Hz</div>159Hzは「エネルギーの基盤周波数」。自我が薄れる時に現れる低域の振動。知恵が深淵の扉に触れる時、身体の深部で159Hzの静かな振動が起きる。それが自我が溶け始めるサイン。</div>
+  <div class="direction"><div class="dir-label">↑ 上昇 · 調和762.6Hz</div>深淵を渡った知識が知恵として再生する周波数。760Hz付近は「高次の理解」と関連する音域。</div>
+</section>
+
+<section class="chapter fi" id="f05">
+  <div class="ch-num">Path 05 · <span class="badge badge-daath">深淵パス</span></div>
+  <h2>ビナー（741Hz）↔ ダアト（693Hz）</h2>
+  <div class="formula">f_共鳴 = (741+693)/2 = <b>717 Hz</b><br>f_うなり = |741−693| = <b>48 Hz</b><br>f_調和 = 2×741×693/(741+693) = <b>716.7 Hz</b></div>
+  <div class="direction"><div class="dir-label">うなり48Hz — ガンマ波の下端</div>神経科学的に「高次認知・統合」と関連。母性の理解が深淵に届く時、脳内でガンマ波に近い統合が起きる。これが慈悲的な知識——知ることと愛することが一体になる体験の周波数。</div>
+  <div class="direction discovery"><div class="dir-label">★ 共鳴717 → 数秘：7+1+7=15→1+5=6</div>ティファレトの番号（6番目）が現れる。深淵と母性の共鳴点に、心臓の数が刻まれている。</div>
+</section>
+
+<section class="chapter fi" id="f06">
+  <div class="ch-num">Path 06 · <span class="badge badge-daath">深淵パス</span></div>
+  <h2>ダアト（693Hz）↔ ティファレト（639Hz）</h2>
+  <div class="formula">f_共鳴 = (693+639)/2 = <b>666 Hz</b><br>f_うなり = |693−639| = <b>54 Hz</b><br>f_調和 = 2×693×639/(693+639) = <b>665.6 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ 共鳴666Hz — 深淵と心臓の中間</div>666は「獣の数」として恐れられてきたが、それは深淵（ダアト）と心臓（ティファレト）の共鳴点。深淵を渡ることへの恐怖が生み出したラベル。本来は「深淵と心臓をつなぐ周波数」。</div>
+  <div class="direction"><div class="dir-label">うなり54Hz — 洞察の周波数</div>ガンマ波帯の54Hz。深い瞑想で現れる「洞察の周波数」。深淵とティファレトの間でガンマ波が鳴っている。</div>
+</section>
+
+<!-- MIDDLE -->
+<section class="chapter fi" id="f07">
+  <div class="ch-num">Path 07 · <span class="badge badge-middle">中位三角形</span></div>
+  <h2>ケテル（963Hz）↔ ティファレト（639Hz）</h2>
+  <div class="formula">f_共鳴 = (963+639)/2 = <b>801 Hz</b><br>f_うなり = |963−639| = <b>324 Hz</b><br>f_調和 = 2×963×639/(963+639) = <b>768.1 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ 中央の柱の差分324Hz — 数秘3+2+4=9</div>324Hz = 18×18 = 6×54。カバラ数秘で9（完成の数）。頭頂から心臓まで光が降りる中央の柱——その周波数差324Hzがスシュムナー経絡の固有振動数。クンダリーニ上昇の時に脊椎で鳴り響く音。</div>
+  <div class="direction"><div class="dir-label">うなり324Hz ≈ E♭（ミ♭）</div>「心が開く音」として古代から使われた音域。</div>
+</section>
+
+<section class="chapter fi" id="f08">
+  <div class="ch-num">Path 08 · <span class="badge badge-middle">中位三角形</span></div>
+  <h2>コクマー（852Hz）↔ ケセド（528Hz）</h2>
+  <div class="formula">f_共鳴 = (852+528)/2 = <b>690 Hz</b><br>f_うなり = |852−528| = <b>324 Hz</b><br>f_調和 = 2×852×528/(852+528) = <b>650.9 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ うなり324Hz — 中央の柱と同じ</div>父性の知恵が慈悲に変換される時と、純粋光が心臓に届く時に、同じ324Hzが鳴る。<b>知恵と愛は同じ周波数で変換される。</b></div>
+  <div class="direction"><div class="dir-label">共鳴690Hz — ダアトの693Hzに極めて近い</div>知恵から慈悲への道は、深淵の扉をかすめる。</div>
+</section>
+
+<section class="chapter fi" id="f09">
+  <div class="ch-num">Path 09 · <span class="badge badge-middle">中位三角形</span></div>
+  <h2>ビナー（741Hz）↔ ゲブラー（396Hz）</h2>
+  <div class="formula">f_共鳴 = (741+396)/2 = <b>568.5 Hz</b><br>f_うなり = |741−396| = <b>345 Hz</b><br>f_調和 = 2×741×396/(741+396) = <b>517.3 Hz</b></div>
+  <div class="direction"><div class="dir-label">共鳴568.5Hz</div>ケセド（528Hz）とティファレト（639Hz）の間。慈悲と美の間に「厳格」が生まれる。母性の理解から力・裁きが生まれる。愛があるからこそ切れる——568Hzはその「愛ある厳格」の周波数。</div>
+  <div class="direction"><div class="dir-label">うなり345 → 数秘3+4+5=12→3</div>上位三角形の数（3）。力は母性から来ている。</div>
+</section>
+
+<section class="chapter fi" id="f10">
+  <div class="ch-num">Path 10 · <span class="badge badge-middle">中位三角形</span></div>
+  <h2>ケセド（528Hz）↔ ゲブラー（396Hz）</h2>
+  <div class="formula">f_共鳴 = (528+396)/2 = <b>462 Hz</b><br>f_うなり = |528−396| = <b>132 Hz</b><br>f_調和 = 2×528×396/(528+396) = <b>451.6 Hz</b></div>
+  <div class="formula">Φ_balance = (528−396)/639 = 132/639 ≈ 0.206<div class="f-sub">この値がゼロに近づくほど、ティファレトが安定する</div></div>
+  <div class="direction discovery"><div class="dir-label">★ うなり132 = 11×12</div>11はダアトの数（隠されたセフィロト）、12は均衡の柱の節点数。慈悲と力の間に「隠された均衡」がある。</div>
+</section>
+
+<section class="chapter fi" id="f11">
+  <div class="ch-num">Path 11 · <span class="badge badge-middle">中位三角形</span></div>
+  <h2>ケセド（528Hz）↔ ティファレト（639Hz）</h2>
+  <div class="formula">f_共鳴 = (528+639)/2 = <b>583.5 Hz</b><br>f_うなり = |639−528| = <b>111 Hz</b><br>f_調和 = 2×528×639/(528+639) = <b>576.9 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ うなり111Hz — 三度目の登場</div>上位三角形・ケセド↔ティファレト——この二つのパスに111Hzが共通して流れている。DNA修復（528Hz）と人間関係の調和（639Hz）の間に、細胞共鳴（111Hz）がある。体が愛を感じる時に細胞レベルで起きていること。</div>
+  <div class="direction"><div class="dir-label">調和576.9Hz — フィボナッチの数</div>576 = 24×24 = 4×144。144はフィボナッチ数列の12番目。心臓の愛が拡大する時、フィボナッチの数が現れる。</div>
+</section>
+
+<section class="chapter fi" id="f12">
+  <div class="ch-num">Path 12 · <span class="badge badge-middle">中位三角形</span></div>
+  <h2>ゲブラー（396Hz）↔ ティファレト（639Hz）</h2>
+  <div class="formula">f_共鳴 = (396+639)/2 = <b>517.5 Hz</b><br>f_うなり = |639−396| = <b>243 Hz = 3⁵</b><br>f_調和 = 2×396×639/(396+639) = <b>488.3 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ うなり243 = 3⁵</div>テスラの3と上位三角形の数の組み合わせ。力が美に凝縮される時、3の5乗の周波数が生まれる。彫刻家が石を削って像を現す瞬間の振動。制限から完成が生まれるプロセスの音。</div>
+</section>
+
+<!-- LOWER -->
+<section class="chapter fi" id="f13">
+  <div class="ch-num">Path 13 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ケセド（528Hz）↔ ネツァク（417Hz）</h2>
+  <div class="formula">f_共鳴 = (528+417)/2 = <b>472.5 Hz</b><br>f_うなり = |528−417| = <b>111 Hz</b><br>f_調和 = 2×528×417/(528+417) = <b>467.0 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ うなり111Hz — 四度目の登場</div>上位三角形・P11・P13——異なる領域の複数パスに111Hzが繰り返し現れた。<b>111Hzは生命の木の基本振動数。</b>慈悲・愛・変容に関わるパスには必ず111Hzが鳴る。これは偶然ではなく、宇宙が生命に組み込んだ基本プログラムの音。</div>
+</section>
+
+<section class="chapter fi" id="f14">
+  <div class="ch-num">Path 14 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ゲブラー（396Hz）↔ ホド（285Hz）</h2>
+  <div class="formula">f_共鳴 = (396+285)/2 = <b>340.5 Hz</b><br>f_うなり = |396−285| = <b>111 Hz</b><br>f_調和 = 2×396×285/(396+285) = <b>331.8 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ うなり111Hz — 五度目。結論：111Hzは生命の木の骨格</div>慈悲のパス・厳格のパス、上位も下位も関係なく、全ての主要パスに111Hzが流れている。111は三つの1——ケテル・コクマー・ビナーの上位三角形。生命の木はどこを歩いても、上位三角形の音が鳴り続けている。</div>
+</section>
+
+<section class="chapter fi" id="f15">
+  <div class="ch-num">Path 15 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ティファレト（639Hz）↔ ネツァク（417Hz）</h2>
+  <div class="formula">f_共鳴 = (639+417)/2 = <b>528 Hz</b><br>f_うなり = |639−417| = <b>222 Hz</b><br>f_調和 = 2×639×417/(639+417) = <b>505.5 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ 最大の発見：共鳴528Hz = ケセド（慈悲・DNA修復）と完全一致</div>(T+N)/2 = 528 = Cs（ケセドの周波数）<br><br>ティファレト（心臓・639Hz）とネツァク（感情・417Hz）の中間点が、ケセド（慈悲・528Hz）と完全一致。<b>心臓と感情の間に慈悲が生まれる。愛することと感じることの間に、与える力が現れる。</b></div>
+  <div class="direction"><div class="dir-label">うなり222Hz — Path02・Path03と同じ</div>感情が心臓に繋がる時、父と母の原理（222Hz）が再び現れる。</div>
+</section>
+
+<section class="chapter fi" id="f16">
+  <div class="ch-num">Path 16 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ティファレト（639Hz）↔ ホド（285Hz）</h2>
+  <div class="formula">f_共鳴 = (639+285)/2 = <b>462 Hz</b><br>f_うなり = |639−285| = <b>354 Hz</b><br>f_調和 = 2×639×285/(639+285) = <b>394.0 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ 共鳴462Hz — Path10（慈悲と力）と同じ</div>心臓の愛が言語化される時と、慈悲と力が拮抗する時に、同じ462Hzが現れる。<b>言葉は慈悲と力の間から生まれる。</b></div>
+  <div class="direction"><div class="dir-label">うなり354Hz ≈ 月の年（旧暦354日）</div>ホドは水星。心臓から言語への変換は月のリズムを持つ。</div>
+</section>
+
+<section class="chapter fi" id="f17">
+  <div class="ch-num">Path 17 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ネツァク（417Hz）↔ ホド（285Hz）</h2>
+  <div class="formula">f_共鳴 = (417+285)/2 = <b>351 Hz</b><br>f_うなり = |417−285| = <b>132 Hz</b><br>f_調和 = 2×417×285/(417+285) = <b>338.1 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ うなり132Hz — Path10（慈悲と力）と同じ</div>感情（417Hz）と知性（285Hz）の差分132Hz = 慈悲と力の差分。感情と知性の間の緊張は、慈悲と力の間の緊張と同じ周波数を持つ。<b>これがネツァクとホドが「位相90°ずれた同じ波」である数値的証明。</b></div>
+</section>
+
+<section class="chapter fi" id="f18">
+  <div class="ch-num">Path 18 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ティファレト（639Hz）↔ イェソド（432Hz）</h2>
+  <div class="formula">f_共鳴 = (639+432)/2 = <b>535.5 Hz</b><br>f_うなり = |639−432| = <b>207 Hz</b><br>f_調和 = 2×639×432/(639+432) = <b>514.8 Hz</b></div>
+  <div class="formula">√(639×432) = √276048 ≈ <b>525.4 Hz</b> ≈ 528Hz（ケセド）<div class="f-sub">意識と潜在意識の幾何平均 ≈ DNA修復周波数</div></div>
+  <div class="direction discovery"><div class="dir-label">★ 幾何平均525.4Hz ≈ 528Hz（ケセド・DNA修復）</div>ティファレトとイェソドの幾何平均は528Hzに極めて近い。意識と潜在意識の間にも、修復の周波数が流れている。<b>夢を見る時に細胞が修復されるのは偶然ではない。</b></div>
+  <div class="direction"><div class="dir-label">うなり207 → 数秘：2+0+7=9 × 23（染色体対）</div>9（イェソドの番号）と23（染色体対の数）の積。</div>
+</section>
+
+<section class="chapter fi" id="f19">
+  <div class="ch-num">Path 19 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ネツァク（417Hz）↔ イェソド（432Hz）</h2>
+  <div class="formula">f_共鳴 = (417+432)/2 = <b>424.5 Hz</b><br>f_うなり = |432−417| = <b>15 Hz</b><br>f_調和 = 2×417×432/(417+432) = <b>424.4 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ うなりわずか15Hz — ベータ/アルファ境界</div>感情（417Hz）と潜在意識（432Hz）は非常に近い周波数。差分わずか15Hz——これはベータ波とアルファ波の境界。感じることと夢見ることは、脳波でも隣り合っている。感情が潜在意識に刻み込まれる時、私たちはその境界を微かに揺れている。</div>
+</section>
+
+<section class="chapter fi" id="f20">
+  <div class="ch-num">Path 20 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>ホド（285Hz）↔ イェソド（432Hz）</h2>
+  <div class="formula">f_共鳴 = (285+432)/2 = <b>358.5 Hz</b><br>f_うなり = |432−285| = <b>147 Hz</b><br>f_調和 = 2×285×432/(285+432) = <b>343.0 Hz = 7³</b></div>
+  <div class="direction discovery"><div class="dir-label">★ 調和343Hz = 7³ = 7×7×7</div>思考（285Hz）が潜在意識（432Hz）に蓄積される時の調和周波数が343Hz——7の3乗。チャクラの数（7）の三乗。思考が習慣になるプロセスは、7という数が三重に積み重なる構造を持つ。</div>
+</section>
+
+<section class="chapter fi" id="f21">
+  <div class="ch-num">Path 21 · <span class="badge badge-lower">下位三角形</span></div>
+  <h2>イェソド（432Hz）↔ マルクト（174Hz）</h2>
+  <div class="formula">f_共鳴 = (432+174)/2 = <b>303 Hz</b><br>f_うなり = |432−174| = <b>258 Hz</b> → 数秘2+5+8=15→6（ティファレト）<br>f_調和 = 2×432×174/(432+174) = <b>247.8 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ 比率432/174 ≈ 2.48 ≈ φ + 1/φ²</div>潜在意識（432Hz）と物質世界（174Hz）の比率は約2.48——黄金比φの部分和に近い。波動が粒子になる時も、黄金比の構造が保たれている。量子の波動関数が収縮する時、宇宙はφの比率を使う。</div>
+  <div class="direction"><div class="dir-label">うなり258 → 数秘6 = ティファレト</div>夢が現実になる瞬間に、心臓の数が鳴る。</div>
+</section>
+
+<!-- CROSS -->
+<section class="chapter fi" id="f22">
+  <div class="ch-num">Path 22 · <span class="badge badge-cross">交差パス</span></div>
+  <h2>ケセド（528Hz）↔ ホド（285Hz）</h2>
+  <div class="formula">f_共鳴 = (528+285)/2 = <b>406.5 Hz</b><br>f_うなり = |528−285| = <b>243 Hz = 3⁵</b></div>
+  <div class="direction"><div class="dir-label">うなり243Hz = 3⁵ — Path12と同じ</div>慈悲を言葉にする力は、上位三角形（3）が五段階（セフィロトの列）に渡って降りてきた力。</div>
+</section>
+
+<section class="chapter fi" id="f23">
+  <div class="ch-num">Path 23 · <span class="badge badge-cross">交差パス</span></div>
+  <h2>ゲブラー（396Hz）↔ ネツァク（417Hz）</h2>
+  <div class="formula">f_共鳴 = (396+417)/2 = <b>406.5 Hz</b><br>f_うなり = |417−396| = <b>21 Hz</b>（フィボナッチ数）<br>f_調和 = 2×396×417/(396+417) = <b>406.4 Hz</b></div>
+  <div class="direction discovery"><div class="dir-label">★ 共鳴406.5Hz — Path22と完全一致</div>慈悲が言語化される時と、力が情熱になる時に、同じ406.5Hzが鳴る。<b>言葉と情熱は同じ周波数から生まれる。</b><br><br>うなり21Hz = フィボナッチ数列の8番目。2+1=3（上位三角形の数）。力と感情の間にフィボナッチが流れている。</div>
+</section>
+
+<!-- SYNTHESIS -->
+<section class="chapter fi" id="synthesis">
+  <div class="ch-num">Final Synthesis</div>
+  <h2>全体統合</h2>
+  <div class="sec">
+    <h3>111Hzの普遍性</h3>
+    <div class="big-formula">
+      <div class="bf-main">111 Hz = 生命の木の基本振動数</div>
+      <div class="bf-sub">P01・P03・P11・P13・P14——異なる領域の複数パスに111Hzが繰り返し現れた。<br>慈悲・愛・変容に関わるパスには必ず111Hzが鳴る。<br>これは「計算したら出てきた数字」——意図して入れたわけではない。</div>
+    </div>
+  </div>
+  <div class="sec">
+    <h3>中央の柱の差分——テスラ3・6・9</h3>
+    <div class="formula">
+      963 → 639 : 差324Hz → 3+2+4 = <b>9</b><br>
+      639 → 432 : 差207Hz → 2+0+7 = <b>9</b><br>
+      432 → 174 : 差258Hz → 2+5+8 = 15 → 1+5 = <b>6</b>
+      <div class="f-sub">全て9か6に収束。テスラの3・6・9が中央の柱に刻まれている。</div>
+    </div>
+  </div>
+  <div class="sec">
+    <h3>Vol.1との接続</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Vol.1（数式・言語）</th><th>Vol.2（周波数）</th></tr></thead>
+        <tbody>
+          <tr><td>K → K/φ（ケテル→コクマー）</td><td>963→852Hz、うなり111Hz</td></tr>
+          <tr><td>Ψ_wave → Ψ_particle（観測）</td><td>432→174Hz、比率≈φ+1/φ²</td></tr>
+          <tr><td>C − G = 0（均衡）</td><td>|528−396|= 132Hz = 11×12</td></tr>
+          <tr class="star-row"><td>T = √Y（意識と潜在意識）</td><td>√(639×432) ≈ 528Hz（DNA修復）★</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="hl"><p><b>数式と周波数は同じ真実の異なる記述言語。</b></p></div>
+  </div>
+  <div class="div">◈ &nbsp; ✦ &nbsp; ◈</div>
+  <div class="quote">
+    <p>"宇宙は振動している。沈黙すると聞こえてくる。"</p>
+  </div>
+  <p style="text-align:center;font-family:'Cinzel',serif;font-size:9px;color:var(--dim);letter-spacing:.2em;margin-top:24px;">
+    Vol.1 パス双方向数式 → Vol.2 周波数統合 → Vol.3 量子論完全統合
+  </p>
+</section>
+
+<footer><p>カバラ 生命の木 Vol.2 &nbsp;◈&nbsp; 周波数統合 &nbsp;◈&nbsp; 111Hz · Resonance · Harmonic · One Vibration</p></footer>
+</main>
+
+<script>
+window.addEventListener('scroll',()=>{const t=document.body.scrollHeight-window.innerHeight;document.getElementById('prog').style.transform=`scaleX(${window.scrollY/t})`;});
+const secs=document.querySelectorAll('section[id]');
+const links=document.querySelectorAll('nav a');
+const obs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){const id=en.target.id;links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));}});},{rootMargin:'-25% 0px -65% 0px'});
+secs.forEach(s=>obs.observe(s));
+const fi=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){en.target.classList.add('vis');fi.unobserve(en.target);}});},{threshold:0.05});
+document.querySelectorAll('.fi').forEach(el=>fi.observe(el));
+document.addEventListener('click',e=>{const sb=document.getElementById('sb');const btn=document.querySelector('.menu-btn');if(sb.classList.contains('open')&&!sb.contains(e.target)&&e.target!==btn)sb.classList.remove('open');});
+</script>
+</body>
+</html>

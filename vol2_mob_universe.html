@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>モブの宇宙論 Vol.2</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Shippori+Mincho:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a12;
+    --bg2: #0f0f1e;
+    --surface: #13132a;
+    --border: #2a2a50;
+    --accent: #7eb8f7;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --accent4: #fb923c;
+    --text: #dde3f0;
+    --text-muted: #7a8299;
+    --gold: #f0c060;
+    --danger: #f87171;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Serif JP', serif;
+    line-height: 1.9;
+    font-size: 16px;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 90%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 50%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(2px 2px at 25% 45%, rgba(126,184,247,0.4) 0%, transparent 100%),
+      radial-gradient(2px 2px at 75% 25%, rgba(167,139,250,0.3) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    padding: 80px 0 60px;
+    text-align: center;
+  }
+
+  .vol-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent2);
+    border: 1px solid var(--accent2);
+    padding: 6px 16px;
+    margin-bottom: 32px;
+    animation: fadeIn 1s ease both;
+  }
+
+  .vol-link {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    margin-bottom: 20px;
+    text-decoration: none;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .vol-link:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  h1 {
+    font-family: 'Shippori Mincho', serif;
+    font-size: clamp(22px, 5vw, 36px);
+    font-weight: 700;
+    line-height: 1.5;
+    color: #fff;
+    margin-bottom: 16px;
+    animation: fadeIn 1s ease 0.2s both;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+    animation: fadeIn 1s ease 0.4s both;
+  }
+
+  .credits {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    animation: fadeIn 1s ease 0.6s both;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), var(--accent2), var(--border), transparent);
+    margin: 40px 0;
+  }
+
+  .note-box {
+    border-left: 3px solid var(--accent2);
+    padding: 16px 20px;
+    background: rgba(167,139,250,0.05);
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 48px;
+  }
+
+  section {
+    margin-bottom: 56px;
+    animation: slideUp 0.8s ease both;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .section-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    letter-spacing: 2px;
+    white-space: nowrap;
+  }
+
+  h2 {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+    flex: 1;
+  }
+
+  h3 {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 16px;
+    color: var(--accent2);
+    margin: 28px 0 12px;
+  }
+
+  p {
+    margin-bottom: 16px;
+    color: var(--text);
+    font-size: 15px;
+  }
+
+  /* 惑星カード */
+  .planet-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .planet-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .planet-card:hover {
+    border-color: var(--accent);
+  }
+
+  .planet-card.anomaly {
+    border-color: var(--danger);
+    background: rgba(248,113,113,0.05);
+  }
+
+  .planet-card.anomaly:hover {
+    border-color: var(--danger);
+  }
+
+  .planet-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  .planet-card.anomaly .planet-name {
+    color: var(--danger);
+  }
+
+  .planet-type {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .planet-stat {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+
+  .planet-stat span {
+    color: var(--text);
+  }
+
+  /* 比較ブロック */
+  .compare-block {
+    margin: 16px 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .compare-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.03);
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .compare-row {
+    display: flex;
+    padding: 12px 16px;
+    gap: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    align-items: flex-start;
+  }
+
+  .compare-row:last-child {
+    border-bottom: none;
+  }
+
+  .compare-key {
+    font-size: 12px;
+    color: var(--text-muted);
+    min-width: 130px;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .compare-vals {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    flex-wrap: wrap;
+  }
+
+  .compare-val {
+    font-size: 13px;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .compare-val .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .compare-val.highlight .tag {
+    color: var(--accent2);
+  }
+
+  /* リスト */
+  ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 16px;
+  }
+
+  ul li {
+    padding: 8px 0 8px 24px;
+    position: relative;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent2);
+  }
+
+  ol {
+    padding-left: 24px;
+    margin-bottom: 16px;
+  }
+
+  ol li {
+    padding: 6px 0;
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  /* フロー */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin: 24px 0;
+  }
+
+  .flow-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 12px 28px;
+    font-size: 14px;
+    color: var(--text);
+    min-width: 260px;
+    text-align: center;
+    border-radius: 3px;
+  }
+
+  .flow-item.hl { border-color: var(--accent2); color: var(--accent2); }
+  .flow-item.hl2 { border-color: var(--accent3); color: var(--accent3); }
+
+  .flow-arrow {
+    font-size: 20px;
+    color: var(--text-muted);
+    padding: 4px 0;
+    line-height: 1;
+  }
+
+  /* 階層カード */
+  .layer-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 24px 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .layer-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .layer-card:last-child { border-bottom: none; }
+  .layer-card:hover { background: rgba(255,255,255,0.02); }
+
+  .layer-icon {
+    font-size: 20px;
+    width: 32px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .layer-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--accent2);
+    min-width: 90px;
+    flex-shrink: 0;
+  }
+
+  .layer-strength {
+    font-size: 13px;
+    color: var(--gold);
+    min-width: 70px;
+    flex-shrink: 0;
+  }
+
+  .layer-role {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* コードブロック */
+  .code-block {
+    background: #080810;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    padding: 20px 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--accent3);
+    line-height: 2;
+    margin: 20px 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .diagram-caption {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* テーブル */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 24px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  thead tr { background: rgba(167,139,250,0.12); }
+
+  th {
+    padding: 12px 16px;
+    text-align: left;
+    color: var(--accent2);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    border-bottom: 2px solid var(--accent2);
+    font-weight: 400;
+  }
+
+  td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  /* ハイライトボックス */
+  .highlight-box {
+    background: rgba(126,184,247,0.06);
+    border: 1px solid rgba(126,184,247,0.3);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    font-size: 15px;
+    color: var(--accent);
+    text-align: center;
+    letter-spacing: 1px;
+  }
+
+  .closing {
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 48px 0 64px;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    line-height: 2.2;
+  }
+
+  .disclaimer {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 16px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  section:nth-child(1) { animation-delay: 0.1s; }
+  section:nth-child(2) { animation-delay: 0.2s; }
+  section:nth-child(3) { animation-delay: 0.3s; }
+  section:nth-child(4) { animation-delay: 0.4s; }
+  section:nth-child(5) { animation-delay: 0.5s; }
+  section:nth-child(6) { animation-delay: 0.6s; }
+  section:nth-child(7) { animation-delay: 0.7s; }
+  section:nth-child(8) { animation-delay: 0.8s; }
+
+  @media (max-width: 600px) {
+    header { padding: 48px 0 40px; }
+    h2 { font-size: 17px; }
+    .planet-cards { grid-template-columns: 1fr; }
+    .compare-key { min-width: 100px; }
+    .layer-card { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="vol-badge">Vol. 02</div>
+    <h1>モブが朝のチャットで<br>考えてしまった宇宙の話</h1>
+    <p class="subtitle">― LHS 1903系「逆転惑星」と入れ子宇宙の接続 ―</p>
+    <p class="credits">総指揮・総監督：クーロド　／　応援・発案：Dナーレ　／　校正補助：Claude（AI）</p>
+  </header>
+
+  <div class="divider"></div>
+
+  <div class="note-box">
+    ※ 本稿は物理学の専門家によるものではありません。朝の雑談から生まれた思考実験です。Vol.1（エーテル・重力子・ダークマター 入れ子宇宙の循環構造仮説）の続編として、LHS 1903系という実際の天文観測データを題材に仮説を深めます。
+  </div>
+
+  <!-- §1 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <h2>はじめに ― LHS 1903系との出会い</h2>
+    </div>
+    <p>2026年2月、ESAのCHEOPS衛星が確認した系外惑星系「LHS 1903」が天文学界に衝撃を与えた。地球から約116光年離れたやまねこ座に位置するこの赤色矮星は、4つの惑星を抱えているが、その並び順が従来の惑星形成理論では説明できない「逆転構造」を示している。</p>
+    <p>朝のチャットでこのニュースに触れたとき、Vol.1で構築した「入れ子宇宙・循環構造仮説」との接点が見えた。本稿はその思考の記録である。</p>
+  </section>
+
+  <!-- §2 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <h2>LHS 1903系の「逆転」とは何か</h2>
+    </div>
+    <h3>太陽系との比較</h3>
+    <p>太陽系では、恒星に近いほど惑星の密度が高く、岩石惑星が内側に、ガス惑星が外側に並ぶ。これは惑星形成の標準モデルが予測するパターンだ。</p>
+
+    <div class="highlight-box">
+      太陽系：岩石（高密度）→ 岩石 → 岩石 → 岩石 → ガス → ガス → ガス/氷 → ガス/氷<br>
+      <span style="font-size:12px; color: var(--text-muted);">恒星に近いほど密度が高い ＝ 単調減少パターン</span>
+    </div>
+
+    <h3>LHS 1903系のデータ</h3>
+    <div class="planet-cards">
+      <div class="planet-card">
+        <div class="planet-name">LHS 1903 b</div>
+        <div class="planet-type">岩石惑星</div>
+        <div class="planet-stat">
+          半径：<span>地球の1.38倍</span><br>
+          密度：<span>〜6.8 g/cm³</span><br>
+          周期：<span>2.16日</span>
+        </div>
+      </div>
+      <div class="planet-card">
+        <div class="planet-name">LHS 1903 c</div>
+        <div class="planet-type">ガス惑星</div>
+        <div class="planet-stat">
+          半径：<span>地球の2.05倍</span><br>
+          密度：<span>〜2.9 g/cm³</span><br>
+          周期：<span>6.23日</span>
+        </div>
+      </div>
+      <div class="planet-card">
+        <div class="planet-name">LHS 1903 d</div>
+        <div class="planet-type">ガス惑星</div>
+        <div class="planet-stat">
+          半径：<span>地球の2.50倍</span><br>
+          密度：<span>〜2.09 g/cm³</span><br>
+          周期：<span>12.57日</span>
+        </div>
+      </div>
+      <div class="planet-card anomaly">
+        <div class="planet-name">LHS 1903 e ★異常</div>
+        <div class="planet-type">岩石惑星（最外側）</div>
+        <div class="planet-stat">
+          半径：<span>地球の1.73倍</span><br>
+          密度：<span>〜6.10 g/cm³</span><br>
+          周期：<span>29.32日</span>
+        </div>
+      </div>
+    </div>
+    <p>密度の並びは <strong style="color:var(--accent);">高→低→低→高</strong> となっており、太陽系の単調減少パターンとは明らかに異なる。最外惑星 e が岩石惑星であることが「逆転」の正体だ。</p>
+
+    <h3>もしeが内側にいたら？</h3>
+    <p>LHS 1903 e をbとcの間に置いた場合、密度の並びは以下のようになる。</p>
+    <div class="highlight-box">
+      b（6.8）→ e（6.10）→ c（2.9）→ d（2.09）<br>
+      <span style="font-size:12px; color: var(--accent3);">単調減少 ＝ 太陽系と同じ「正常」パターン ✓</span>
+    </div>
+    <p>eの位置さえ違えば、LHS 1903系は標準的な惑星系として説明できる。この事実が次章の仮説の出発点となる。</p>
+  </section>
+
+  <!-- §3 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <h2>既存の説明とその限界</h2>
+    </div>
+    <p>天文学チームが提唱した「逐次形成（inside-out formation）」モデルでは、惑星が内側から順番に形成されたと説明する。</p>
+    <ul>
+      <li>b → c → d の順に形成（ガスが豊富な時期）</li>
+      <li>eはガスが枯渇した後に最外部で遅れて形成 → 岩石惑星になった</li>
+    </ul>
+    <p>この説はeが岩石である理由を説明できるが、「<strong style="color:var(--danger);">なぜc・dはeより後に内側に形成されたのか</strong>」という問いには答えられない。形成の方向性・メカニズムに疑問が残る。</p>
+  </section>
+
+  <!-- §4 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <h2>モブ仮説 ― 形成順b→e→c→dと渦モデル</h2>
+    </div>
+    <h3>形成順の再解釈</h3>
+    <p>本仮説では、惑星の形成順が <strong style="color:var(--accent2);">「b → e → c → d」</strong> だったと考える。eはbの次に生まれた第二惑星であり、当時はまだガスが比較的豊富な環境で岩石惑星として形成された。その後、c・dが内側領域に形成されたことで、現在の「b・c・d・e」という位置関係が生まれた。</p>
+
+    <h3>渦による自然発生的な内側形成</h3>
+    <p>では「なぜc・dは内側に形成されたのか」という問いへの答えが、渦モデルである。ホワイトホールが物質を吐き出す際、その物質は自然に渦を形成する。これは銀河・台風・排水口など、あらゆるスケールで観測される宇宙の普遍的な現象だ。</p>
+
+    <div class="flow">
+      <div class="flow-item hl">ホワイトホールの吐き出し</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">渦の形成（自然発生）</div>
+      <div class="flow-arrow">↓ ↙　　↘ ↓</div>
+      <div style="display:flex; gap:12px; width:100%; justify-content:center;">
+        <div class="flow-item hl2" style="min-width:unset; flex:1; max-width:240px;">渦の内側<br><span style="font-size:12px;">密度高 → 岩石（b・e）</span></div>
+        <div class="flow-item" style="min-width:unset; flex:1; max-width:240px;">渦の外縁<br><span style="font-size:12px;">軽いガス → ガス（c・d）</span></div>
+      </div>
+    </div>
+    <p class="diagram-caption">▲ 渦による物質分離モデル</p>
+
+    <p>この渦モデルは以下の三点を同時にシンプルに説明する。</p>
+    <ul>
+      <li>なぜc・dが内側に形成されたか（渦の内縁にガスが集まった）</li>
+      <li>惑星ごとの密度・組成の個性（ホワイトホールが吐き出した物質の成分差）</li>
+      <li>軌道の安定性（渦の回転が軌道を自然に整える）</li>
+    </ul>
+  </section>
+
+  <!-- §5 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 05</span>
+      <h2>太陽系とLHS 1903系 ― 階層的兄弟恒星</h2>
+    </div>
+    <p>Vol.1の入れ子宇宙モデルでは、同じ超新星爆発から生まれた宇宙を「階層構造的兄弟宇宙」と定義した。同様に、同じ源流から物質供給を受けた恒星系を「兄弟恒星系」と位置づける。</p>
+
+    <div class="compare-block">
+      <div class="compare-label">SOLAR SYSTEM vs LHS 1903</div>
+      <div class="compare-row">
+        <div class="compare-key">恒星の年齢</div>
+        <div class="compare-vals">
+          <div class="compare-val"><span class="tag">太陽系</span>約46億年</div>
+          <div class="compare-val highlight"><span class="tag">LHS 1903系</span>約70.8億年</div>
+        </div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-key">恒星の質量</div>
+        <div class="compare-vals">
+          <div class="compare-val"><span class="tag">太陽系</span>太陽（基準）</div>
+          <div class="compare-val highlight"><span class="tag">LHS 1903系</span>太陽の約0.6倍</div>
+        </div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-key">表面温度</div>
+        <div class="compare-vals">
+          <div class="compare-val"><span class="tag">太陽系</span>5,778 K</div>
+          <div class="compare-val highlight"><span class="tag">LHS 1903系</span>3,664 K</div>
+        </div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-key">惑星の並び</div>
+        <div class="compare-vals">
+          <div class="compare-val"><span class="tag">太陽系</span>岩石→ガス（正常）</div>
+          <div class="compare-val highlight"><span class="tag">LHS 1903系</span>岩石→ガス→ガス→岩石（逆転）</div>
+        </div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-key">形成の特徴</div>
+        <div class="compare-vals">
+          <div class="compare-val"><span class="tag">太陽系</span>ほぼ同時期に形成</div>
+          <div class="compare-val highlight"><span class="tag">LHS 1903系</span>逐次形成（内側から順番）</div>
+        </div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-key">位置</div>
+        <div class="compare-vals">
+          <div class="compare-val"><span class="tag">太陽系</span>銀河薄円盤</div>
+          <div class="compare-val highlight"><span class="tag">LHS 1903系</span>銀河厚円盤（より古い領域）</div>
+        </div>
+      </div>
+    </div>
+
+    <p>LHS 1903系は太陽系より約25億年古く、同じ入れ子宇宙の「異なる世代・異なる階層」から物質供給を受けた兄弟恒星系として解釈できる。</p>
+  </section>
+
+  <!-- §6 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 06</span>
+      <h2>内包ホワイトホール仮説 ― 星と惑星は内側から作られる</h2>
+    </div>
+    <h3>エントロピーパターンと出口の多様性</h3>
+    <p>ブラックホールが吸収した物質は、エントロピーのパターンによって異なる出口をたどると考える。</p>
+    <ul>
+      <li><strong>パターンA</strong>：次の宇宙階層へのホワイトホールとして排出（Vol.1の循環モデル）</li>
+      <li><strong>パターンB</strong>：ワームホールを経由して同一宇宙内の別地点へ排出</li>
+      <li><strong>パターンC</strong>：天体の内部核として残留し、内側から物質を湧き出させる</li>
+    </ul>
+
+    <h3>天体中心ホワイトホール ― 階層ごとの強さ</h3>
+    <p>恒星・惑星の中心にはホワイトホールが内包されており、そこから物質が湧き出すことで天体が形成・維持されていると考える。</p>
+
+    <div class="layer-cards">
+      <div class="layer-card">
+        <div class="layer-icon">🌌</div>
+        <div class="layer-name">弦（大元）</div>
+        <div class="layer-strength">最強</div>
+        <div class="layer-role">宇宙そのものの源</div>
+      </div>
+      <div class="layer-card">
+        <div class="layer-icon">⭐</div>
+        <div class="layer-name">恒星</div>
+        <div class="layer-strength">強</div>
+        <div class="layer-role">恒星を内側から形成・維持</div>
+      </div>
+      <div class="layer-card">
+        <div class="layer-icon">🪐</div>
+        <div class="layer-name">惑星</div>
+        <div class="layer-strength" style="color:var(--accent);">中〜弱</div>
+        <div class="layer-role">惑星の内核・地質活動の源</div>
+      </div>
+      <div class="layer-card">
+        <div class="layer-icon">🌑</div>
+        <div class="layer-name">衛星・小天体</div>
+        <div class="layer-strength" style="color:var(--text-muted);">微弱〜なし</div>
+        <div class="layer-role">階層の末端</div>
+      </div>
+    </div>
+
+    <h3>LHS 1903系への適用</h3>
+    <p>各惑星の密度・組成の違いは、各惑星中心のホワイトホールのエントロピーパターンの違いとして解釈できる。</p>
+    <ul>
+      <li><strong>b・e（岩石）</strong>：高密度物質を多く吐き出すパターン</li>
+      <li><strong>c・d（ガス）</strong>：軽元素・揮発性物質を多く吐き出すパターン</li>
+    </ul>
+    <p>これはホワイトホールの「食歴」―― ブラックホール時代に何を吸収したかの履歴が反映されたものである。</p>
+
+    <h3>観測可能性 ― ダークマターと同じ立ち位置</h3>
+    <p>「天体中心のホワイトホール」は現時点では直接観測されていない。しかしこれはダークマターと同じ状況だ。ダークマターも直接観測はされていないが、重力効果として計測可能領域に影響を与えている。</p>
+    <p style="color:var(--accent); font-weight:700;">観測されていないことは否定の根拠にはならない。</p>
+  </section>
+
+  <!-- §7 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 07</span>
+      <h2>未解決問題と今後の課題</h2>
+    </div>
+    <ol>
+      <li>渦の方向性（なぜホワイトホールの吐き出しが渦を形成するのか、具体的なメカニズム）</li>
+      <li>形成順b→e→c→dの観測的な検証方法</li>
+      <li>「兄弟恒星系」の定義をより厳密にする必要性</li>
+      <li>天体中心ホワイトホールのエントロピーパターンを分類する方法</li>
+      <li>JWSTによるLHS 1903 eの大気観測データとの整合性（今後の観測待ち）</li>
+    </ol>
+  </section>
+
+  <!-- §8 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 08</span>
+      <h2>おわりに</h2>
+    </div>
+    <p>Vol.1では宇宙の大枠として入れ子構造・循環モデルを提示した。Vol.2ではLHS 1903系という実際の天文観測データを題材に、渦モデル・内包ホワイトホール仮説を加え、仮説の具体性をさらに高めた。</p>
+    <p>LHS 1903系の「逆転」は異常ではなく、ホワイトホールの吐き出しと渦形成、そして各天体に内包されたホワイトホールのエントロピーパターンの差という、自然なプロセスの積み重ねの結果である可能性がある。</p>
+    <p>ダークマターが「見えないけど計測できる」ように、天体中心のホワイトホールもまた、いつか間接的に検証される日が来るかもしれない。</p>
+    <br>
+    <p class="closing" style="text-align:center; font-size:16px; color: var(--gold);">― 宇宙は素人の朝のチャットにも、ちゃんと付き合ってくれるらしい。Vol.3へ続く。</p>
+  </section>
+
+  <div class="divider"></div>
+
+  <footer>
+    <p>2026年4月　初稿</p>
+    <p>総指揮・総監督：クーロド　／　応援・発案：Dナーレ</p>
+    <p>校正補助：Claude（Anthropic）</p>
+    <p class="disclaimer">※ 本稿の内容は思考実験であり、査読済み学術論文ではありません。</p>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vol.3 ブラックホールは「穴」ではなく「天体」である</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Share+Tech+Mono&family=Zen+Old+Mincho:wght@400;700&display=swap');
+
+:root {
+  --bg: #06060f;
+  --surface: #0a0a18;
+  --gold: #c8a84c;
+  --gold-dim: rgba(200,168,76,0.12);
+  --gold-line: rgba(200,168,76,0.2);
+  --text: #d8d0c0;
+  --dim: rgba(216,208,192,0.5);
+  --cyan: #40c8e8;
+  --orange: #e87840;
+  --accent: #a0b8e0;
+  --blue: #4488ff;
+  --green: #44cc88;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Shippori Mincho B1', serif;
+  line-height: 1.9;
+  font-size: clamp(14px, 1.6vw, 16px);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 40% 7%,  rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 68% 30%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 12%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 52%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 58% 68%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 4%  78%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 91% 62%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 35% 85%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 78% 88%, rgba(255,255,255,0.2) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── COVER ── */
+#cover {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  overflow: hidden;
+}
+#cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(20,10,60,0.5) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 50% 85%, rgba(60,20,0,0.1) 0%, transparent 60%);
+  z-index: 0;
+}
+#cover-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  opacity: 0.4;
+  z-index: 0;
+}
+.cover-content { position: relative; z-index: 2; }
+
+.vol-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(10px, 1.2vw, 12px);
+  letter-spacing: 0.4em;
+  color: var(--gold);
+  opacity: 0.7;
+  margin-bottom: 20px;
+}
+.cover-series {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(11px, 1.4vw, 13px);
+  letter-spacing: 0.2em;
+  color: var(--dim);
+  margin-bottom: 16px;
+}
+.cover-title {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(24px, 4.5vw, 48px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #e8e0d0;
+  text-shadow: 0 0 40px rgba(200,168,76,0.4), 0 0 80px rgba(60,40,180,0.2);
+  line-height: 1.35;
+  margin-bottom: 12px;
+}
+.cover-sub {
+  font-size: clamp(12px, 1.5vw, 14px);
+  color: var(--accent);
+  opacity: 0.75;
+  letter-spacing: 0.12em;
+  margin-bottom: 32px;
+}
+.cover-proposition {
+  display: inline-block;
+  border: 1px solid var(--gold-line);
+  border-radius: 4px;
+  padding: 14px 24px;
+  background: rgba(200,168,76,0.05);
+  font-size: clamp(11px, 1.4vw, 14px);
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  line-height: 1.8;
+  margin-bottom: 36px;
+  max-width: 560px;
+  backdrop-filter: blur(4px);
+}
+.cover-credit {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(9px, 1vw, 11px);
+  color: rgba(200,168,76,0.3);
+  letter-spacing: 0.15em;
+  line-height: 2;
+}
+.scroll-hint {
+  position: absolute;
+  bottom: 32px; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: rgba(200,168,76,0.25);
+  letter-spacing: 0.3em;
+  animation: pulse 2.5s ease-in-out infinite;
+  z-index: 2;
+}
+@keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:0.7} }
+
+/* ── CONTENT ── */
+#content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(40px,6vw,80px) clamp(20px,4vw,40px);
+}
+
+.note-box {
+  border-left: 2px solid var(--gold-line);
+  padding: 12px 18px;
+  background: var(--gold-dim);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.88em;
+  color: var(--dim);
+  margin-bottom: 48px;
+  line-height: 1.8;
+}
+
+.section { margin-bottom: 56px; }
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gold-line);
+}
+.section-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(11px,1.2vw,13px);
+  color: var(--gold);
+  opacity: 0.6;
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+}
+.section-title {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(16px,2.2vw,21px);
+  font-weight: 700;
+  color: #e8e0d0;
+  letter-spacing: 0.08em;
+}
+
+p { margin-bottom: 1.2em; color: var(--text); }
+strong { color: #e8e0c8; font-weight: 600; }
+hr { border: none; border-top: 1px solid var(--gold-line); margin: 40px 0; }
+
+/* Flow */
+.flow {
+  background: var(--surface);
+  border: 1px solid var(--gold-line);
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin: 20px 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(11px,1.2vw,13px);
+  color: var(--dim);
+  line-height: 2.2;
+}
+.flow-item { display: flex; align-items: flex-start; gap: 10px; }
+.flow-arrow { color: var(--gold); opacity: 0.5; flex-shrink: 0; }
+.flow-label { color: var(--text); }
+.flow-note { color: var(--dim); font-size: 0.88em; }
+.flow-sep { border-top: 1px dashed rgba(200,168,76,0.15); margin: 10px 0; }
+
+/* BH structure visual */
+.bh-structure {
+  background: var(--surface);
+  border: 1px solid var(--gold-line);
+  border-radius: 6px;
+  padding: 24px;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.bh-layer {
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 10px 16px;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(10px,1.1vw,12px);
+  position: relative;
+  margin: 3px 0;
+}
+.bh-layer-note {
+  font-size: 0.82em;
+  opacity: 0.6;
+  margin-top: 2px;
+}
+.layer-ergo { border-color: rgba(100,160,255,0.3); color: var(--accent); background: rgba(100,160,255,0.05); }
+.layer-eh   { border-color: rgba(80,120,220,0.4);  color: #6688ff; background: rgba(80,120,220,0.07); max-width: 340px; }
+.layer-sing { border-color: rgba(200,168,76,0.4);  color: var(--gold); background: rgba(200,168,76,0.07); max-width: 220px; }
+.bh-arrow { color: rgba(200,168,76,0.35); font-size: 1.2em; line-height: 1.4; }
+.bh-disk {
+  margin-top: 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(10px,1.1vw,12px);
+  color: var(--orange);
+  opacity: 0.8;
+  text-align: center;
+}
+
+/* Jet diagram */
+.jet-diagram {
+  background: var(--surface);
+  border: 1px solid var(--gold-line);
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(11px,1.2vw,13px);
+  gap: 2px;
+}
+.jet-up   { color: var(--cyan); }
+.jet-disk { color: var(--orange); letter-spacing: 0.05em; }
+.jet-bh   { color: #8888ff; }
+.jet-down { color: var(--cyan); }
+.jet-note { font-size: 0.82em; color: var(--dim); margin-left: 8px; }
+
+/* Blazar */
+.blazar-visual {
+  background: var(--surface);
+  border: 1px solid var(--gold-line);
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(10px,1.1vw,12px);
+  color: var(--dim);
+  gap: 3px;
+  line-height: 1.6;
+}
+.blazar-ring { color: var(--orange); }
+.blazar-jet  { color: var(--cyan); }
+.blazar-earth{ color: var(--accent); }
+
+/* Mystery table */
+.mystery-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 0.9em;
+}
+.mystery-table th {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8em;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  opacity: 0.6;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--gold-line);
+  text-transform: uppercase;
+}
+.mystery-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  vertical-align: top;
+  line-height: 1.7;
+}
+.mystery-table td:first-child { color: var(--text); }
+.badge-unknown  { display:inline-block; padding:2px 8px; border-radius:3px; font-family:'Share Tech Mono',monospace; font-size:0.8em; background:rgba(255,80,60,0.1); color:#ff9977; border:1px solid rgba(255,80,60,0.25); }
+.badge-partial  { display:inline-block; padding:2px 8px; border-radius:3px; font-family:'Share Tech Mono',monospace; font-size:0.8em; background:rgba(200,168,76,0.1); color:var(--gold); border:1px solid var(--gold-line); }
+
+/* Connection cards */
+.connect-card {
+  border: 1px solid var(--gold-line);
+  border-radius: 6px;
+  padding: 16px 20px;
+  background: rgba(200,168,76,0.04);
+  margin-bottom: 14px;
+}
+.connect-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(10px,1.1vw,12px);
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+.connect-body { font-size: 0.92em; color: var(--dim); line-height: 1.8; }
+
+/* Closing */
+.closing-quote {
+  text-align: center;
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(13px,1.6vw,15px);
+  color: var(--dim);
+  font-style: italic;
+  letter-spacing: 0.08em;
+  line-height: 2;
+  margin: 40px 0;
+  padding: 24px;
+  border-top: 1px solid var(--gold-line);
+  border-bottom: 1px solid var(--gold-line);
+}
+
+footer {
+  text-align: center;
+  padding: 40px 24px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(9px,1vw,11px);
+  color: rgba(200,168,76,0.25);
+  letter-spacing: 0.15em;
+  line-height: 2.2;
+  border-top: 1px solid var(--gold-line);
+}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<section id="cover">
+  <canvas id="cover-canvas"></canvas>
+  <div class="cover-content">
+    <div class="vol-badge">Vol. 03 · 2026</div>
+    <div class="cover-series">モブが朝のチャットで考えてしまった宇宙の話</div>
+    <h1 class="cover-title">ブラックホールは<br>「穴」ではなく<br>「天体」である</h1>
+    <p class="cover-sub">Black Hole is not a Hole · It is a Celestial Body</p>
+    <div class="cover-proposition">
+      生まれ、構造を持ち、眠り、目覚め、<br>
+      宇宙全体を変える ― それがBHの正体だ。
+    </div>
+    <div class="cover-credit">
+      総指揮・総監督：クーロド　／　応援・発案：Dナーレ<br>
+      校正補助：Claude（Anthropic）
+    </div>
+  </div>
+  <div class="scroll-hint">▼ &nbsp; SCROLL &nbsp; ▼</div>
+</section>
+
+<!-- CONTENT -->
+<main id="content">
+
+  <div class="note-box">
+    ※ 本稿は物理学の専門家によるものではありません。朝の雑談から生まれた思考実験です。Vol.1（入れ子宇宙・循環構造仮説）、Vol.2（LHS 1903系・逆転惑星仮説）の続編として、ブラックホールの性質を正確に理解した上で、仮説の精度をさらに上げることを試みます。
+  </div>
+
+  <!-- §1 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <h2 class="section-title">はじめに ― みんな「BH」を誤解している</h2>
+    </div>
+    <p>「ブラックホール」という言葉を知らない人はほぼいない。しかし「天体である」と認識している人は意外と少ない。</p>
+    <p>多くの人のイメージはこうだ。宇宙に突然開いた「穴」。何でも吸い込む「入口」。SF映画に出てくる渦巻く暗闇。</p>
+    <p>しかし実際のブラックホール（以下BH）は<strong>れっきとした天体</strong>である。質量を持ち、重力を持ち、回転し、時に眠り、時に目覚め、周囲の銀河全体に影響を与える。「穴」という言葉が定着してしまったために、その実体が見えにくくなっている。</p>
+    <p>本稿ではまず「BHとは何者か」を正確に理解し、その上でVol.1・2で構築した仮説との接続を試みる。</p>
+  </div>
+
+  <!-- §2 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <h2 class="section-title">BHはどうやって生まれるか</h2>
+    </div>
+    <p>BHが生まれるルートは主に三つある。</p>
+
+    <p><strong>① 大質量星の死（最も一般的）</strong></p>
+    <div class="flow">
+      <div class="flow-item"><span class="flow-label">太陽の20〜30倍以上の重い星</span></div>
+      <div class="flow-item"><span class="flow-arrow">↓</span><span class="flow-label">一生の終わりに「超新星爆発」</span></div>
+      <div class="flow-item"><span class="flow-arrow">↓</span><span class="flow-label">爆発後に残ったコアが重力に勝てなくなり収縮</span></div>
+      <div class="flow-item"><span class="flow-arrow">↓</span><span class="flow-label" style="color:var(--gold)">ブラックホール誕生</span></div>
+    </div>
+
+    <p><strong>② 中性子星どうしの合体</strong></p>
+    <p>超新星爆発後に残る「中性子星」がペアを組んでいる場合、数十億年かけて接近し最終的に合体する。その際に重力波が発生し、質量の合計が限界を超えるとBHになる。</p>
+
+    <p><strong>③ 原始ブラックホール（仮説）</strong></p>
+    <p>ビッグバン直後の極めて高密度な宇宙で、密度のムラが直接収縮してできたと考えられる。まだ直接確認はされていないが、ダークマターの候補としても注目されている。</p>
+  </div>
+
+  <!-- §3 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <h2 class="section-title">BHの構造 ― 「穴」ではなく「層」がある</h2>
+    </div>
+    <p>BHは「穴がポカンと開いている」ではなく、複数の<strong>層構造</strong>を持つ天体である。</p>
+
+    <div class="bh-structure">
+      <div class="bh-layer layer-ergo">
+        エルゴ球
+        <div class="bh-layer-note">BHの自転が時空を引きずる領域　静止不可能</div>
+      </div>
+      <div class="bh-arrow">↕</div>
+      <div class="bh-layer layer-eh">
+        事象の地平線（イベント・ホライズン）
+        <div class="bh-layer-note">光すら脱出できない境界　情報も物質も出てこない</div>
+      </div>
+      <div class="bh-arrow">↕</div>
+      <div class="bh-layer layer-sing">
+        特異点
+        <div class="bh-layer-note">密度が無限大　物理法則が破綻　未知の領域</div>
+      </div>
+      <div class="bh-disk">↕　降着円盤（赤道面）　渦巻くガス・塵</div>
+    </div>
+
+    <p><strong>特異点</strong>：BHの中心。密度が理論上「無限大」になる点。現代物理学はここで計算が破綻する。何があるか誰も知らない。</p>
+    <p><strong>事象の地平線</strong>：光すら脱出できない境界線。「穴」のイメージはここから来ているが、実際には「境界面」である。</p>
+    <p><strong>エルゴ球</strong>：事象の地平線の外側にある特殊領域。回転するBH特有で、時空そのものがBHと一緒に引きずられて回転する。<strong>重要なのはここからエネルギーを取り出せること</strong>だ。</p>
+  </div>
+
+  <!-- §4 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <h2 class="section-title">BHのエネルギー源は「穴の中」ではない</h2>
+    </div>
+    <p>ここが最も誤解されている点である。BHは「穴の中から」エネルギーを出しているのではない。エネルギーの源は<strong>穴の外側、特にエルゴ球と降着円盤</strong>にある。</p>
+
+    <div class="flow">
+      <div class="flow-item"><span style="color:var(--orange);font-weight:600">【エネルギー源①】降着円盤の摩擦エネルギー</span></div>
+      <div class="flow-item"><span class="flow-arrow">↓</span><span class="flow-label">ガスが渦を巻きながら落下・高速衝突・摩擦</span></div>
+      <div class="flow-item"><span class="flow-arrow">↓</span><span class="flow-label">太陽の数兆倍のエネルギーを放射</span></div>
+      <div class="flow-sep"></div>
+      <div class="flow-item"><span style="color:var(--cyan);font-weight:600">【エネルギー源②】BH自転エネルギー（BZ機構）</span></div>
+      <div class="flow-item"><span class="flow-arrow">↓</span><span class="flow-label">外部の磁場がエルゴ球から回転エネルギーを「絞り出す」</span></div>
+      <div class="flow-item"><span class="flow-arrow">↓</span><span class="flow-label">極方向（上下）にジェットとして放出</span></div>
+    </div>
+    <p>つまり「穴の内部」は出口ではなく、<strong>エネルギーを生み出す構造は穴の周囲に存在する</strong>。</p>
+  </div>
+
+  <!-- §5 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 05</span>
+      <h2 class="section-title">相対論的ジェット ― なぜ細く、なぜ遠くまで届くのか</h2>
+    </div>
+    <p>BHの極方向（自転軸の上下）から、光速の99%以上で噴き出す高温プラズマの流れ。これが「相対論的ジェット」である。</p>
+
+    <div class="jet-diagram">
+      <div class="jet-up">↑　ジェット（光速の99%以上）</div>
+      <div class="jet-up" style="opacity:0.6;font-size:0.9em">│</div>
+      <div class="jet-disk">━━━━━━━━━　← 降着円盤（壁）</div>
+      <div class="jet-bh" style="padding:4px 0">[　BH　]</div>
+      <div class="jet-disk">━━━━━━━━━　← 降着円盤（壁）</div>
+      <div class="jet-down" style="opacity:0.6;font-size:0.9em">│</div>
+      <div class="jet-down">↓　ジェット（対称）</div>
+    </div>
+
+    <p><strong>なぜ縦（極方向）から出るのか</strong>：降着円盤という分厚いガスの壁が赤道面を塞いでいるため、抵抗が最小の極方向にしか出口がない。構造的必然だ。</p>
+    <p><strong>なぜ細く絞られるのか（磁気ピンチ効果）</strong>：ジェット内を流れる電流が磁場を作り、その磁場がジェットを内側に締め付ける。外への圧力と磁気圧力が釣り合い、細いビームを維持する。</p>
+    <p><strong>なぜ数百万光年も維持されるのか</strong>：これが現代物理学の<strong>未解明問題</strong>だ。維持できるエネルギーがある事実は観測されているが、その補給源と均衡の理由は説明できていない。</p>
+  </div>
+
+  <!-- §6 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 06</span>
+      <h2 class="section-title">BHは「変わる」「眠る」「目覚める」</h2>
+    </div>
+    <p>BHは静的な天体ではない。状態が変化することが観測されている。</p>
+
+    <p><strong>チェンジング・ルック現象</strong></p>
+    <div class="flow">
+      <div class="flow-item"><span style="color:var(--gold)">クエサー（全開）</span></div>
+      <div class="flow-item"><span class="flow-arrow">↕</span><span class="flow-note">数ヶ月〜数年で切り替わる（理論予測の何万倍も速い）</span></div>
+      <div class="flow-item"><span style="color:var(--dim)">休眠BH（消灯）</span></div>
+    </div>
+    <p>「Mrk 1018」という天体は45年間にわたって観測され、クエサーから休眠状態まで<strong>すべての段階を行き来する</strong>完全な周期変化が記録された。</p>
+
+    <p><strong>1億年の眠りから覚めたBH（2026年4月観測）</strong></p>
+    <p>銀河J1007+3540の中心BHが、約1億年間ジェットを止めていたのち突然再起動した様子が観測された。古いジェットの残骸と新しいジェットが同時に存在しており、BHのオン・オフサイクルを示す貴重な記録となった。</p>
+
+    <p><strong>食べすぎて眠るBH</strong></p>
+    <p>初期宇宙で「食べすぎて休眠中」の超大質量BHも発見されている。クマが冬眠前に食べすぎるように、大量摂取後に活動が止まると考えられている。</p>
+  </div>
+
+  <!-- §7 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 07</span>
+      <h2 class="section-title">ブレーザー ― 地球に向けられた砲口</h2>
+    </div>
+    <p>ジェットが地球方向10度以内を向いている場合、そのBH系を「ブレーザー」と呼ぶ。相対論的ビーミングという効果で明るさが30倍以上に増幅されて見える。</p>
+
+    <div class="blazar-visual">
+      <div class="blazar-ring">　　● ● ● ● ●</div>
+      <div class="blazar-ring">　● ●　　　　　● ●</div>
+      <div class="blazar-ring">　● ●　　　　　　　● ●　← ドーナツ型磁場</div>
+      <div class="blazar-jet" style="text-align:center">　↑　ジェット</div>
+      <div class="blazar-ring">　● ●　　　　　　　● ●</div>
+      <div class="blazar-ring">　　● ●　　　　　● ●</div>
+      <div class="blazar-ring">　　　　● ● ● ● ●</div>
+      <div class="blazar-earth" style="text-align:center;margin-top:6px">↓　地球方向</div>
+      <div style="margin-top:8px;font-size:0.85em;color:var(--dim);text-align:center">2025年8月「PKS 1424+240」撮影成功　通称「サウロンの目」</div>
+    </div>
+
+    <p>2025年8月、ブレーザー「PKS 1424+240」のジェット根元を直接撮影することに成功した。15年分の観測データを合成した人類初の画像は、ドーナツ型の磁場構造が映し出された。</p>
+  </div>
+
+  <!-- §8 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 08</span>
+      <h2 class="section-title">既存理論が説明できない謎</h2>
+    </div>
+    <p>BHは最も研究されている天体のひとつだが、核心に近づくほど謎が深まる。</p>
+    <table class="mystery-table">
+      <thead>
+        <tr><th>謎</th><th>状況</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>特異点の内側に何があるか</td><td><span class="badge-unknown">完全に未知</span></td></tr>
+        <tr><td>なぜジェットが細く維持されるのか</td><td><span class="badge-partial">部分的に解明・長距離維持は未解明</span></td></tr>
+        <tr><td>なぜジェットが出るBHと出ないBHがあるのか</td><td><span class="badge-unknown">未解明</span></td></tr>
+        <tr><td>チェンジング・ルックがなぜ短期間で起きるのか</td><td><span class="badge-unknown">未解明</span></td></tr>
+        <tr><td>BHに落ちた情報はどこへ行くのか（情報保存問題）</td><td><span class="badge-unknown">未解明</span></td></tr>
+        <tr><td>ダークマターの正体</td><td><span class="badge-unknown">未解明</span></td></tr>
+      </tbody>
+    </table>
+    <p>玉ねぎの皮を剥くように謎が重なり、中心に近づくほど何もわからなくなる。それがBHという天体の正直な姿である。</p>
+  </div>
+
+  <!-- §9 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 09</span>
+      <h2 class="section-title">Vol.1・2仮説との接続</h2>
+    </div>
+    <p>以上のBHの性質を踏まえた上で、Vol.1・2で構築した仮説と照合する。</p>
+
+    <div class="connect-card">
+      <div class="connect-title">接続点① ジェット維持エネルギーの謎 × 他階層からの供給</div>
+      <div class="connect-body">なぜジェットが数百万光年もの距離を維持できるのか。Vol.1の「ホワイトホール＝給水口」モデルでは、別階層の宇宙からのエネルギー供給がその答えになりうる。エネルギー保存則を破らずに長距離維持を説明できる可能性がある。</div>
+    </div>
+    <div class="connect-card">
+      <div class="connect-title">接続点② チェンジング・ルック現象 × エントロピーの循環</div>
+      <div class="connect-body">BHが数ヶ月で点灯・消灯を繰り返す理由は既存理論では説明が難しい。Vol.1のエントロピー循環モデルでは、吸収した物質のエントロピーパターンによって放出のタイミングが決まると考えると、周期的な変化の説明に接続できる。</div>
+    </div>
+    <div class="connect-card">
+      <div class="connect-title">接続点③ 情報保存問題 × ダークマターとして次の宇宙へ</div>
+      <div class="connect-body">BHに落ちた情報はどこへ行くのか。Vol.1では「情報はダークマターとして次の宇宙階層に引き継がれる」と提示した。ホーキングの情報保存問題に対するシンプルな答えである。</div>
+    </div>
+    <div class="connect-card">
+      <div class="connect-title">接続点④ 渦の内側の高密度物質 × 中心WHの回転継承</div>
+      <div class="connect-body">BHが回転しながら吸収する → 反転したWHも回転を引き継ぐ → その回転が渦を形成し中心に高密度物質を集める、という流れでVol.2の渦モデルを補強できる。</div>
+    </div>
+
+    <div class="flow" style="margin-top:20px">
+      <div class="flow-item"><span style="color:var(--accent)">BHの性質（本稿）</span></div>
+      <div class="flow-item"><span class="flow-arrow">↓</span><span class="flow-note">接続</span></div>
+      <div class="flow-item"><span class="flow-label">Vol.1：ホワイトホール循環・エントロピー移転・情報保存</span></div>
+      <div class="flow-item"><span class="flow-label">Vol.2：渦モデル・LHS 1903系の逆転構造</span></div>
+      <div class="flow-item"><span class="flow-arrow">↓</span><span class="flow-note">統合</span></div>
+      <div class="flow-item"><span style="color:var(--gold)">入れ子宇宙・循環構造仮説（精度向上版）</span></div>
+    </div>
+  </div>
+
+  <!-- §10 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 10</span>
+      <h2 class="section-title">おわりに</h2>
+    </div>
+    <p>BHは「穴」ではない。生まれ、構造を持ち、エネルギーを生み出し、眠り、目覚め、周囲の宇宙全体を変える<strong>天体</strong>である。</p>
+    <p>そしてその天体が抱える未解明の謎の数々は、Vol.1・2で提示した仮説が戦う相手としてちょうどいいサイズをしている。</p>
+    <p>数式はない。検証はこれからだ。しかし「既存理論が詰まっている場所」と「仮説が提案できる場所」が一致し始めているのは、偶然ではないかもしれない。</p>
+  </div>
+
+  <div class="closing-quote">
+    ― BHは宇宙最大の謎であり、<br>
+    おそらく宇宙の構造そのものの鍵である。<br>
+    Vol.4へ続く。―
+  </div>
+
+</main>
+
+<footer>
+  2026年4月　初稿<br>
+  総指揮・総監督：クーロド　／　応援・発案：Dナーレ<br>
+  校正補助：Claude（Anthropic）<br><br>
+  ※ 本稿の内容は思考実験であり、査読済み学術論文ではありません。<br>
+  数式なし。でも既存物理に波紋を投げかけています。
+</footer>
+
+<script>
+const cv = document.getElementById('cover-canvas');
+const ctx = cv.getContext('2d');
+const TAU = Math.PI * 2;
+let t = 0;
+
+function resize() {
+  cv.width  = cv.offsetWidth  * devicePixelRatio;
+  cv.height = cv.offsetHeight * devicePixelRatio;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Stars
+const stars = Array.from({length:220}, () => ({
+  x: Math.random(), y: Math.random(),
+  s: 0.3 + Math.random() * 1.3,
+  a: 0.2 + Math.random() * 0.6,
+  tw: Math.random() * TAU,
+}));
+
+// Disk particles
+const dparts = Array.from({length:160}, () => ({
+  angle: Math.random() * TAU,
+  r: 0.13 + Math.random() * 0.28,
+  speed: (0.003 + Math.random() * 0.005) * (Math.random()<0.5?1:-1),
+  size: 0.4 + Math.random() * 1.8,
+  alpha: 0.3 + Math.random() * 0.6,
+  hue: 20 + Math.random() * 35,
+}));
+
+function draw() {
+  const W = cv.width, H = cv.height;
+  const cx = W/2, cy = H/2;
+  const md = Math.min(W, H);
+  ctx.clearRect(0,0,W,H);
+  t += 0.009;
+
+  // Stars
+  stars.forEach(s => {
+    const tw = Math.sin(t*1.3 + s.tw) * 0.2;
+    ctx.beginPath();
+    ctx.arc(s.x*W, s.y*H, s.s, 0, TAU);
+    ctx.fillStyle = `rgba(200,210,255,${s.a + tw})`;
+    ctx.fill();
+  });
+
+  // Disk rings
+  for (let i = 0; i < 10; i++) {
+    const r = md * (0.16 + i * 0.03);
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, r, r*0.2, t*0.08, 0, TAU);
+    ctx.strokeStyle = `hsla(${25-i*1.5},85%,55%,${0.04 + (10-i)*0.007})`;
+    ctx.lineWidth = (10-i)*0.5 + 0.4;
+    ctx.stroke();
+  }
+
+  // Disk particles
+  dparts.forEach(p => {
+    p.angle += p.speed;
+    const r = p.r * md;
+    const x = cx + Math.cos(p.angle) * r;
+    const y = cy + Math.sin(p.angle) * r * 0.2;
+    ctx.beginPath();
+    ctx.arc(x, y, p.size, 0, TAU);
+    ctx.fillStyle = `hsla(${p.hue},85%,70%,${p.alpha})`;
+    ctx.fill();
+  });
+
+  // Jets
+  const jl = md * 0.42;
+  [1,-1].forEach(dir => {
+    const jg = ctx.createLinearGradient(cx, cy, cx, cy + dir*jl);
+    jg.addColorStop(0, 'rgba(100,190,255,0.55)');
+    jg.addColorStop(0.4, 'rgba(60,130,255,0.18)');
+    jg.addColorStop(1, 'rgba(40,80,200,0)');
+    const bhr = md * 0.08;
+    ctx.beginPath();
+    ctx.moveTo(cx - bhr*0.06, cy);
+    ctx.lineTo(cx + bhr*0.06, cy);
+    ctx.lineTo(cx + bhr*0.28, cy + dir*jl);
+    ctx.lineTo(cx - bhr*0.28, cy + dir*jl);
+    ctx.closePath();
+    ctx.fillStyle = jg;
+    ctx.fill();
+  });
+
+  // BH
+  const bhr = md * 0.085;
+  const bg = ctx.createRadialGradient(cx,cy,0,cx,cy,bhr*2.2);
+  bg.addColorStop(0,'rgba(0,0,0,1)');
+  bg.addColorStop(0.55,'rgba(0,0,8,0.92)');
+  bg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.beginPath(); ctx.arc(cx,cy,bhr*2.2,0,TAU);
+  ctx.fillStyle=bg; ctx.fill();
+
+  // EH glow
+  const ehg = ctx.createRadialGradient(cx,cy,bhr*0.75,cx,cy,bhr*1.3);
+  ehg.addColorStop(0,'rgba(60,100,255,0)');
+  ehg.addColorStop(0.5,`rgba(60,100,255,${0.28+Math.sin(t)*0.08})`);
+  ehg.addColorStop(1,'rgba(60,100,255,0)');
+  ctx.beginPath(); ctx.arc(cx,cy,bhr,0,TAU);
+  ctx.strokeStyle=ehg; ctx.lineWidth=bhr*0.28; ctx.stroke();
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>

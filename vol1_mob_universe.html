@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>モブの宇宙論 Vol.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Shippori+Mincho:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a12;
+    --bg2: #0f0f1e;
+    --surface: #13132a;
+    --border: #2a2a50;
+    --accent: #7eb8f7;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --text: #dde3f0;
+    --text-muted: #7a8299;
+    --gold: #f0c060;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Serif JP', serif;
+    line-height: 1.9;
+    font-size: 16px;
+    overflow-x: hidden;
+  }
+
+  /* 星空背景 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 90%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 50%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 35%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 70%, rgba(255,255,255,0.3) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ヘッダー */
+  header {
+    padding: 80px 0 60px;
+    text-align: center;
+    position: relative;
+  }
+
+  .vol-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 6px 16px;
+    margin-bottom: 32px;
+    text-transform: uppercase;
+    animation: fadeIn 1s ease both;
+  }
+
+  h1 {
+    font-family: 'Shippori Mincho', serif;
+    font-size: clamp(22px, 5vw, 36px);
+    font-weight: 700;
+    line-height: 1.5;
+    color: #fff;
+    margin-bottom: 16px;
+    animation: fadeIn 1s ease 0.2s both;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+    animation: fadeIn 1s ease 0.4s both;
+  }
+
+  .credits {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    animation: fadeIn 1s ease 0.6s both;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), var(--accent), var(--border), transparent);
+    margin: 40px 0;
+    animation: fadeIn 1s ease 0.8s both;
+  }
+
+  /* 注記 */
+  .note-box {
+    border-left: 3px solid var(--accent2);
+    padding: 16px 20px;
+    background: rgba(167,139,250,0.05);
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 48px;
+    animation: fadeIn 1s ease 1s both;
+  }
+
+  /* セクション */
+  section {
+    margin-bottom: 56px;
+    animation: slideUp 0.8s ease both;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .section-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    white-space: nowrap;
+  }
+
+  h2 {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+    flex: 1;
+  }
+
+  h3 {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 16px;
+    color: var(--accent);
+    margin: 28px 0 12px;
+  }
+
+  p {
+    margin-bottom: 16px;
+    color: var(--text);
+    font-size: 15px;
+  }
+
+  /* 図表ボックス */
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 32px 24px;
+    margin: 24px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    text-align: center;
+    line-height: 2;
+  }
+
+  .diagram-caption {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* 入れ子図 */
+  .nested-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 24px 0;
+  }
+
+  .nest-layer {
+    border-radius: 6px;
+    padding: 20px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    position: relative;
+  }
+
+  .nest-1 {
+    background: rgba(126,184,247,0.08);
+    border: 2px solid rgba(126,184,247,0.5);
+    color: var(--accent);
+    padding: 28px 32px;
+  }
+
+  .nest-2 {
+    background: rgba(167,139,250,0.08);
+    border: 2px solid rgba(167,139,250,0.5);
+    color: var(--accent2);
+    padding: 22px 26px;
+    margin: 10px;
+  }
+
+  .nest-3 {
+    background: rgba(52,211,153,0.08);
+    border: 2px solid rgba(52,211,153,0.5);
+    color: var(--accent3);
+    padding: 16px 20px;
+    margin: 10px;
+  }
+
+  /* リスト */
+  ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 16px;
+  }
+
+  ul li {
+    padding: 8px 0 8px 24px;
+    position: relative;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  ol {
+    padding-left: 24px;
+    margin-bottom: 16px;
+  }
+
+  ol li {
+    padding: 6px 0;
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  /* コードブロック */
+  .code-block {
+    background: #080810;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    padding: 20px 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--accent3);
+    line-height: 2;
+    margin: 20px 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* テーブル */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 24px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  thead tr {
+    background: rgba(126,184,247,0.12);
+  }
+
+  th {
+    padding: 12px 16px;
+    text-align: left;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    border-bottom: 2px solid var(--accent);
+    font-weight: 400;
+  }
+
+  td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  /* フロー図 */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin: 24px 0;
+  }
+
+  .flow-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 12px 28px;
+    font-size: 14px;
+    color: var(--text);
+    min-width: 240px;
+    text-align: center;
+    border-radius: 3px;
+  }
+
+  .flow-item.highlight {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .flow-arrow {
+    font-size: 20px;
+    color: var(--text-muted);
+    padding: 4px 0;
+    line-height: 1;
+  }
+
+  /* おわりに */
+  .closing {
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+
+  /* フッター */
+  footer {
+    text-align: center;
+    padding: 48px 0 64px;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    line-height: 2;
+  }
+
+  .disclaimer {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 16px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  section:nth-child(1) { animation-delay: 0.1s; }
+  section:nth-child(2) { animation-delay: 0.2s; }
+  section:nth-child(3) { animation-delay: 0.3s; }
+  section:nth-child(4) { animation-delay: 0.4s; }
+  section:nth-child(5) { animation-delay: 0.5s; }
+  section:nth-child(6) { animation-delay: 0.6s; }
+  section:nth-child(7) { animation-delay: 0.7s; }
+
+  @media (max-width: 600px) {
+    header { padding: 48px 0 40px; }
+    h2 { font-size: 17px; }
+    .nest-1 { padding: 16px 18px; }
+    .nest-2 { padding: 14px 14px; }
+    .nest-3 { padding: 10px 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="vol-badge">Vol. 01</div>
+    <h1>モブが朝のチャットで<br>考えてしまった宇宙の話</h1>
+    <p class="subtitle">― エーテル・重力子・ダークマター　入れ子宇宙の循環構造仮説 ―</p>
+    <p class="credits">総指揮・総監督：クーロド　／　応援・発案：Dナーレ　／　校正補助：Claude（AI）</p>
+  </header>
+
+  <div class="divider"></div>
+
+  <div class="note-box">
+    ※ 本稿は物理学の専門家によるものではありません。朝の雑談から生まれた思考実験です。でも意外と既存理論と戦えそうなので、記録として残しておきます。笑
+  </div>
+
+  <!-- §1 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <h2>はじめに ― なぜ考えたのか</h2>
+    </div>
+    <p>マイケルソン＝モーリーの実験からアインシュタインの一般相対性理論まで話が及んだとき、ふと気づいた。アインシュタイン自身が「エーテルなしの空間は考えることもできない」と述べていたのだ（『エーテルと相対論』1920年講演）。</p>
+    <p>ただしそれは19世紀的な「光の媒質としての物質」ではなく、「物理的性質を持つ時空そのもの」としてのエーテルである。この認識から出発し、ダークマター・ダークエネルギー・ブラックホール・超弦理論をつなぐ一つの仮説的骨格を組み立ててみた。</p>
+  </section>
+
+  <!-- §2 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <h2>基本仮説 ― 二重構造モデル</h2>
+    </div>
+    <p>本仮説の出発点は、時空の物理的性質を担う何か（便宜上「エーテル」と呼ぶ）がもともと均一に存在していたという仮定である。質量が生じると重力が発生し、時空に歪みが生まれる。このとき以下の分離が起きると考える。</p>
+    <ul>
+      <li>歪みの外側：重力子として外へ押し出され、ダークマターの濃集域を形成する</li>
+      <li>歪みの内側：エーテルとして残留し、慣性・密度の基盤として機能する</li>
+      <li>両者は分離後も干渉し合い、互いに影響を及ぼし続ける</li>
+      <li>ダークエネルギーは重力と反発する ＝ 重力に「触れられない」性質を持つ</li>
+    </ul>
+
+    <!-- 入れ子図 -->
+    <div class="nested-diagram">
+      <div class="nest-1">
+        ダークエネルギー（反発層）
+        <div class="nest-2">
+          重力子（歪み外縁）
+          <div class="nest-3">
+            エーテル（残留層）
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="diagram-caption">▲ 図1：二重構造の模式図</p>
+
+    <p>この構造において重力はエーテルと重力子を媒介し、ダークエネルギーは反発することで外縁から宇宙の膨張を駆動する。宇宙の加速膨張という観測事実とも矛盾しない。</p>
+  </section>
+
+  <!-- §3 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <h2>入れ子構造 ― 弦から枝葉へ</h2>
+    </div>
+    <p>本仮説は超弦理論のブレーンワールド仮説と接続する。大元の「弦」が強い重力とエーテルを持ち、階層を経るごとにエーテルが残留・重力子が外へ押し出され、末端の枝葉（我々の宇宙）では重力が極端に弱くなる。</p>
+
+    <div class="flow">
+      <div class="flow-item highlight">弦（大元）― 最強の重力</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">宇宙A（強い重力）</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">宇宙B（中程度の重力）</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item highlight">宇宙C（弱い重力）← 我々はここ</div>
+    </div>
+    <p class="diagram-caption">▲ 図2：入れ子構造</p>
+
+    <p>これは物理学の「重力階層問題」―― なぜ重力だけが他の三力より極端に弱いのか ―― に対する直感的な答えを与える。末端の枝葉ほど重力は希薄になるからだ。</p>
+  </section>
+
+  <!-- §4 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <h2>基本単位の構造 ― グルーオン八配置</h2>
+    </div>
+    <p>宇宙の基本単位として以下の構造を仮定する。エントロピー＋とエントロピー－を縦線で隔て、それぞれを丸で囲んだ点をグルーオンと見立てる。それを八方向に配置し、中心に弦を置き、全体を球体で囲む。</p>
+
+    <div class="code-block">    ●   ●   ●
+  ●   ●|●   ●
+    ●  [弦] ●
+  ●   ●|●   ●
+    ●   ●   ●
+（● = グルーオン、| = エントロピー境界）</div>
+    <p class="diagram-caption">▲ 図3：基本単位の概念図（断面）</p>
+
+    <p>グルーオンが八種類存在するというQCD（量子色力学）の事実と配置数が一致しているのは偶然ではないかもしれない。</p>
+  </section>
+
+  <!-- §5 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 05</span>
+      <h2>循環仮説 ― ブラックホールとホワイトホールの連動</h2>
+    </div>
+    <p>本仮説における宇宙は「水槽システム」として機能する。エントロピーが極値に達し「バランスの取れなくなったもの」がブラックホールに吸い込まれ、ホワイトホールから次の階層へ排出される。</p>
+    <ul>
+      <li>ブラックホール ＝ 排水口（エントロピー極値のものを吸収）</li>
+      <li>ホワイトホール ＝ 給水口（次の宇宙階層へ排出）</li>
+      <li>超新星爆発 ＝ 入れ子構造の入り口・接続点</li>
+      <li>排出されたものが次の宇宙のダークマター＝残響として現れる</li>
+    </ul>
+
+    <div class="flow">
+      <div class="flow-item">宇宙A：エントロピー増大</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item highlight">ブラックホール（排水口）</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item highlight">ホワイトホール（給水口）</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">宇宙B のダークマター（残響）</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">新たなエントロピー増大・繰り返し</div>
+    </div>
+    <p class="diagram-caption">▲ 図4：宇宙間循環の流れ</p>
+
+    <p>この循環によりエネルギーと情報は消えずに保存される。ホーキングの情報保存問題に対して、「情報はダークマターとして次の宇宙に引き継がれる」というシンプルな答えを提示する。</p>
+  </section>
+
+  <!-- §6 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 06</span>
+      <h2>既存理論との比較</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>既存理論</th>
+            <th>本仮説との対応点</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ペンローズ CCC理論</td>
+            <td>前宇宙の情報が次のビッグバンへ引き継がれる構造が一致。本仮説はその情報をダークマターと同定</td>
+          </tr>
+          <tr>
+            <td>スモーリン 宇宙自然選択理論</td>
+            <td>ブラックホール内部で新宇宙が生まれる点で入れ子構造と一致</td>
+          </tr>
+          <tr>
+            <td>ブレーンワールド仮説（超弦理論）</td>
+            <td>重力が高次元に漏れるため弱いという説明が「枝葉ほど重力が弱い」描像と対応</td>
+          </tr>
+          <tr>
+            <td>ホログラフィック宇宙論</td>
+            <td>情報が境界面に保存される構造がエントロピー境界（グルーオン配置）と共鳴</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- §7 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 07</span>
+      <h2>おわりに</h2>
+    </div>
+    <p>本仮説が一つの骨格で説明しようとしている未解決問題は以下の通りである。</p>
+    <ol>
+      <li>重力がなぜ他の三力より極端に弱いのか（重力階層問題）</li>
+      <li>ダークマターの正体は何か</li>
+      <li>ダークエネルギーがなぜ反重力的に働くのか</li>
+      <li>ブラックホールに落ちた情報はどこへ行くのか</li>
+      <li>宇宙の大規模構造（泡状・網目状）はなぜ生じるのか</li>
+    </ol>
+    <br>
+    <p class="closing">数式はない。検証もこれからだ。しかし朝のチャットから生まれた仮説がここまで既存理論と共鳴するとは思っていなかった。誰かが数式を与えてくれることを期待しながら、本稿をインターネットの海に放流する。</p>
+    <br>
+    <p class="closing" style="text-align:center; font-size:16px; color: var(--gold);">― 宇宙は素人の妄想にも、ちゃんと付き合ってくれるらしい。</p>
+  </section>
+
+  <div class="divider"></div>
+
+  <footer>
+    <p>2026年4月　初稿</p>
+    <p>総指揮・総監督：クーロド　／　応援・発案：Dナーレ</p>
+    <p>校正補助：Claude（Anthropic）</p>
+    <p class="disclaimer">※ 本稿の内容は思考実験であり、査読済み学術論文ではありません。</p>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生命の木 — カバラ・惑星・金属 対応図</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=Noto+Serif+JP:wght@300;400;600&display=swap');
+
+  :root {
+    --bg: #0a0806;
+    --gold: #c9a84c;
+    --gold-light: #f0d080;
+    --gold-dim: #7a6030;
+    --silver: #b8c8d8;
+    --copper: #b87333;
+    --iron: #8899aa;
+    --tin: #a0b0c0;
+    --lead: #607080;
+    --mercury-col: #88ddcc;
+    --text: #e8dcc8;
+    --text-dim: #8878608;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 100%, rgba(100,80,40,0.12) 0%, transparent 60%);
+    font-family: 'Noto Serif JP', serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    overflow-x: hidden;
+  }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(14px, 3vw, 22px);
+    color: var(--gold-light);
+    letter-spacing: 0.15em;
+    text-align: center;
+    margin-bottom: 6px;
+    text-shadow: 0 0 30px rgba(201,168,76,0.5);
+  }
+
+  .subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(9px, 1.8vw, 12px);
+    color: var(--gold-dim);
+    letter-spacing: 0.3em;
+    text-align: center;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+  }
+
+  .main-container {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  /* ===== TREE SVG ===== */
+  .tree-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  svg#tree {
+    width: min(480px, 92vw);
+    height: auto;
+    filter: drop-shadow(0 0 40px rgba(201,168,76,0.12));
+  }
+
+  /* path lines */
+  .seph-path {
+    stroke: rgba(201,168,76,0.25);
+    stroke-width: 1.5;
+    fill: none;
+    stroke-dasharray: 4 4;
+  }
+
+  /* pillar labels */
+  .pillar-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    fill: rgba(201,168,76,0.35);
+    letter-spacing: 0.2em;
+  }
+
+  /* sephirot nodes */
+  .node-outer {
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .node-outer:hover .node-circle {
+    filter: brightness(1.4);
+  }
+  .node-outer:hover .node-glow {
+    opacity: 1;
+  }
+
+  .node-glow {
+    opacity: 0.4;
+    transition: opacity 0.3s;
+  }
+
+  .node-name-jp {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 8.5px;
+    font-weight: 600;
+    fill: #fff;
+    text-anchor: middle;
+    dominant-baseline: middle;
+  }
+  .node-name-en {
+    font-family: 'Cinzel', serif;
+    font-size: 6px;
+    fill: rgba(255,255,255,0.6);
+    text-anchor: middle;
+  }
+  .node-metal {
+    font-family: 'Cinzel', serif;
+    font-size: 7px;
+    font-weight: 600;
+    text-anchor: middle;
+  }
+  .node-number {
+    font-family: 'Cinzel', serif;
+    font-size: 7px;
+    fill: rgba(255,255,255,0.4);
+    text-anchor: middle;
+  }
+
+  /* ===== LEGEND / INFO PANEL ===== */
+  .info-panel {
+    flex: 1;
+    min-width: 260px;
+    max-width: 420px;
+  }
+
+  .legend-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    padding-bottom: 8px;
+  }
+
+  .legend-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 28px;
+  }
+
+  .legend-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 1fr 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(201,168,76,0.08);
+    background: rgba(255,255,255,0.02);
+    transition: background 0.2s, border-color 0.2s;
+    cursor: default;
+  }
+  .legend-row:hover {
+    background: rgba(201,168,76,0.06);
+    border-color: rgba(201,168,76,0.25);
+  }
+
+  .legend-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+
+  .legend-seph {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 11px;
+    color: var(--text);
+  }
+  .legend-planet {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    color: rgba(200,200,200,0.65);
+  }
+  .legend-metal {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .process-section {
+    margin-top: 8px;
+  }
+
+  .process-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    padding-bottom: 8px;
+  }
+
+  .process-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .process-step {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .step-line-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 24px;
+    flex-shrink: 0;
+  }
+  .step-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .step-connector {
+    width: 1px;
+    flex: 1;
+    background: rgba(201,168,76,0.2);
+    margin: 3px 0;
+    min-height: 20px;
+  }
+
+  .step-content {
+    padding-bottom: 16px;
+    flex: 1;
+  }
+  .step-stage {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+  .step-latin {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    color: rgba(200,200,200,0.5);
+    font-style: italic;
+  }
+  .step-desc {
+    font-size: 10px;
+    color: rgba(200,190,170,0.7);
+    margin-top: 2px;
+    line-height: 1.5;
+  }
+
+  .footer-note {
+    margin-top: 32px;
+    font-size: 9px;
+    color: rgba(200,180,130,0.35);
+    text-align: center;
+    letter-spacing: 0.15em;
+    font-family: 'Cinzel', serif;
+  }
+
+  /* Abyss line */
+  .abyss-label {
+    font-family: 'Cinzel', serif;
+    font-size: 7.5px;
+    fill: rgba(150,130,200,0.5);
+    letter-spacing: 0.2em;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.7; }
+  }
+  .abyss-line {
+    animation: pulse 4s ease-in-out infinite;
+  }
+</style>
+</head>
+<body>
+
+<h1>生命の木 ✦ Tree of Life</h1>
+<div class="subtitle">カバラ &nbsp;·&nbsp; 惑星 &nbsp;·&nbsp; 錬金術金属 &nbsp;·&nbsp; 対応図</div>
+
+<div class="main-container">
+
+  <!-- ===== SVG TREE ===== -->
+  <div class="tree-wrap">
+  <svg id="tree" viewBox="0 0 320 520" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Glows -->
+      <radialGradient id="gKeter" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#c8e8ff" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gLead" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#7090a8" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#405060" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gTin" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#a8c0d8" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#7090b0" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gIron" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#cc4444" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#882222" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gGold" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f8e060" stop-opacity="1"/>
+        <stop offset="100%" stop-color="#c07820" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gCopper" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#d89050" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#904020" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gMercury" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#80e8c8" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#209870" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gSilver" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#d0e8f8" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#8090a0" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="gEarth" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#90c860" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#406020" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="blur4">
+        <feGaussianBlur stdDeviation="4"/>
+      </filter>
+      <filter id="blur6">
+        <feGaussianBlur stdDeviation="6"/>
+      </filter>
+    </defs>
+
+    <!-- Background subtle geometry -->
+    <line x1="80" y1="0" x2="80" y2="520" stroke="rgba(201,168,76,0.06)" stroke-width="1"/>
+    <line x1="160" y1="0" x2="160" y2="520" stroke="rgba(201,168,76,0.10)" stroke-width="1"/>
+    <line x1="240" y1="0" x2="240" y2="520" stroke="rgba(201,168,76,0.06)" stroke-width="1"/>
+
+    <!-- Pillar labels -->
+    <text x="80" y="16" class="pillar-label" text-anchor="middle">厳しさの柱</text>
+    <text x="160" y="16" class="pillar-label" text-anchor="middle">均衡の柱</text>
+    <text x="240" y="16" class="pillar-label" text-anchor="middle">慈悲の柱</text>
+
+    <!-- Abyss line (between Binah/Chokhmah and Chesed) -->
+    <line x1="30" y1="188" x2="290" y2="188" stroke="rgba(130,100,200,0.3)" stroke-width="1" stroke-dasharray="6 4" class="abyss-line"/>
+    <text x="295" y="191" class="abyss-label">深淵</text>
+
+    <!-- ===== PATHS (connections) ===== -->
+    <!-- Keter-Chokhmah -->
+    <line x1="160" y1="52" x2="240" y2="112" class="seph-path"/>
+    <!-- Keter-Binah -->
+    <line x1="160" y1="52" x2="80" y2="112" class="seph-path"/>
+    <!-- Keter-Tifaret -->
+    <line x1="160" y1="52" x2="160" y2="262" class="seph-path"/>
+    <!-- Chokhmah-Binah -->
+    <line x1="240" y1="112" x2="80" y2="112" class="seph-path"/>
+    <!-- Chokhmah-Chesed -->
+    <line x1="240" y1="112" x2="240" y2="212" class="seph-path"/>
+    <!-- Binah-Geburah -->
+    <line x1="80" y1="112" x2="80" y2="212" class="seph-path"/>
+    <!-- Chesed-Geburah -->
+    <line x1="240" y1="212" x2="80" y2="212" class="seph-path"/>
+    <!-- Chesed-Tifaret -->
+    <line x1="240" y1="212" x2="160" y2="262" class="seph-path"/>
+    <!-- Geburah-Tifaret -->
+    <line x1="80" y1="212" x2="160" y2="262" class="seph-path"/>
+    <!-- Tifaret-Netzach -->
+    <line x1="160" y1="262" x2="240" y2="342" class="seph-path"/>
+    <!-- Tifaret-Hod -->
+    <line x1="160" y1="262" x2="80" y2="342" class="seph-path"/>
+    <!-- Tifaret-Yesod -->
+    <line x1="160" y1="262" x2="160" y2="412" class="seph-path"/>
+    <!-- Netzach-Hod -->
+    <line x1="240" y1="342" x2="80" y2="342" class="seph-path"/>
+    <!-- Netzach-Yesod -->
+    <line x1="240" y1="342" x2="160" y2="412" class="seph-path"/>
+    <!-- Hod-Yesod -->
+    <line x1="80" y1="342" x2="160" y2="412" class="seph-path"/>
+    <!-- Yesod-Malkuth -->
+    <line x1="160" y1="412" x2="160" y2="482" class="seph-path"/>
+    <!-- Chesed-Netzach -->
+    <line x1="240" y1="212" x2="240" y2="342" class="seph-path"/>
+    <!-- Geburah-Hod -->
+    <line x1="80" y1="212" x2="80" y2="342" class="seph-path"/>
+    <!-- Binah-Tifaret -->
+    <line x1="80" y1="112" x2="160" y2="262" class="seph-path"/>
+    <!-- Chokhmah-Tifaret -->
+    <line x1="240" y1="112" x2="160" y2="262" class="seph-path"/>
+
+    <!-- ===== NODES ===== -->
+
+    <!-- 1. Keter (160, 52) — 光 -->
+    <g class="node-outer" transform="translate(160,52)">
+      <circle r="26" fill="url(#gKeter)" filter="url(#blur6)" class="node-glow"/>
+      <circle r="20" fill="#1a1a2e" stroke="#d8eeff" stroke-width="1.5" class="node-circle"/>
+      <circle r="16" fill="none" stroke="rgba(200,230,255,0.3)" stroke-width="0.8"/>
+      <text y="-5" class="node-name-jp">ケテル</text>
+      <text y="5" class="node-name-en">Kether</text>
+      <text y="14" class="node-metal" fill="#d8eeff">✦ 光</text>
+    </g>
+
+    <!-- 2. Chokhmah (240, 112) — なし（原質） -->
+    <g class="node-outer" transform="translate(240,112)">
+      <circle r="24" fill="url(#gTin)" filter="url(#blur6)" class="node-glow"/>
+      <circle r="18" fill="#0e1a24" stroke="#a8c0d8" stroke-width="1.5" class="node-circle"/>
+      <text y="-5" class="node-name-jp">コクマー</text>
+      <text y="5" class="node-name-en">Chokmah</text>
+      <text y="14" class="node-metal" fill="#a8c0d8">原質</text>
+    </g>
+
+    <!-- 3. Binah (80, 112) — 鉛 -->
+    <g class="node-outer" transform="translate(80,112)">
+      <circle r="24" fill="url(#gLead)" filter="url(#blur6)" class="node-glow"/>
+      <circle r="18" fill="#0e1420" stroke="#7090a8" stroke-width="1.5" class="node-circle"/>
+      <text y="-5" class="node-name-jp">ビナー</text>
+      <text y="5" class="node-name-en">Binah</text>
+      <text y="14" class="node-metal" fill="#90aac0">鉛 Pb</text>
+    </g>
+
+    <!-- 4. Chesed (240, 212) — 錫 -->
+    <g class="node-outer" transform="translate(240,212)">
+      <circle r="24" fill="url(#gTin)" filter="url(#blur6)" class="node-glow"/>
+      <circle r="18" fill="#0e1824" stroke="#a0b8d0" stroke-width="1.5" class="node-circle"/>
+      <text y="-5" class="node-name-jp">ケセド</text>
+      <text y="5" class="node-name-en">Chesed</text>
+      <text y="14" class="node-metal" fill="#a0b8d0">錫 Sn</text>
+    </g>
+
+    <!-- 5. Geburah (80, 212) — 鉄 -->
+    <g class="node-outer" transform="translate(80,212)">
+      <circle r="24" fill="url(#gIron)" filter="url(#blur6)" class="node-glow"/>
+      <circle r="18" fill="#200e0e" stroke="#cc5555" stroke-width="1.5" class="node-circle"/>
+      <text y="-5" class="node-name-jp">ゲブラー</text>
+      <text y="5" class="node-name-en">Geburah</text>
+      <text y="14" class="node-metal" fill="#dd7777">鉄 Fe</text>
+    </g>
+
+    <!-- 6. Tifaret (160, 262) — 金 ★ -->
+    <g class="node-outer" transform="translate(160,262)">
+      <circle r="32" fill="url(#gGold)" filter="url(#blur6)" class="node-glow" opacity="0.6"/>
+      <circle r="24" fill="#1e1400" stroke="#f0c840" stroke-width="2" class="node-circle"/>
+      <circle r="20" fill="none" stroke="rgba(240,200,60,0.3)" stroke-width="0.8"/>
+      <!-- Star of David subtle -->
+      <text y="-8" class="node-name-jp" style="font-size:9.5px">ティファレト</text>
+      <text y="2" class="node-name-en">Tipharet</text>
+      <text y="13" class="node-metal" fill="#f8d040" style="font-size:9px">金 Au ★</text>
+    </g>
+
+    <!-- 7. Netzach (240, 342) — 銅 -->
+    <g class="node-outer" transform="translate(240,342)">
+      <circle r="24" fill="url(#gCopper)" filter="url(#blur6)" class="node-glow"/>
+      <circle r="18" fill="#201008" stroke="#c87840" stroke-width="1.5" class="node-circle"/>
+      <text y="-5" class="node-name-jp">ネツァク</text>
+      <text y="5" class="node-name-en">Netzach</text>
+      <text y="14" class="node-metal" fill="#d89050">銅 Cu</text>
+    </g>
+
+    <!-- 8. Hod (80, 342) — 水銀 -->
+    <g class="node-outer" transform="translate(80,342)">
+      <circle r="24" fill="url(#gMercury)" filter="url(#blur6)" class="node-glow"/>
+      <circle r="18" fill="#081a18" stroke="#50c8a8" stroke-width="1.5" class="node-circle"/>
+      <text y="-5" class="node-name-jp">ホド</text>
+      <text y="5" class="node-name-en">Hod</text>
+      <text y="14" class="node-metal" fill="#60d8b8">水銀 Hg</text>
+    </g>
+
+    <!-- 9. Yesod (160, 412) — 銀 -->
+    <g class="node-outer" transform="translate(160,412)">
+      <circle r="24" fill="url(#gSilver)" filter="url(#blur6)" class="node-glow"/>
+      <circle r="18" fill="#101820" stroke="#b0c8e0" stroke-width="1.5" class="node-circle"/>
+      <text y="-5" class="node-name-jp">イェソド</text>
+      <text y="5" class="node-name-en">Yesod</text>
+      <text y="14" class="node-metal" fill="#c0d8f0">銀 Ag</text>
+    </g>
+
+    <!-- 10. Malkuth (160, 482) — 全金属 -->
+    <g class="node-outer" transform="translate(160,482)">
+      <circle r="24" fill="url(#gEarth)" filter="url(#blur6)" class="node-glow"/>
+      <circle r="18" fill="#0e180a" stroke="#70b840" stroke-width="1.5" class="node-circle"/>
+      <!-- four quarters -->
+      <text y="-5" class="node-name-jp">マルクト</text>
+      <text y="5" class="node-name-en">Malkuth</text>
+      <text y="14" class="node-metal" fill="#88cc50" style="font-size:6.5px">全金属の統合</text>
+    </g>
+
+    <!-- Node numbers (subtle) -->
+    <text x="160" y="30" class="node-number">①</text>
+    <text x="258" y="92" class="node-number">②</text>
+    <text x="62" y="92" class="node-number">③</text>
+    <text x="258" y="192" class="node-number">④</text>
+    <text x="62" y="192" class="node-number">⑤</text>
+    <text x="178" y="242" class="node-number">⑥</text>
+    <text x="258" y="322" class="node-number">⑦</text>
+    <text x="62" y="322" class="node-number">⑧</text>
+    <text x="178" y="392" class="node-number">⑨</text>
+    <text x="178" y="462" class="node-number">⑩</text>
+
+  </svg>
+  </div>
+
+  <!-- ===== INFO PANEL ===== -->
+  <div class="info-panel">
+
+    <div class="legend-title">✦ セフィロト対応表</div>
+    <div class="legend-grid">
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:rgba(200,230,255,0.15);border:1.5px solid #c8e8ff;">✦</div>
+        <div class="legend-seph">① ケテル</div>
+        <div class="legend-planet" style="color:#c8e8ff;">神・光</div>
+        <div class="legend-metal" style="color:#c8e8ff;">光（超越）</div>
+      </div>
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:rgba(168,192,216,0.15);border:1.5px solid #a8c0d8;">☿</div>
+        <div class="legend-seph">② コクマー</div>
+        <div class="legend-planet">恒星天</div>
+        <div class="legend-metal" style="color:#a8c0d8;">原質</div>
+      </div>
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:rgba(100,130,150,0.15);border:1.5px solid #7090a8;">♄</div>
+        <div class="legend-seph">③ ビナー</div>
+        <div class="legend-planet">土星 Saturn</div>
+        <div class="legend-metal" style="color:#90aac0;">鉛 Pb</div>
+      </div>
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:rgba(160,184,208,0.15);border:1.5px solid #a0b8d0;">♃</div>
+        <div class="legend-seph">④ ケセド</div>
+        <div class="legend-planet">木星 Jupiter</div>
+        <div class="legend-metal" style="color:#a0b8d0;">錫 Sn</div>
+      </div>
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:rgba(180,60,60,0.15);border:1.5px solid #cc5555;">♂</div>
+        <div class="legend-seph">⑤ ゲブラー</div>
+        <div class="legend-planet">火星 Mars</div>
+        <div class="legend-metal" style="color:#dd7777;">鉄 Fe</div>
+      </div>
+
+      <div class="legend-row" style="border-color:rgba(240,200,60,0.3);background:rgba(240,200,60,0.05);">
+        <div class="legend-dot" style="background:rgba(240,200,60,0.2);border:2px solid #f0c840;">☉</div>
+        <div class="legend-seph" style="color:#f8e070;">⑥ ティファレト</div>
+        <div class="legend-planet" style="color:#d0a820;">太陽 Sun</div>
+        <div class="legend-metal" style="color:#f8d040;">金 Au ★</div>
+      </div>
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:rgba(180,120,50,0.15);border:1.5px solid #c87840;">♀</div>
+        <div class="legend-seph">⑦ ネツァク</div>
+        <div class="legend-planet">金星 Venus</div>
+        <div class="legend-metal" style="color:#d89050;">銅 Cu</div>
+      </div>
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:rgba(80,200,168,0.15);border:1.5px solid #50c8a8;">☿</div>
+        <div class="legend-seph">⑧ ホド</div>
+        <div class="legend-planet">水星 Mercury</div>
+        <div class="legend-metal" style="color:#60d8b8;">水銀 Hg</div>
+      </div>
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:rgba(176,200,224,0.15);border:1.5px solid #b0c8e0;">☽</div>
+        <div class="legend-seph">⑨ イェソド</div>
+        <div class="legend-planet">月 Moon</div>
+        <div class="legend-metal" style="color:#c0d8f0;">銀 Ag</div>
+      </div>
+
+      <div class="legend-row">
+        <div class="legend-dot" style="background:rgba(112,184,64,0.15);border:1.5px solid #70b840;">⊕</div>
+        <div class="legend-seph">⑩ マルクト</div>
+        <div class="legend-planet">地球 Earth</div>
+        <div class="legend-metal" style="color:#88cc50;">全金属の統合</div>
+      </div>
+
+    </div>
+
+    <!-- Alchemical process -->
+    <div class="process-section">
+      <div class="process-title">✦ 錬金術の変容プロセス</div>
+      <div class="process-steps">
+
+        <div class="process-step">
+          <div class="step-line-wrap">
+            <div class="step-dot" style="border-color:#444;background:#1a1a1a;"></div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-stage" style="color:#888;">ニグレド 黒化</div>
+            <div class="step-latin">Nigredo — 鉛</div>
+            <div class="step-desc">マルクト〜イェソド｜物質・無意識・未覚醒の状態</div>
+          </div>
+        </div>
+
+        <div class="process-step">
+          <div class="step-line-wrap">
+            <div class="step-dot" style="border-color:#c0d8f0;background:#102030;"></div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-stage" style="color:#c0d8f0;">アルベド 白化</div>
+            <div class="step-latin">Albedo — 銀</div>
+            <div class="step-desc">ホド〜イェソド｜浄化・意識の目覚め・感情の洗練</div>
+          </div>
+        </div>
+
+        <div class="process-step">
+          <div class="step-line-wrap">
+            <div class="step-dot" style="border-color:#d89050;background:#201008;"></div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-stage" style="color:#d89050;">キトリニタス 黄化</div>
+            <div class="step-latin">Citrinitas — 銅・鉄</div>
+            <div class="step-desc">ネツァク〜ゲブラー｜感情・意志の統合と試練</div>
+          </div>
+        </div>
+
+        <div class="process-step">
+          <div class="step-line-wrap">
+            <div class="step-dot" style="border-color:#f0c840;background:#201400;"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-stage" style="color:#f8d040;">ルベド 赤化 ★</div>
+            <div class="step-latin">Rubedo — 金</div>
+            <div class="step-desc">ティファレト｜魂の完成・悟り・神との合一</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="footer-note">
+      As above, so below — Emerald Tablet<br>
+      上にあるものは下にあるものの如く
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

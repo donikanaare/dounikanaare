@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vol.4 エントロピーの先っちょへ</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Share+Tech+Mono&family=Zen+Old+Mincho:wght@400;700&display=swap');
+
+:root {
+  --bg: #06060f;
+  --surface: #0a0a18;
+  --gold: #c8a84c;
+  --gold-dim: rgba(200,168,76,0.15);
+  --gold-line: rgba(200,168,76,0.2);
+  --text: #d8d0c0;
+  --dim: rgba(216,208,192,0.5);
+  --cyan: #40c8e8;
+  --orange: #e87840;
+  --accent: #a0b8e0;
+  --strong: #ff6644;
+  --weak: #44aaff;
+  --mid: #88cc88;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Shippori Mincho B1', serif;
+  line-height: 1.9;
+  font-size: clamp(14px, 1.6vw, 16px);
+  overflow-x: hidden;
+}
+
+/* Stars background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 8%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 72% 33%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 88% 15%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 28% 55%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5% 80%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 93% 65%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 38% 88%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 90%, rgba(255,255,255,0.2) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Cover */
+#cover {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  overflow: hidden;
+}
+
+#cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(40,20,80,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 50% 80%, rgba(200,100,20,0.08) 0%, transparent 60%);
+  z-index: 0;
+}
+
+/* Animated BH in cover */
+#cover-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.35;
+  z-index: 0;
+}
+
+.cover-content {
+  position: relative;
+  z-index: 2;
+}
+
+.vol-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(10px, 1.2vw, 12px);
+  letter-spacing: 0.4em;
+  color: var(--gold);
+  opacity: 0.7;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.cover-series {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(11px, 1.4vw, 13px);
+  letter-spacing: 0.2em;
+  color: var(--dim);
+  margin-bottom: 16px;
+}
+
+.cover-title {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #e8e0d0;
+  text-shadow:
+    0 0 40px rgba(200,168,76,0.4),
+    0 0 80px rgba(100,80,200,0.2);
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+
+.cover-sub {
+  font-size: clamp(12px, 1.6vw, 15px);
+  color: var(--accent);
+  opacity: 0.8;
+  letter-spacing: 0.1em;
+  margin-bottom: 32px;
+}
+
+.cover-proposition {
+  display: inline-block;
+  border: 1px solid var(--gold-line);
+  border-radius: 4px;
+  padding: 16px 28px;
+  background: rgba(200,168,76,0.05);
+  font-size: clamp(12px, 1.5vw, 15px);
+  color: var(--gold);
+  letter-spacing: 0.05em;
+  line-height: 1.7;
+  margin-bottom: 40px;
+  max-width: 600px;
+  backdrop-filter: blur(4px);
+}
+
+.cover-credit {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(9px, 1vw, 11px);
+  color: rgba(200,168,76,0.3);
+  letter-spacing: 0.15em;
+  line-height: 2;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: rgba(200,168,76,0.25);
+  letter-spacing: 0.3em;
+  animation: pulse 2.5s ease-in-out infinite;
+  z-index: 2;
+}
+@keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:0.7} }
+
+/* Main content */
+#content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(40px, 6vw, 80px) clamp(20px, 4vw, 40px);
+}
+
+/* Note box */
+.note-box {
+  border-left: 2px solid var(--gold-line);
+  padding: 12px 18px;
+  background: var(--gold-dim);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.88em;
+  color: var(--dim);
+  margin-bottom: 48px;
+  line-height: 1.8;
+}
+
+/* Section */
+.section {
+  margin-bottom: 56px;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gold-line);
+}
+
+.section-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(11px, 1.2vw, 13px);
+  color: var(--gold);
+  opacity: 0.6;
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(16px, 2.2vw, 21px);
+  font-weight: 700;
+  color: #e8e0d0;
+  letter-spacing: 0.08em;
+}
+
+p {
+  margin-bottom: 1.2em;
+  color: var(--text);
+}
+
+strong {
+  color: #e8e0c8;
+  font-weight: 600;
+}
+
+/* Proposition block */
+.proposition {
+  border-left: 3px solid var(--gold);
+  padding: 14px 20px;
+  background: rgba(200,168,76,0.06);
+  border-radius: 0 4px 4px 0;
+  font-size: 1.05em;
+  color: var(--gold);
+  margin: 24px 0;
+  letter-spacing: 0.03em;
+}
+
+/* Three-layer table */
+.layer-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 0.9em;
+}
+.layer-table th {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8em;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  opacity: 0.6;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--gold-line);
+  text-transform: uppercase;
+}
+.layer-table td {
+  padding: 12px 12px;
+  border-bottom: 1px solid rgba(200,168,76,0.08);
+  vertical-align: top;
+  line-height: 1.7;
+}
+.layer-strong { color: var(--strong); font-weight: 600; }
+.layer-mid { color: var(--mid); font-weight: 600; }
+.layer-weak { color: var(--weak); font-weight: 600; }
+.layer-here {
+  display: inline-block;
+  background: rgba(136,204,136,0.12);
+  border: 1px solid rgba(136,204,136,0.3);
+  border-radius: 3px;
+  padding: 1px 7px;
+  font-size: 0.85em;
+  color: var(--mid);
+  margin-left: 6px;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+/* Flow diagram */
+.flow {
+  background: var(--surface);
+  border: 1px solid var(--gold-line);
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin: 24px 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(11px, 1.2vw, 13px);
+  color: var(--dim);
+  line-height: 2.2;
+}
+.flow-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.flow-arrow {
+  color: var(--gold);
+  opacity: 0.5;
+}
+.flow-label {
+  color: var(--text);
+}
+.flow-note {
+  color: var(--dim);
+  font-size: 0.88em;
+}
+.flow-eq {
+  text-align: center;
+  color: var(--gold);
+  font-size: 1.1em;
+  padding: 8px 0;
+  letter-spacing: 0.3em;
+}
+
+/* Edge of chaos visual */
+.chaos-bar {
+  margin: 24px 0;
+  background: var(--surface);
+  border: 1px solid var(--gold-line);
+  border-radius: 6px;
+  padding: 20px 24px;
+}
+.chaos-gradient {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(to right, var(--strong), var(--mid), var(--weak));
+  margin: 12px 0;
+  position: relative;
+}
+.chaos-marker {
+  position: absolute;
+  top: -6px;
+  left: 55%;
+  width: 3px;
+  height: 24px;
+  background: white;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(255,255,255,0.6);
+}
+.chaos-marker::after {
+  content: '← 我々';
+  position: absolute;
+  top: 28px;
+  left: -10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,0.6);
+  white-space: nowrap;
+}
+.chaos-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  margin-top: 28px;
+  color: var(--dim);
+}
+
+/* Comparison table */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 0.88em;
+}
+.compare-table th {
+  padding: 10px 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8em;
+  letter-spacing: 0.15em;
+  border-bottom: 1px solid var(--gold-line);
+  text-align: left;
+}
+.compare-table th.bh-h { color: var(--orange); }
+.compare-table th.earth-h { color: var(--accent); }
+.compare-table th.eq-h { color: var(--gold); text-align: center; }
+.compare-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  vertical-align: top;
+  line-height: 1.7;
+}
+.compare-table td.bh-c { color: var(--orange); opacity: 0.9; }
+.compare-table td.earth-c { color: var(--accent); opacity: 0.9; }
+.compare-table td.eq-c { color: var(--gold); text-align: center; font-size: 1.1em; }
+.compare-table td.label { color: var(--dim); font-family: 'Share Tech Mono', monospace; font-size: 0.85em; }
+
+/* Status table */
+.status-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 0.88em;
+}
+.status-table th {
+  padding: 8px 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8em;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  opacity: 0.6;
+  text-align: left;
+  border-bottom: 1px solid var(--gold-line);
+}
+.status-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  line-height: 1.7;
+}
+.status-table td:first-child { color: var(--text); }
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8em;
+  letter-spacing: 0.05em;
+}
+.badge-proven { background: rgba(136,204,136,0.15); color: #88cc88; border: 1px solid rgba(136,204,136,0.3); }
+.badge-align { background: rgba(100,160,255,0.12); color: #88aaff; border: 1px solid rgba(100,160,255,0.25); }
+.badge-hypothesis { background: rgba(200,168,76,0.1); color: var(--gold); border: 1px solid var(--gold-line); }
+.badge-open { background: rgba(255,100,80,0.1); color: #ff9977; border: 1px solid rgba(255,100,80,0.25); }
+
+/* Quote */
+.closing-quote {
+  text-align: center;
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(13px, 1.6vw, 15px);
+  color: var(--dim);
+  font-style: italic;
+  letter-spacing: 0.08em;
+  line-height: 2;
+  margin: 40px 0;
+  padding: 24px;
+  border-top: 1px solid var(--gold-line);
+  border-bottom: 1px solid var(--gold-line);
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 40px 24px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(9px, 1vw, 11px);
+  color: rgba(200,168,76,0.25);
+  letter-spacing: 0.15em;
+  line-height: 2.2;
+  border-top: 1px solid var(--gold-line);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--gold-line);
+  margin: 40px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<section id="cover">
+  <canvas id="cover-canvas"></canvas>
+  <div class="cover-content">
+    <div class="vol-badge">Vol. 04 · 2026</div>
+    <div class="cover-series">モブが朝のチャットで考えてしまった宇宙の話</div>
+    <h1 class="cover-title">エントロピーの<br>先っちょへ</h1>
+    <p class="cover-sub">We are already inside a Black Hole</p>
+    <div class="cover-proposition">
+      「宇宙の観測限界は事象の地平線であり、<br>
+      我々はすでにブラックホールの内部にいる」
+    </div>
+    <div class="cover-credit">
+      総指揮・総監督：クーロド　／　応援・発案：Dナーレ<br>
+      校正補助：Claude（Anthropic）
+    </div>
+  </div>
+  <div class="scroll-hint">▼ &nbsp; SCROLL &nbsp; ▼</div>
+</section>
+
+<!-- CONTENT -->
+<main id="content">
+
+  <div class="note-box">
+    ※ 本稿は物理学の専門家によるものではありません。朝の雑談から生まれた思考実験です。Vol.1（入れ子宇宙・循環構造仮説）、Vol.2（LHS 1903系・逆転惑星仮説）、Vol.3（BHは天体である）の続編として、今回は最も攻めた命題に挑みます。
+  </div>
+
+  <!-- §1 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <h2 class="section-title">今日の中心命題</h2>
+    </div>
+    <div class="proposition">
+      「宇宙の観測限界は事象の地平線であり、<br>
+      我々はすでにブラックホールの内部にいる」
+    </div>
+    <p>これは比喩ではない。数学的構造として、宇宙論的地平線とブラックホールの事象の地平線は<strong>同じ方程式で記述される</strong>。</p>
+    <p>今回はその命題に至るまでの思考の道筋を、できるだけ丁寧に辿る。</p>
+  </div>
+
+  <!-- §2 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <h2 class="section-title">三層構造の宇宙</h2>
+    </div>
+    <p>前回Vol.3ではBHの構造を解剖した。今回はもう一段引いて、<strong>宇宙全体の力の構造</strong>を考える。</p>
+    <p>仮説として、宇宙は「大元」を除いて大きく三層で成り立っていると考えてみる。ウォルター・ラッセルが「宇宙は陰陽の螺旋と波動で構成される」と述べた構造とも響く。</p>
+    <table class="layer-table">
+      <thead>
+        <tr>
+          <th>層</th>
+          <th>特性</th>
+          <th>対応する宇宙の状態</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="layer-strong">強い力の世界</span></td>
+          <td>高密度・高エネルギー・時間が極めて遅い</td>
+          <td>ビッグバン直後・BH内部</td>
+        </tr>
+        <tr>
+          <td><span class="layer-mid">中央値の世界</span></td>
+          <td>適度な密度・時間が中程度・情報処理可能</td>
+          <td>銀河・恒星・生命<span class="layer-here">← 我々</span></td>
+        </tr>
+        <tr>
+          <td><span class="layer-weak">弱い力の世界</span></td>
+          <td>低密度・拡散・高速・情報化が進む</td>
+          <td>宇宙の外縁・加速膨張の先</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>この三層は固定した「場所」ではなく、<strong>エントロピーの勾配</strong>に沿った状態の分類だと考えるとしっくりくる。</p>
+  </div>
+
+  <!-- §3 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <h2 class="section-title">我々はエントロピーの先っちょにいる</h2>
+    </div>
+    <p>エントロピーとは「秩序から無秩序へ向かう方向性」のことだ。宇宙は常にエントロピーが増大する方向へ進む。これは物理学の根本法則の一つである。</p>
+    <div class="flow">
+      <div class="flow-item"><span class="layer-strong">強い力</span><span class="flow-note">（低エントロピー・秩序・高密度）</span></div>
+      <div class="flow-item"><span class="flow-arrow">　↓</span><span class="flow-note">エントロピー増大の方向</span></div>
+      <div class="flow-item"><span class="layer-mid">中央値</span><span class="flow-note">（今ここ）</span></div>
+      <div class="flow-item"><span class="flow-arrow">　↓</span></div>
+      <div class="flow-item"><span class="layer-weak">弱い力</span><span class="flow-note">（高エントロピー・無秩序・拡散）</span></div>
+    </div>
+    <p>我々が今いる「中央値の世界」は、強い力から弱い力へ向かう<strong>途中</strong>にある。</p>
+    <p><strong>エントロピーの増大方向において、我々は「先端」に近い位置にいる。</strong></p>
+    <p>宇宙の初期はエントロピーが極めて低く、物質は高密度に凝縮されていた。138億年かけて膨張・拡散し、我々の時代に至った。宇宙がクエサー全盛期を過ぎ、銀河が老いていくこの時代は、エントロピーの先っちょに相当する。</p>
+  </div>
+
+  <!-- §4 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <h2 class="section-title">密度が高いほど時間が遅い</h2>
+    </div>
+    <p>ここで相対性理論が登場する。アインシュタインの一般相対性理論によれば、<strong>重力が強い場所（高密度）では時間の進みが遅くなる</strong>。これは「重力時間遅延」と呼ばれ、GPS衛星の補正に実際に使われている実証済みの事実だ。</p>
+    <div class="flow">
+      <div class="flow-item"><span class="layer-strong">強い力の世界（高密度・高重力）</span></div>
+      <div class="flow-item"><span class="flow-arrow">　→</span><span class="flow-note">時間の進みが極めて遅い・外から見ると「ほぼ静止」</span></div>
+      <div style="height:10px"></div>
+      <div class="flow-item"><span class="layer-mid">中央値の世界</span></div>
+      <div class="flow-item"><span class="flow-arrow">　→</span><span class="flow-note">時間が普通に流れる</span></div>
+      <div style="height:10px"></div>
+      <div class="flow-item"><span class="layer-weak">弱い力の世界（低密度・低重力）</span></div>
+      <div class="flow-item"><span class="flow-arrow">　→</span><span class="flow-note">時間の進みが速い・変化が激しく情報処理が高速</span></div>
+    </div>
+    <p>つまり三層構造は「密度の違い」であると同時に「時間速度の違い」でもある。<strong>強い力の世界は我々から見ると極限に遅く、弱い力の世界は極限に速い。</strong></p>
+    <p>「先端は変化に富む」という直感は、時間速度の観点からも正確だった。</p>
+  </div>
+
+  <!-- §5 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 05</span>
+      <h2 class="section-title">エッジ・オブ・カオス</h2>
+    </div>
+    <p>複雑系科学に「エッジ・オブ・カオス（カオスの縁）」という概念がある。秩序とカオスの<strong>境界付近</strong>に、最も情報処理能力が高い領域が存在するという理論だ。</p>
+    <div class="chaos-bar">
+      <div style="display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:11px;margin-bottom:6px;">
+        <span style="color:var(--strong)">完全な秩序</span>
+        <span style="color:white;opacity:0.6">エッジ・オブ・カオス</span>
+        <span style="color:var(--weak)">完全なカオス</span>
+      </div>
+      <div class="chaos-gradient">
+        <div class="chaos-marker"></div>
+      </div>
+      <div class="chaos-labels">
+        <span>変化なし・情報処理不可</span>
+        <span>生命・意識・知性が生まれる</span>
+        <span>構造を保てない</span>
+      </div>
+    </div>
+    <p>我々がいる中央値の世界、特にその「先端寄り」の位置は、このエッジ・オブ・カオスに対応する可能性がある。</p>
+    <p>星が生まれ、銀河が構造を持ち、生命が発生し、意識が芽生えた。これは偶然ではなく、<strong>エントロピーの先っちょ、カオスの縁だからこそ生まれた必然</strong>かもしれない。</p>
+  </div>
+
+  <!-- §6 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 06</span>
+      <h2 class="section-title">強い力の世界は情報へ変わる</h2>
+    </div>
+    <p>Vol.3でBHの特異点について触れた。密度が「無限大」になる点で、現代物理学の計算が破綻する場所だ。ここで一つの仮説を立てる。</p>
+    <div class="proposition">
+      強い力の世界（高密度・高エネルギー）は、<br>特異点を経て「情報」へと変換される。
+    </div>
+    <p>量子情報理論では、情報と物理は等価だとされる。ジョン・ホイーラーの「It from Bit（全ての物質は情報から生まれる）」という命題がある。</p>
+    <div class="flow">
+      <div class="flow-item"><span class="layer-strong">強い力の世界</span><span class="flow-note">（物質・質量の極限）</span></div>
+      <div class="flow-item"><span class="flow-arrow">　↓</span><span class="flow-note">特異点での変換</span></div>
+      <div class="flow-item"><span style="color:var(--gold)">情報として次の層へ</span></div>
+      <div class="flow-item"><span class="flow-arrow">　↓</span></div>
+      <div class="flow-item"><span class="layer-mid">中央値の世界</span><span class="flow-note">で再び物質化</span></div>
+    </div>
+    <p>形は「物質」から「情報」に変わるが、<strong>総量は保存される</strong>。均等に散布されるのか、大元に回帰するのかはまだわからない。しかし消えるのではなく<strong>変換される</strong>という構造は、質量保存則の宇宙間拡張として成立しうる。</p>
+  </div>
+
+  <!-- §7 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 07</span>
+      <h2 class="section-title">我々はすでにBHの内部にいる</h2>
+    </div>
+    <p>ここが今回最も攻めた命題だ。宇宙論には「宇宙論的地平線（ハッブル地平線）」という概念がある。宇宙が膨張する速度が光速を超える距離では、光が永遠に我々に届かない。そこが「観測可能な宇宙の果て」だ。</p>
+    <p><strong>この二つは数学的に同じ構造を持つ。</strong></p>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="width:35%">項目</th>
+          <th class="bh-h" style="width:28%">BH内部の存在</th>
+          <th class="eq-h" style="width:9%"></th>
+          <th class="earth-h" style="width:28%">地球の人類</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="label">境界</td>
+          <td class="bh-c">事象の地平線<br>（見えない・出られない）</td>
+          <td class="eq-c">≒</td>
+          <td class="earth-c">観測可能な宇宙の果て<br>（見えない・行けない）</td>
+        </tr>
+        <tr>
+          <td class="label">降り注ぐもの</td>
+          <td class="bh-c">粒子・放射</td>
+          <td class="eq-c">≒</td>
+          <td class="earth-c">宇宙線・光</td>
+        </tr>
+        <tr>
+          <td class="label">時間</td>
+          <td class="bh-c">外から見ると極端に遅い</td>
+          <td class="eq-c">≒</td>
+          <td class="earth-c">より大きな構造から見ると遅い？</td>
+        </tr>
+        <tr>
+          <td class="label">最大の謎</td>
+          <td class="bh-c">「外に何があるか」</td>
+          <td class="eq-c">≒</td>
+          <td class="earth-c">「宇宙の外に何があるか」</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>同じ問いを持つ存在は、同じ構造の中にいる可能性が高い。</strong></p>
+  </div>
+
+  <!-- §8 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 08</span>
+      <h2 class="section-title">銀河の死とクエサー、そしてサイクル</h2>
+    </div>
+    <p>ハッブル宇宙望遠鏡の赤方偏移観測では、青い銀河が若く、赤い銀河が老いている。クエサーは若い宇宙（ガスが豊富な時期）に多く輝いていた。</p>
+    <div class="flow">
+      <div class="flow-item"><span style="color:#88aaff">青い銀河（若い・ガス豊富）</span></div>
+      <div class="flow-item"><span class="flow-arrow">　↓</span></div>
+      <div class="flow-item"><span class="flow-label">大質量星が超新星爆発 → BH誕生</span></div>
+      <div class="flow-item"><span class="flow-arrow">　↓</span></div>
+      <div class="flow-item"><span class="flow-label">BHが成長・合体 → 超大質量BH</span></div>
+      <div class="flow-item"><span class="flow-arrow">　↓</span></div>
+      <div class="flow-item"><span style="color:var(--gold)">クエサーとして爆発的に輝く</span><span class="flow-note">（命を燃やし尽くす最後の輝き）</span></div>
+      <div class="flow-item"><span class="flow-arrow">　↓</span></div>
+      <div class="flow-item"><span style="color:#cc6644">赤い銀河へ老いる</span></div>
+      <div class="flow-item"><span class="flow-arrow">　↓</span></div>
+      <div class="flow-item"><span class="flow-label">中心BHは休眠 → 情報を次の層へ</span></div>
+    </div>
+    <p>この銀河スケールのサイクルが、Vol.1の宇宙スケール循環の<strong>一つの単位</strong>だとすれば、全ての階層が同じ構造を繰り返していることになる。</p>
+    <p><strong>フラクタル構造だ。</strong></p>
+  </div>
+
+  <!-- §9 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 09</span>
+      <h2 class="section-title">スピリチュアルとの意外な接続</h2>
+    </div>
+    <p>「アセンション」という概念がある。スピリチュアルの文脈では「人類や地球が次の次元・波動へと移行する」という意味で使われる。仮説を物理的に読み直すと、</p>
+    <div class="proposition">「情報密度の上昇による、既存の物質のより高次の状態への移行」</div>
+    <p>として解釈できる。強い力の世界から情報が流れ込み、中央値の世界（我々の世界）に大量の情報と物質が供給されると、既存の物質がより高次の状態へ移行する可能性がある。</p>
+    <p>数式で証明できる話ではない。しかし構造としては一致している。古代から様々な文化が感じ取ってきた「次の段階への移行」という直感は、宇宙のエントロピー構造と無関係ではないかもしれない。</p>
+  </div>
+
+  <!-- §10 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 10</span>
+      <h2 class="section-title">未解明リスト（Vol.4時点）</h2>
+    </div>
+    <p>正直に整理する。</p>
+    <table class="status-table">
+      <thead>
+        <tr><th>命題</th><th>状態</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>宇宙は三層構造を持つ</td><td><span class="badge badge-align">既存物理と整合</span></td></tr>
+        <tr><td>密度が高いほど時間が遅い</td><td><span class="badge badge-proven">実証済み</span></td></tr>
+        <tr><td>我々はエッジ・オブ・カオスにいる</td><td><span class="badge badge-align">複雑系理論と整合</span></td></tr>
+        <tr><td>宇宙の端＝事象の地平線</td><td><span class="badge badge-align">数学的構造は一致</span></td></tr>
+        <tr><td>強い力の世界→情報への変換</td><td><span class="badge badge-hypothesis">仮説・量子情報理論と整合</span></td></tr>
+        <tr><td>質量保存則の宇宙間拡張</td><td><span class="badge badge-open">検証方法未確立</span></td></tr>
+        <tr><td>我々はBHの内部にいる</td><td><span class="badge badge-hypothesis">数学的に同構造・解釈は仮説</span></td></tr>
+      </tbody>
+    </table>
+    <p>矛盾が減っている。疑問も整理されてきた。これが思考実験の進歩の証拠だ。</p>
+  </div>
+
+  <!-- §11 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 11</span>
+      <h2 class="section-title">おわりに</h2>
+    </div>
+    <p>Vol.1から始まった「朝のチャット」は、気がつけば宇宙の構造全体を射程に収めるところまで来た。</p>
+    <p>エントロピーの先っちょにいる我々が、エントロピーの方向性を考えている。これ自体が宇宙の自己認識の一形態かもしれない。</p>
+    <p>BHは「穴」ではなく天体だった。クエサーはBHの状態だった。ジェットは穴からではなく周囲から出ていた。宇宙の端はBHの地平線と同じ構造だった。</p>
+    <p>全ての誤解が解けるたびに、仮説の輪郭がはっきりしてくる。</p>
+  </div>
+
+  <div class="closing-quote">
+    ― 我々はすでにBHの内部にいる。<br>
+    そして特異点の先に次の宇宙がある。<br>
+    Vol.5へ続く。―
+  </div>
+
+</main>
+
+<footer>
+  2026年4月　初稿<br>
+  総指揮・総監督：クーロド　／　応援・発案：Dナーレ<br>
+  校正補助：Claude（Anthropic）<br><br>
+  ※ 本稿の内容は思考実験であり、査読済み学術論文ではありません。<br>
+  数式なし。でも既存物理に波紋を投げかけています。
+</footer>
+
+<script>
+// Cover canvas: animated BH
+const cv = document.getElementById('cover-canvas');
+const ctx = cv.getContext('2d');
+let t = 0;
+
+function resizeCover() {
+  cv.width = cv.offsetWidth * devicePixelRatio;
+  cv.height = cv.offsetHeight * devicePixelRatio;
+}
+resizeCover();
+window.addEventListener('resize', resizeCover);
+
+const TAU = Math.PI * 2;
+
+// Particles
+const particles = Array.from({length: 180}, () => ({
+  angle: Math.random() * TAU,
+  r: 0.15 + Math.random() * 0.35,
+  speed: (0.002 + Math.random() * 0.004) * (Math.random() < 0.5 ? 1 : -1),
+  size: 0.5 + Math.random() * 2,
+  alpha: 0.2 + Math.random() * 0.6,
+  hue: Math.random() < 0.5 ? 30 + Math.random()*20 : 200 + Math.random()*40,
+}));
+
+function drawCover() {
+  const W = cv.width, H = cv.height;
+  const cx = W / 2, cy = H / 2;
+  const minD = Math.min(W, H);
+
+  ctx.clearRect(0, 0, W, H);
+  t += 0.008;
+
+  // Disk rings
+  for (let i = 0; i < 12; i++) {
+    const r = minD * (0.18 + i * 0.028);
+    const alpha = 0.04 + (12 - i) * 0.008;
+    const hue = 25 - i * 1.5;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, r, r * 0.22, t * 0.1, 0, TAU);
+    ctx.strokeStyle = `hsla(${hue},85%,55%,${alpha})`;
+    ctx.lineWidth = (12 - i) * 0.4 + 0.5;
+    ctx.stroke();
+  }
+
+  // Particles
+  particles.forEach(p => {
+    p.angle += p.speed;
+    const r = p.r * minD;
+    const x = cx + Math.cos(p.angle) * r;
+    const y = cy + Math.sin(p.angle) * r * 0.22;
+    ctx.beginPath();
+    ctx.arc(x, y, p.size, 0, TAU);
+    ctx.fillStyle = `hsla(${p.hue},80%,70%,${p.alpha})`;
+    ctx.fill();
+  });
+
+  // BH center
+  const bhR = minD * 0.09;
+  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, bhR * 2);
+  grad.addColorStop(0, 'rgba(0,0,0,1)');
+  grad.addColorStop(0.5, 'rgba(0,0,5,0.9)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.beginPath();
+  ctx.arc(cx, cy, bhR * 2, 0, TAU);
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Event horizon ring
+  const ehGrad = ctx.createRadialGradient(cx, cy, bhR * 0.8, cx, cy, bhR * 1.3);
+  ehGrad.addColorStop(0, 'rgba(80,120,255,0)');
+  ehGrad.addColorStop(0.5, `rgba(80,120,255,${0.3 + Math.sin(t)*0.1})`);
+  ehGrad.addColorStop(1, 'rgba(80,120,255,0)');
+  ctx.beginPath();
+  ctx.arc(cx, cy, bhR, 0, TAU);
+  ctx.strokeStyle = ehGrad;
+  ctx.lineWidth = bhR * 0.3;
+  ctx.stroke();
+
+  // Jets
+  const jetLen = minD * 0.4;
+  [1, -1].forEach(dir => {
+    const jg = ctx.createLinearGradient(cx, cy, cx, cy + dir * jetLen);
+    jg.addColorStop(0, 'rgba(100,180,255,0.5)');
+    jg.addColorStop(0.5, 'rgba(60,120,255,0.15)');
+    jg.addColorStop(1, 'rgba(40,80,255,0)');
+    ctx.beginPath();
+    ctx.moveTo(cx - bhR * 0.08, cy);
+    ctx.lineTo(cx + bhR * 0.08, cy);
+    ctx.lineTo(cx + bhR * 0.3, cy + dir * jetLen);
+    ctx.lineTo(cx - bhR * 0.3, cy + dir * jetLen);
+    ctx.closePath();
+    ctx.fillStyle = jg;
+    ctx.fill();
+  });
+
+  requestAnimationFrame(drawCover);
+}
+drawCover();
+</script>
+</body>
+</html>

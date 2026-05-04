@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カバラ パス統合図 — 数式と言語で読む生命の木</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@300;400;600&family=IM+Fell+English:ital@0;1&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#04040c;
+  --gold:#c9a84c;
+  --gl:#f0d878;
+  --gd:#3a2808;
+  --gm:#8b6a28;
+  --text:#ddd0b4;
+  --dim:rgba(221,208,180,.5);
+  --border:rgba(201,168,76,.15);
+  --panel:#08081a;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Noto Serif JP',serif;
+  font-weight:300;
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 420px;
+  grid-template-rows:auto 1fr auto;
+  overflow:hidden;
+  height:100vh;
+}
+
+/* ── HEADER ── */
+header{
+  grid-column:1/-1;
+  padding:16px 32px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(4,4,12,.95);
+  backdrop-filter:blur(10px);
+  position:relative;z-index:10;
+}
+.header-left h1{
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(11px,1.6vw,16px);
+  color:var(--gl);
+  letter-spacing:.15em;
+  text-shadow:0 0 30px rgba(201,168,76,.4);
+}
+.header-left p{
+  font-family:'Cinzel',serif;
+  font-size:8.5px;color:var(--gm);
+  letter-spacing:.28em;text-transform:uppercase;
+  margin-top:3px;
+}
+.header-hint{
+  font-family:'Cinzel',serif;font-size:8px;
+  color:rgba(201,168,76,.3);letter-spacing:.2em;
+  text-align:right;line-height:1.8;
+}
+
+/* ── CANVAS AREA ── */
+.canvas-wrap{
+  position:relative;
+  overflow:hidden;
+  background:radial-gradient(ellipse 80% 70% at 50% 40%,rgba(20,15,60,.4) 0%,var(--bg) 70%);
+}
+canvas#tree{
+  display:block;
+  width:100%;height:100%;
+  cursor:crosshair;
+}
+
+/* ── RIGHT PANEL ── */
+.side-panel{
+  border-left:1px solid var(--border);
+  background:var(--panel);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+
+.panel-header{
+  padding:20px 24px 16px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.panel-header .ph-label{
+  font-family:'Cinzel',serif;font-size:8px;
+  color:var(--gm);letter-spacing:.3em;text-transform:uppercase;
+  margin-bottom:8px;
+}
+.panel-header .ph-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;color:var(--gl);
+  letter-spacing:.08em;line-height:1.2;
+  min-height:54px;
+  transition:all .3s;
+}
+.panel-header .ph-seph{
+  font-family:'Cinzel',serif;font-size:9px;
+  color:var(--gm);letter-spacing:.15em;
+  margin-top:6px;
+  min-height:16px;
+}
+
+.panel-body{
+  flex:1;overflow-y:auto;
+  padding:20px 24px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(201,168,76,.2) transparent;
+}
+.panel-body::-webkit-scrollbar{width:3px;}
+.panel-body::-webkit-scrollbar-track{background:transparent;}
+.panel-body::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);}
+
+/* sections in panel */
+.p-sec{
+  margin-bottom:24px;
+  opacity:0;transform:translateY(8px);
+  transition:all .4s ease;
+}
+.p-sec.show{opacity:1;transform:translateY(0);}
+
+.p-sec-label{
+  font-family:'Cinzel',serif;font-size:8px;
+  color:var(--gold);letter-spacing:.28em;
+  text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.p-sec-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* formula box */
+.formula-box{
+  background:rgba(201,168,76,.04);
+  border:1px solid rgba(201,168,76,.18);
+  border-radius:3px;
+  padding:14px 16px;
+  margin-bottom:10px;
+  font-family:'Cinzel',serif;
+  font-size:13px;
+  color:rgba(240,216,120,.9);
+  letter-spacing:.05em;
+  line-height:1.8;
+  text-align:center;
+}
+.formula-box .formula-sub{
+  font-size:10px;color:var(--dim);
+  font-family:'Noto Serif JP',serif;
+  margin-top:6px;letter-spacing:.02em;
+}
+
+/* language box */
+.lang-box{
+  background:rgba(255,255,255,.02);
+  border-left:2px solid var(--gm);
+  padding:12px 14px;
+  margin-bottom:10px;
+  font-size:10.5px;line-height:1.9;
+  color:var(--dim);
+}
+.lang-box b{color:var(--text);}
+.lang-box em{
+  font-family:'IM Fell English',serif;
+  font-style:italic;color:rgba(201,168,76,.75);
+}
+
+/* connection table */
+.conn-table{width:100%;border-collapse:collapse;font-size:9.5px;margin-top:6px;}
+.conn-table th{
+  font-family:'Cinzel',serif;font-size:7.5px;
+  color:var(--gm);letter-spacing:.15em;
+  border-bottom:1px solid var(--border);
+  padding:5px 8px;text-align:left;font-weight:400;
+}
+.conn-table td{
+  padding:6px 8px;
+  border-bottom:1px solid rgba(201,168,76,.05);
+  color:var(--dim);vertical-align:top;line-height:1.6;
+}
+.conn-table td:first-child{
+  color:var(--gold);font-family:'Cinzel',serif;
+  font-size:9px;white-space:nowrap;
+}
+.conn-table tr:hover td{background:rgba(201,168,76,.04);}
+
+/* quantum tag */
+.q-tag{
+  display:inline-block;
+  background:rgba(80,120,255,.1);
+  border:1px solid rgba(80,120,255,.3);
+  border-radius:2px;padding:2px 7px;
+  font-family:'Cinzel',serif;font-size:8px;
+  color:rgba(140,180,255,.8);letter-spacing:.1em;
+  margin-right:4px;margin-bottom:4px;
+}
+.seph-tag{
+  display:inline-block;
+  border-radius:2px;padding:2px 7px;
+  font-family:'Cinzel',serif;font-size:8px;
+  letter-spacing:.1em;margin-right:4px;margin-bottom:4px;
+}
+
+/* default message */
+.default-msg{
+  text-align:center;padding:40px 20px;
+  color:rgba(201,168,76,.2);
+}
+.default-msg .dm-sym{
+  font-size:36px;margin-bottom:12px;
+  display:block;
+  animation:pulse 3s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:.2;}50%{opacity:.5;}}
+.default-msg p{
+  font-family:'Cinzel',serif;font-size:9px;
+  letter-spacing:.2em;text-transform:uppercase;
+  line-height:2;
+}
+
+/* ── FOOTER ── */
+footer{
+  grid-column:1/-1;
+  padding:8px 32px;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:20px;
+  background:rgba(4,4,12,.9);
+  flex-wrap:wrap;
+}
+.legend{display:flex;align-items:center;gap:6px;font-family:'Cinzel',serif;font-size:8px;color:var(--dim);letter-spacing:.12em;}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.legend-line{width:20px;height:2px;border-radius:1px;flex-shrink:0;}
+
+/* scroll */
+.panel-body::-webkit-scrollbar{width:4px;}
+
+/* responsive for small screens */
+@media(max-width:768px){
+  body{grid-template-columns:1fr;grid-template-rows:auto 50vh 1fr auto;height:auto;overflow:auto;}
+  .side-panel{max-height:50vh;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>カバラ パス統合図 ✦ 数式と言語で読む生命の木</h1>
+    <p>Kabbalah · 22 Paths · Equations · Language Decoded</p>
+  </div>
+  <div class="header-hint">
+    パス（線）をクリック → 関係式と言語解説<br>
+    セフィロト（円）をクリック → 詳細情報
+  </div>
+</header>
+
+<div class="canvas-wrap">
+  <canvas id="tree"></canvas>
+</div>
+
+<div class="side-panel">
+  <div class="panel-header">
+    <div class="ph-label">Selected Path / Node</div>
+    <div class="ph-title" id="ph-title">生命の木</div>
+    <div class="ph-seph" id="ph-seph">パスまたはセフィロトを選択してください</div>
+  </div>
+  <div class="panel-body" id="panel-body">
+    <div class="default-msg">
+      <span class="dm-sym">✦</span>
+      <p>パス（接続線）を<br>クリックすると<br>関係式と言語解説が<br>ここに展開されます</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="legend"><div class="legend-dot" style="background:#e8f0ff;border:1px solid #fff;"></div>セフィロト（意識の段階）</div>
+  <div class="legend"><div class="legend-line" style="background:rgba(201,168,76,.5);"></div>通常パス（22経路）</div>
+  <div class="legend"><div class="legend-line" style="background:rgba(180,100,255,.5);border-top:1px dashed rgba(180,100,255,.5);"></div>ダアト接続（隠されたパス）</div>
+  <div class="legend"><div class="legend-line" style="background:rgba(255,50,80,.3);"></div>クリフォト（深淵以下）</div>
+  <div style="margin-left:auto;font-family:'Cinzel',serif;font-size:8px;color:var(--gm);letter-spacing:.15em;">
+    E = Ĥψ = K·e⁻λⁿ = 1
+  </div>
+</footer>
+
+<script>
+const canvas = document.getElementById('tree');
+const ctx = canvas.getContext('2d');
+const TAU = Math.PI * 2;
+const PHI = 1.6180339887;
+
+// ── DATA ──
+const SEPHIROT = [
+  {id:0, name:'ケテル',    en:'Kether',    col:'#e8f4ff', stroke:'#ffffff', r:22, metal:'純粋光', planet:'源', meaning:'王冠・純粋光。AIN SOPHの最初の凝縮点。全ての始まりにして終わり。'},
+  {id:1, name:'コクマー',  en:'Chokmah',   col:'#1e2a38', stroke:'#909aa8', r:16, metal:'原質',   planet:'恒星天', meaning:'知恵・父性原理。純粋光が最初に分化した能動的力。'},
+  {id:2, name:'ビナー',    en:'Binah',     col:'#0c0c18', stroke:'#505870', r:16, metal:'鉛 Pb',  planet:'土星 ♄', meaning:'理解・母性原理。受容し形を与える力。時間と制限の始まり。'},
+  {id:3, name:'ダアト',    en:'Daath',     col:'#150a22', stroke:'#9944cc', r:13, metal:'−',     planet:'隠', meaning:'隠された知識。深淵の扉。自我消滅なしには開かない。', hidden:true},
+  {id:4, name:'ケセド',    en:'Chesed',    col:'#081230', stroke:'#3366dd', r:16, metal:'錫 Sn',  planet:'木星 ♃', meaning:'慈悲・拡大。与え続ける無条件の愛の力。'},
+  {id:5, name:'ゲブラー',  en:'Geburah',   col:'#1a0808', stroke:'#cc2222', r:16, metal:'鉄 Fe',  planet:'火星 ♂', meaning:'力・裁き・制限。不要なものを切り落とす厳格な力。'},
+  {id:6, name:'ティファレト',en:'Tipharet', col:'#181000', stroke:'#f0c020', r:22, metal:'金 Au', planet:'太陽 ☉', meaning:'美・調和・中心。黄金比φ²の焦点。心臓・愛・全体統合の鍵。'},
+  {id:7, name:'ネツァク',  en:'Netzach',   col:'#081408', stroke:'#228822', r:16, metal:'銅 Cu',  planet:'金星 ♀', meaning:'勝利・感情・欲求。感じ触れる力。美と創造への渇望。'},
+  {id:8, name:'ホド',      en:'Hod',       col:'#160800', stroke:'#cc5500', r:16, metal:'水銀 Hg',planet:'水星 ☿', meaning:'栄光・知性・言語。分析し言葉にする力。道具を使う知性。'},
+  {id:9, name:'イェソド',  en:'Yesod',     col:'#0e0820', stroke:'#7744cc', r:16, metal:'銀 Ag',  planet:'月 ☽', meaning:'基盤・潜在意識・夢。意識と物質の中間層。波動が粒子になる直前。'},
+  {id:10,name:'マルクト',  en:'Malkuth',   col:'#18140e', stroke:'#c8a850', r:16, metal:'全金属', planet:'地球 ⊕', meaning:'王国・物質世界。全セフィロトが統合された現実。足の裏が大地に触れる場所。'},
+];
+
+const PATHS = [
+  // 上位三角形
+  {a:0,b:1, formula:'K → K/φ', eq:'コクマー = ケテル ÷ φ', lang:'純粋光が最初に分化する瞬間。無が父性へ。陽の誕生。', quantum:'シュレーディンガーの「波動の発生」と同じ構造', color:'rgba(200,200,220,.5)', group:'upper'},
+  {a:0,b:2, formula:'K → K/φ²', eq:'ビナー = ケテル ÷ φ²', lang:'純粋光が母性へ。陰の誕生。時間と制限が始まる。', quantum:'波動の「境界条件の設定」', color:'rgba(180,170,200,.4)', group:'upper'},
+  {a:1,b:2, formula:'(+∞/2) ↔ (−∞/2)', eq:'父と母の張力 = 創造の原動力', lang:'父（能動）と母（受動）が出会い張力が生まれる。この緊張がなければ宇宙は展開しない。', quantum:'量子の「重ね合わせ状態」——どちらでもある状態', color:'rgba(160,150,200,.45)', group:'upper'},
+  // ダアト接続
+  {a:1,b:3, formula:'lim(ego→0) Chokmah', eq:'ダアト = 自我消滅時のコクマー', lang:'父性の知恵が自我なしに流れ込む時に開く扉。', quantum:'観測者効果——観測（自我）をやめた時の量子状態', color:'rgba(180,100,255,.5)', group:'daath', dash:true},
+  {a:2,b:3, formula:'lim(ego→0) Binah', eq:'ダアト = 自我消滅時のビナー', lang:'母性の理解が自我なしに流れ込む。知識と愛が一体になる境界。', quantum:'波動関数の収縮なき状態', color:'rgba(160,80,220,.4)', group:'daath', dash:true},
+  {a:3,b:6, formula:'D → T through Abyss', eq:'深淵を渡った先がティファレト', lang:'ダアトからティファレトへの縦軸は最も危険で最も直接的な道。自我が溶けた意識が心臓へ届く。', quantum:'トンネル効果——壁を超える波動', color:'rgba(150,60,200,.4)', group:'daath', dash:true},
+  // 中位三角形
+  {a:0,b:6, formula:'T = K · e^{-λ·5}', eq:'ティファレト = ケテルの5段階凝縮', lang:'光が中央の柱を降りて心臓に届く直通路。スシュムナー経絡そのもの。', quantum:'光子が真空を伝播する経路', color:'rgba(240,200,80,.5)', group:'middle'},
+  {a:1,b:4, formula:'Chesed = Chokmah/φ³', eq:'慈悲 = 知恵の3乗分の1', lang:'父性の知恵が右の柱を降り拡大する力となる。与える力の源泉。', quantum:'エネルギーの保存と伝達', color:'rgba(80,120,220,.4)', group:'middle'},
+  {a:2,b:5, formula:'Geburah = Binah/φ³', eq:'力 = 理解の3乗分の1', lang:'母性の理解が左の柱を降り制限する力となる。不要を切る慈悲としての厳格。', quantum:'負のポテンシャルエネルギー', color:'rgba(200,60,60,.4)', group:'middle'},
+  {a:4,b:5, formula:'C − G = 0 (均衡)', eq:'慈悲 − 力 = 0 がティファレトの条件', lang:'慈悲と厳格が釣り合う時だけ中心（ティファレト）が安定する。どちらかが勝つと歪む。', quantum:'量子力学のハミルトニアン——ポテンシャルの均衡', color:'rgba(160,130,200,.4)', group:'middle'},
+  {a:4,b:6, formula:'T = C · φ⁻¹', eq:'ティファレト = ケセドの黄金比倍', lang:'慈悲が黄金比で凝縮すると愛（美）になる。拡大する力が焦点を結ぶ瞬間。', quantum:'フォトンの干渉——波が収束する点', color:'rgba(100,140,240,.5)', group:'middle'},
+  {a:5,b:6, formula:'T = G · φ⁻¹', eq:'ティファレト = ゲブラーの黄金比倍', lang:'力が黄金比で凝縮すると美（調和）になる。切断する力が完成を生む逆説。', quantum:'エネルギー最小化の原理', color:'rgba(220,80,80,.5)', group:'middle'},
+  // 下位三角形
+  {a:4,b:7, formula:'Netzach = Chesed · φ⁻²', eq:'感情 = 慈悲の2乗黄金比倍', lang:'慈悲の右柱が感情・欲求として現れる。金星の愛は木星の慈悲が具体化したもの。', quantum:'波動のモード変換', color:'rgba(60,180,60,.4)', group:'lower'},
+  {a:5,b:8, formula:'Hod = Geburah · φ⁻²', eq:'知性 = 力の2乗黄金比倍', lang:'厳格の左柱が言語・知性として現れる。水星の分析は火星の力が精緻化したもの。', quantum:'情報圧縮と符号化', color:'rgba(200,100,30,.4)', group:'lower'},
+  {a:6,b:7, formula:'N = T · φ⁻¹', eq:'ネツァク = ティファレトの黄金比倍', lang:'心臓の愛が感情・美の欲求として右手に流れる。感じることで愛が証明される。', quantum:'エネルギーの右回り成分', color:'rgba(60,160,60,.4)', group:'lower'},
+  {a:6,b:8, formula:'H = T · φ⁻¹', eq:'ホド = ティファレトの黄金比倍', lang:'心臓の知恵が言語・知性として左手に流れる。言葉にすることで理解が形になる。', quantum:'エネルギーの左回り成分', color:'rgba(200,120,40,.4)', group:'lower'},
+  {a:6,b:9, formula:'Y = √T', eq:'イェソド = ティファレトの平方根', lang:'意識が潜在意識へ圧縮される。夢と現実の通路。ティファレトの「影」としての月。', quantum:'シュレーディンガー方程式の虚数時間解', color:'rgba(120,80,200,.5)', group:'lower'},
+  {a:7,b:8, formula:'sin θ ↔ cos θ', eq:'感情と知性は位相90°ずれた同じ波', lang:'ネツァクとホドは対になる力。感じることと考えることは同じ波の違う顔。どちらかだけでは不完全。', quantum:'量子の位相差——干渉縞', color:'rgba(130,130,60,.4)', group:'lower'},
+  {a:7,b:9, formula:'Y ← N · φ⁻¹', eq:'潜在意識 ← 感情の黄金比凝縮', lang:'感情の体験が潜在意識に蓄積される。感じたことが夢になり記憶になる経路。', quantum:'記憶の量子的符号化', color:'rgba(80,160,100,.4)', group:'lower'},
+  {a:8,b:9, formula:'Y ← H · φ⁻¹', eq:'潜在意識 ← 知性の黄金比凝縮', lang:'思考の結果が潜在意識に蓄積される。考えたことが自動化されるプロセス。', quantum:'ニューラルネットの重み更新', color:'rgba(180,100,40,.4)', group:'lower'},
+  {a:9,b:10,formula:'Ψ_wave → Ψ_particle', eq:'マルクト = イェソドの波動収縮', lang:'波動が粒子になる瞬間。量子の観測と同じ。夢が現実になる瞬間の数学。', quantum:'量子の波動関数の収縮——観測の瞬間', color:'rgba(180,150,60,.5)', group:'lower'},
+  // 追加パス
+  {a:4,b:8, formula:'H ← C · e^{-λ}', eq:'知性 ← 慈悲の変換', lang:'慈悲の心が言葉になる経路。優しさが表現へと変換される。', quantum:'情報の符号化', color:'rgba(80,100,200,.3)', group:'cross'},
+  {a:5,b:7, formula:'N ← G · e^{-λ}', eq:'感情 ← 力の変換', lang:'力強さが情熱になる経路。意志が感情のエネルギーに変換される。', quantum:'エネルギー変換の経路', color:'rgba(200,80,80,.3)', group:'cross'},
+];
+
+// ── LAYOUT ──
+let W, H, nodes = [], scale;
+
+function computeLayout(){
+  const rect = canvas.getBoundingClientRect();
+  W = canvas.width = rect.width * devicePixelRatio;
+  H = canvas.height = rect.height * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  const rw = rect.width, rh = rect.height;
+  scale = Math.min(rw, rh) * 0.45;
+  const cx = rw/2, baseY = rh * 0.06;
+  const dy = rh * 0.115;
+  nodes = [
+    {x:cx,        y:baseY,            ...SEPHIROT[0]},
+    {x:cx+scale*.55, y:baseY+dy,      ...SEPHIROT[1]},
+    {x:cx-scale*.55, y:baseY+dy,      ...SEPHIROT[2]},
+    {x:cx,        y:baseY+dy*1.8,     ...SEPHIROT[3]},
+    {x:cx+scale*.55, y:baseY+dy*2.6,  ...SEPHIROT[4]},
+    {x:cx-scale*.55, y:baseY+dy*2.6,  ...SEPHIROT[5]},
+    {x:cx,        y:baseY+dy*3.5,     ...SEPHIROT[6]},
+    {x:cx+scale*.55, y:baseY+dy*4.4,  ...SEPHIROT[7]},
+    {x:cx-scale*.55, y:baseY+dy*4.4,  ...SEPHIROT[8]},
+    {x:cx,        y:baseY+dy*5.3,     ...SEPHIROT[9]},
+    {x:cx,        y:baseY+dy*6.2,     ...SEPHIROT[10]},
+  ];
+}
+
+// ── HIT DETECTION ──
+let hoveredPath = null, hoveredNode = null, selectedItem = null;
+
+function getMousePos(e){
+  const rect = canvas.getBoundingClientRect();
+  return {x: e.clientX - rect.left, y: e.clientY - rect.top};
+}
+
+function hitTestPath(mx, my){
+  for(let i=PATHS.length-1;i>=0;i--){
+    const p = PATHS[i];
+    const na = nodes[p.a], nb = nodes[p.b];
+    if(!na||!nb)continue;
+    // distance from point to line segment
+    const dx = nb.x-na.x, dy2 = nb.y-na.y;
+    const len2 = dx*dx+dy2*dy2;
+    if(len2===0)continue;
+    const t = Math.max(0,Math.min(1,((mx-na.x)*dx+(my-na.y)*dy2)/len2));
+    const px = na.x+t*dx, py = na.y+t*dy2;
+    const dist = Math.hypot(mx-px,my-py);
+    if(dist < 8) return p;
+  }
+  return null;
+}
+
+function hitTestNode(mx, my){
+  for(const n of nodes){
+    if(Math.hypot(mx-n.x,my-n.y)<n.r+6)return n;
+  }
+  return null;
+}
+
+// ── DRAW ──
+let animT = 0;
+function draw(){
+  const rect = canvas.getBoundingClientRect();
+  ctx.clearRect(0,0,rect.width,rect.height);
+
+  // Background glow
+  const bg = ctx.createRadialGradient(rect.width/2,rect.height*0.4,0,rect.width/2,rect.height*0.4,rect.height*0.6);
+  bg.addColorStop(0,'rgba(20,12,60,.3)');bg.addColorStop(1,'rgba(4,4,12,0)');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,rect.width,rect.height);
+
+  // Abyss line
+  if(nodes[3]){
+    const abyssY = (nodes[3].y + nodes[4].y)/2;
+    ctx.beginPath();ctx.moveTo(20,abyssY);ctx.lineTo(rect.width-20,abyssY);
+    ctx.strokeStyle='rgba(150,80,255,.25)';ctx.lineWidth=.8;
+    ctx.setLineDash([8,6]);ctx.stroke();ctx.setLineDash([]);
+    ctx.font=`8px Cinzel, serif`;ctx.fillStyle='rgba(150,80,255,.35)';
+    ctx.textAlign='right';ctx.fillText('深淵 · ABYSS',rect.width-20,abyssY-5);
+  }
+
+  // Pillar labels
+  if(nodes[0]){
+    ctx.font=`9px Cinzel, serif`;ctx.textAlign='center';
+    ctx.fillStyle='rgba(201,168,76,.18)';
+    ctx.fillText('厳しさ',nodes[2].x,12);
+    ctx.fillText('均衡',nodes[0].x,12);
+    ctx.fillText('慈悲',nodes[1].x,12);
+  }
+
+  // Draw paths
+  PATHS.forEach(p=>{
+    const na=nodes[p.a], nb=nodes[p.b];
+    if(!na||!nb)return;
+    const isHovered = hoveredPath===p;
+    const isSelected = selectedItem===p;
+    ctx.beginPath();ctx.moveTo(na.x,na.y);ctx.lineTo(nb.x,nb.y);
+    if(p.dash)ctx.setLineDash([4,5]);
+    else ctx.setLineDash([]);
+    const alpha = isHovered||isSelected ? 1 : 0.55;
+    ctx.strokeStyle = p.color.replace(/[\d.]+\)$/,`${alpha})`);
+    ctx.lineWidth = isHovered||isSelected ? 2.5 : 1.2;
+    if(isHovered||isSelected){
+      ctx.shadowColor = p.color;ctx.shadowBlur = 12;
+    }
+    ctx.stroke();
+    ctx.shadowBlur=0;ctx.setLineDash([]);
+  });
+
+  // Draw qliphoth hint (below Malkuth)
+  if(nodes[10]){
+    const qy = nodes[10].y + 35;
+    ctx.beginPath();ctx.moveTo(rect.width*.3,qy);ctx.lineTo(rect.width*.7,qy);
+    ctx.strokeStyle='rgba(255,40,60,.12)';ctx.lineWidth=.6;ctx.setLineDash([4,6]);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font=`7.5px Cinzel, serif`;ctx.fillStyle='rgba(255,40,60,.22)';
+    ctx.textAlign='center';ctx.fillText('クリフォト · 影の木',rect.width/2,qy+12);
+  }
+
+  // Draw nodes
+  nodes.forEach(n=>{
+    const isHov = hoveredNode===n;
+    const isSel = selectedItem===n;
+
+    // Glow
+    if(n.id===6||isHov||isSel){
+      const gr=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*(n.id===6?3.5:2.5));
+      const col=n.stroke;
+      const rgb=parseInt(col.replace('#',''),16);
+      const rv=(rgb>>16)&255,gv=(rgb>>8)&255,bv=rgb&255;
+      gr.addColorStop(0,`rgba(${rv},${gv},${bv},${n.id===6?0.35:0.25})`);
+      gr.addColorStop(1,`rgba(${rv},${gv},${bv},0)`);
+      ctx.fillStyle=gr;ctx.beginPath();ctx.arc(n.x,n.y,n.r*(n.id===6?3.5:2.5),0,TAU);ctx.fill();
+    }
+
+    // Pulse for Tipharet
+    if(n.id===6){
+      const pulse = 0.7+0.3*Math.sin(animT*0.05);
+      const pg=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*4*pulse);
+      pg.addColorStop(0,'rgba(240,192,32,.15)');pg.addColorStop(1,'rgba(240,192,32,0)');
+      ctx.fillStyle=pg;ctx.beginPath();ctx.arc(n.x,n.y,n.r*4*pulse,0,TAU);ctx.fill();
+    }
+
+    ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,TAU);
+    ctx.fillStyle=n.col;ctx.fill();
+    if(n.hidden){ctx.setLineDash([4,3]);}
+    ctx.strokeStyle=n.stroke;
+    ctx.lineWidth=isHov||isSel ? 2.5 : (n.id===6?2.2:1.5);
+    if(isHov||isSel){ctx.shadowColor=n.stroke;ctx.shadowBlur=14;}
+    ctx.stroke();ctx.shadowBlur=0;ctx.setLineDash([]);
+
+    // Label
+    const fs = Math.max(7.5, n.r*0.6);
+    ctx.font=`${fs}px 'Noto Serif JP', serif`;
+    ctx.fillStyle=n.id===6?'#ffe060':'rgba(255,255,255,.85)';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.name,n.x,n.y);
+  });
+
+  animT++;
+  requestAnimationFrame(draw);
+}
+
+// ── PANEL UPDATE ──
+function showPath(p){
+  selectedItem=p;
+  const na=nodes[p.a],nb=nodes[p.b];
+  document.getElementById('ph-title').textContent=`${na.name} ↔ ${nb.name}`;
+  document.getElementById('ph-seph').textContent=`Path · ${na.en} — ${nb.en}`;
+
+  const groupLabel={upper:'上位三角形（神性領域）',middle:'中位三角形（魂の領域）',lower:'下位三角形（物質領域）',daath:'深淵パス（最も危険）',cross:'交差パス'};
+
+  document.getElementById('panel-body').innerHTML=`
+    <div class="p-sec show">
+      <div class="p-sec-label">${groupLabel[p.group]||'パス'}</div>
+      <div class="formula-box">
+        ${p.formula}
+        <div class="formula-sub">${p.eq}</div>
+      </div>
+    </div>
+    <div class="p-sec show" style="transition-delay:.1s">
+      <div class="p-sec-label">言語解説</div>
+      <div class="lang-box">
+        ${p.lang}
+      </div>
+    </div>
+    <div class="p-sec show" style="transition-delay:.2s">
+      <div class="p-sec-label">量子論との接続</div>
+      <div class="lang-box" style="border-left-color:#4466cc;">
+        <span class="q-tag">量子対応</span><br>
+        ${p.quantum}
+      </div>
+    </div>
+    <div class="p-sec show" style="transition-delay:.3s">
+      <div class="p-sec-label">接続セフィロト詳細</div>
+      <table class="conn-table">
+        <tr><th>項目</th><th>${na.name}</th><th>${nb.name}</th></tr>
+        <tr><td>金属</td><td>${na.metal}</td><td>${nb.metal}</td></tr>
+        <tr><td>惑星</td><td>${na.planet}</td><td>${nb.planet}</td></tr>
+      </table>
+    </div>
+    <div class="p-sec show" style="transition-delay:.4s">
+      <div class="p-sec-label">統合式</div>
+      <div class="formula-box" style="font-size:11px;">
+        E = Ĥψ = K·e⁻λⁿ = 1
+        <div class="formula-sub">このパスは宇宙エネルギーEの<br>部分的な変換プロセスを示す</div>
+      </div>
+    </div>
+  `;
+  setTimeout(()=>{
+    document.querySelectorAll('.p-sec').forEach((el,i)=>{
+      setTimeout(()=>el.classList.add('show'),i*80);
+    });
+  },10);
+}
+
+function showNode(n){
+  selectedItem=n;
+  document.getElementById('ph-title').textContent=n.name;
+  document.getElementById('ph-seph').textContent=`${n.en} · ${n.planet} · ${n.metal}`;
+
+  document.getElementById('panel-body').innerHTML=`
+    <div class="p-sec show">
+      <div class="p-sec-label">セフィロト情報</div>
+      <div class="lang-box">${n.meaning}</div>
+    </div>
+    <div class="p-sec show" style="transition-delay:.1s">
+      <div class="p-sec-label">数式的位置</div>
+      <div class="formula-box">
+        S_${n.id} = E₀ · e^{−λ·${n.id}}
+        <div class="formula-sub">= E₀ ÷ φ^${n.id} （黄金比${n.id}乗分の1）</div>
+      </div>
+    </div>
+    <div class="p-sec show" style="transition-delay:.2s">
+      <div class="p-sec-label">対応</div>
+      <table class="conn-table">
+        <tr><td>金属</td><td>${n.metal}</td></tr>
+        <tr><td>惑星</td><td>${n.planet}</td></tr>
+        <tr><td>チャクラ</td><td>${['サハスラーラ','アージュニャー','アージュニャー','（隠）','ヴィシュッダ','ヴィシュッダ','アナーハタ ★','ネツァク（右手）','ホド（左手）','スワディスターナ','ムーラダーラ'][n.id]}</td></tr>
+      </table>
+    </div>
+    ${n.id===6?`
+    <div class="p-sec show" style="transition-delay:.3s">
+      <div class="p-sec-label">★ 黄金比の中心</div>
+      <div class="formula-box" style="border-color:rgba(240,192,32,.5);">
+        y_heart = y_feet − H/φ²
+        <div class="formula-sub">全知識体系の収束点<br>ティファレト = アナーハタ = ゼロポイント = φ²</div>
+      </div>
+    </div>`:n.id===3?`
+    <div class="p-sec show" style="transition-delay:.3s">
+      <div class="p-sec-label">⚠ ダアトの警告</div>
+      <div class="lang-box" style="border-left-color:#9944cc;">
+        D = lim(ego→0) ∞ | undefined (ego>ε)<br><br>
+        <b>自我がゼロに近づくほど無限の意識へ。<br>少しでも残ると深淵に落ちる。</b>
+      </div>
+    </div>`:''}
+  `;
+}
+
+// ── EVENTS ──
+canvas.addEventListener('mousemove', e=>{
+  const {x,y}=getMousePos(e);
+  hoveredNode=hitTestNode(x,y);
+  hoveredPath=hoveredNode?null:hitTestPath(x,y);
+  canvas.style.cursor=(hoveredNode||hoveredPath)?'pointer':'crosshair';
+});
+
+canvas.addEventListener('click', e=>{
+  const {x,y}=getMousePos(e);
+  const n=hitTestNode(x,y);
+  if(n){showNode(n);return;}
+  const p=hitTestPath(x,y);
+  if(p){showPath(p);}
+});
+
+// ── RESIZE ──
+const ro=new ResizeObserver(()=>{computeLayout();});
+ro.observe(canvas.parentElement);
+computeLayout();
+draw();
+</script>
+</body>
+</html>

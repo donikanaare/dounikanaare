@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>エメラルドタブレット × 生命の木</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@300;400;600&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#060810;
+  --gold:#c9a84c;
+  --gold-l:#f0d080;
+  --gold-d:#5a4820;
+  --text:#ddd0b8;
+  --dim:rgba(221,208,184,0.5);
+  --emerald:#40c890;
+  --emerald-d:#1a6040;
+  --emerald-l:#80ffcc;
+}
+
+body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse 100% 50% at 50% 0%,rgba(40,180,100,.06) 0%,transparent 60%),
+    radial-gradient(ellipse 100% 50% at 50% 100%,rgba(100,60,200,.07) 0%,transparent 60%);
+  font-family:'Noto Serif JP',serif;
+  color:var(--text);
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:28px 12px 60px;
+  overflow-x:hidden;
+}
+
+/* HEADER */
+h1{
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(11px,2.4vw,18px);
+  color:var(--emerald-l);
+  letter-spacing:.16em;text-align:center;
+  text-shadow:0 0 40px rgba(64,200,144,.5),0 0 80px rgba(64,200,144,.2);
+  margin-bottom:4px;
+}
+.sub{
+  font-family:'Cinzel',serif;
+  font-size:clamp(7px,1.3vw,10px);
+  color:var(--emerald-d);
+  letter-spacing:.32em;text-align:center;margin-bottom:6px;
+  text-transform:uppercase;
+}
+.tagline{
+  font-family:'Cinzel',serif;
+  font-size:clamp(8px,1.5vw,11px);
+  color:rgba(64,200,144,.5);
+  letter-spacing:.2em;text-align:center;margin-bottom:26px;
+  font-style:italic;
+}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:22px;flex-wrap:wrap;justify-content:center;}
+.tab{
+  font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.16em;
+  padding:7px 16px;border-radius:3px;cursor:pointer;
+  border:1px solid var(--emerald-d);
+  background:transparent;color:var(--emerald-d);
+  transition:all .25s;text-transform:uppercase;
+}
+.tab:hover{border-color:var(--emerald);color:var(--emerald);}
+.tab.active{
+  background:rgba(64,200,144,.1);
+  border-color:var(--emerald);color:var(--emerald-l);
+  box-shadow:0 0 16px rgba(64,200,144,.2);
+}
+
+/* PANELS */
+.panel{display:none;width:100%;max-width:1120px;animation:fadeUp .5s ease both;}
+.panel.active{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;align-items:flex-start;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+svg.main-svg{width:min(440px,96vw);height:auto;flex-shrink:0;}
+
+/* INFO */
+.info{flex:1;min-width:250px;max-width:380px;display:flex;flex-direction:column;gap:16px;}
+.sec{border-left:2px solid var(--emerald-d);padding-left:14px;}
+.sec-t{
+  font-family:'Cinzel',serif;font-size:9px;letter-spacing:.25em;
+  color:var(--emerald);text-transform:uppercase;margin-bottom:7px;
+}
+.sec-body{font-size:10.5px;line-height:1.9;color:var(--dim);}
+.sec-body b{color:var(--text);}
+.sec-body em{color:var(--emerald-l);font-style:italic;}
+
+.phrase-card{
+  border:1px solid rgba(64,200,144,.15);
+  border-radius:5px;
+  padding:10px 12px;
+  background:rgba(64,200,144,.04);
+  margin-bottom:6px;
+}
+.phrase-card .latin{
+  font-family:'Cinzel',serif;font-size:9px;
+  color:var(--emerald);letter-spacing:.12em;margin-bottom:4px;
+}
+.phrase-card .jp{font-size:10.5px;color:var(--text);margin-bottom:3px;}
+.phrase-card .meaning{font-size:9.5px;color:var(--dim);}
+
+.flow-diagram{
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  border:1px solid rgba(64,200,144,.12);
+  border-radius:6px;padding:14px 10px;
+  background:rgba(64,200,144,.03);
+}
+.flow-item{
+  display:flex;align-items:center;gap:10px;width:100%;
+  padding:4px 0;
+}
+.flow-dot{
+  width:12px;height:12px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid;
+}
+.flow-text{font-size:10px;color:var(--dim);flex:1;}
+.flow-text b{color:var(--text);}
+.flow-arrow{
+  text-align:center;font-size:14px;
+  color:rgba(64,200,144,.4);padding:1px 0;
+  width:100%;
+}
+
+.foot{
+  margin-top:36px;font-family:'Cinzel',serif;font-size:8px;
+  color:rgba(64,200,144,.22);letter-spacing:.22em;text-align:center;
+}
+
+/* node tooltip */
+.tooltip{
+  position:fixed;
+  background:rgba(6,8,16,.95);
+  border:1px solid rgba(64,200,144,.4);
+  border-radius:5px;padding:10px 14px;
+  font-family:'Noto Serif JP',serif;font-size:10px;
+  color:var(--text);pointer-events:none;
+  max-width:220px;line-height:1.7;
+  display:none;z-index:100;
+  box-shadow:0 0 20px rgba(64,200,144,.15);
+}
+.tooltip .tt-name{
+  font-family:'Cinzel',serif;font-size:9px;
+  color:var(--emerald-l);letter-spacing:.15em;margin-bottom:4px;
+}
+.tooltip .tt-phrase{
+  font-style:italic;color:var(--emerald);
+  font-size:9.5px;margin-bottom:3px;
+}
+</style>
+</head>
+<body>
+
+<h1>Emerald Tablet × Tree of Life</h1>
+<div class="sub">エメラルドタブレット × 生命の木 — 統合マップ</div>
+<div class="tagline">"As above, so below · As within, so without"</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('above',this)">上下対応</button>
+  <button class="tab" onclick="show('circulation',this)">円環の流れ</button>
+  <button class="tab" onclick="show('macro',this)">マクロ／ミクロ</button>
+</div>
+
+<!-- TOOLTIP -->
+<div class="tooltip" id="tt">
+  <div class="tt-name" id="tt-name"></div>
+  <div class="tt-phrase" id="tt-phrase"></div>
+  <div id="tt-body"></div>
+</div>
+
+<!-- ══════════ TAB 1: AS ABOVE SO BELOW ══════════ -->
+<div class="panel active" id="above">
+
+<svg class="main-svg" viewBox="0 0 340 640" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="gW2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff" stop-opacity=".9"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gYl2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffe030" stop-opacity="1"/><stop offset="60%" stop-color="#c07800" stop-opacity=".4"/><stop offset="100%" stop-color="#c07800" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gPu2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#9966ff" stop-opacity=".8"/><stop offset="100%" stop-color="#330088" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gEm" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#40c890" stop-opacity=".6"/><stop offset="100%" stop-color="#106040" stop-opacity="0"/></radialGradient>
+  <filter id="bl5"><feGaussianBlur stdDeviation="5"/></filter>
+  <filter id="bl8"><feGaussianBlur stdDeviation="8"/></filter>
+  <filter id="bl10"><feGaussianBlur stdDeviation="10"/></filter>
+
+  <!-- Emerald glow gradient for mirror line -->
+  <linearGradient id="mirrorGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="rgba(64,200,144,0)"/>
+    <stop offset="30%" stop-color="rgba(64,200,144,0.6)"/>
+    <stop offset="50%" stop-color="rgba(64,200,144,0.9)"/>
+    <stop offset="70%" stop-color="rgba(64,200,144,0.6)"/>
+    <stop offset="100%" stop-color="rgba(64,200,144,0)"/>
+  </linearGradient>
+
+  <!-- Up arrow gradient -->
+  <linearGradient id="upGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+    <stop offset="0%" stop-color="rgba(64,200,144,0)"/>
+    <stop offset="100%" stop-color="rgba(64,200,144,0.7)"/>
+  </linearGradient>
+  <!-- Down arrow gradient -->
+  <linearGradient id="downGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="rgba(201,168,76,0)"/>
+    <stop offset="100%" stop-color="rgba(201,168,76,0.7)"/>
+  </linearGradient>
+</defs>
+
+<!-- ── ABOVE / BELOW LABELS ── -->
+<text x="170" y="18" font-family="Cinzel" font-size="8" fill="rgba(64,200,144,.5)" text-anchor="middle" letter-spacing=".3em">ABOVE — マクロコスモス · 宇宙</text>
+<text x="170" y="622" font-family="Cinzel" font-size="8" fill="rgba(201,168,76,.5)" text-anchor="middle" letter-spacing=".3em">BELOW — ミクロコスモス · 人間</text>
+
+<!-- Background zone tints -->
+<rect x="10" y="22" width="320" height="290" rx="8" fill="rgba(64,200,144,.02)" stroke="rgba(64,200,144,.06)" stroke-width=".8"/>
+<rect x="10" y="330" width="320" height="290" rx="8" fill="rgba(201,168,76,.02)" stroke="rgba(201,168,76,.06)" stroke-width=".8"/>
+
+<!-- ── MIRROR LINE (As above so below) ── -->
+<line x1="10" y1="318" x2="330" y2="318" stroke="url(#mirrorGrad)" stroke-width="2"/>
+<!-- Mirror label -->
+<text x="170" y="313" font-family="Cinzel" font-size="8" fill="rgba(64,200,144,.8)" text-anchor="middle" letter-spacing=".25em">AS ABOVE · SO BELOW</text>
+<text x="170" y="325" font-family="Noto Serif JP" font-size="7" fill="rgba(64,200,144,.4)" text-anchor="middle">ティファレト — 宇宙と人間の鏡面</text>
+
+<!-- ── ASCENDING ARROW (left of tree) ── -->
+<line x1="22" y1="580" x2="22" y2="80" stroke="url(#upGrad)" stroke-width="1.5"/>
+<polygon points="22,75 17,90 27,90" fill="rgba(64,200,144,.6)"/>
+<text x="15" y="340" font-family="Cinzel" font-size="7" fill="rgba(64,200,144,.45)" text-anchor="middle" transform="rotate(-90,15,340)" letter-spacing=".2em">地から天へ上昇 · Ascent</text>
+
+<!-- ── DESCENDING ARROW (right of tree) ── -->
+<line x1="318" y1="80" x2="318" y2="580" stroke="url(#downGrad)" stroke-width="1.5"/>
+<polygon points="318,585 313,570 323,570" fill="rgba(201,168,76,.6)"/>
+<text x="325" y="340" font-family="Cinzel" font-size="7" fill="rgba(201,168,76,.45)" text-anchor="middle" transform="rotate(90,325,340)" letter-spacing=".2em">天から地へ降下 · Descent</text>
+
+<!-- ── TREE PATHS ── -->
+<g stroke-dasharray="4 4" stroke-width="1.1" fill="none">
+  <line x1="170" y1="55" x2="250" y2="110" stroke="rgba(64,200,144,.2)"/>
+  <line x1="170" y1="55" x2="90" y2="110" stroke="rgba(64,200,144,.2)"/>
+  <line x1="90" y1="110" x2="250" y2="110" stroke="rgba(64,200,144,.15)"/>
+  <line x1="170" y1="55" x2="170" y2="280" stroke="rgba(255,224,50,.28)"/>
+  <line x1="250" y1="110" x2="250" y2="205" stroke="rgba(64,150,255,.22)"/>
+  <line x1="90" y1="110" x2="90" y2="205" stroke="rgba(255,80,80,.22)"/>
+  <line x1="90" y1="205" x2="250" y2="205" stroke="rgba(200,150,200,.18)"/>
+  <line x1="250" y1="205" x2="170" y2="280" stroke="rgba(200,200,80,.2)"/>
+  <line x1="90" y1="205" x2="170" y2="280" stroke="rgba(200,200,80,.2)"/>
+  <!-- Below mirror -->
+  <line x1="170" y1="280" x2="250" y2="360" stroke="rgba(201,168,76,.22)"/>
+  <line x1="170" y1="280" x2="90" y2="360" stroke="rgba(201,168,76,.22)"/>
+  <line x1="170" y1="280" x2="170" y2="430" stroke="rgba(150,100,255,.28)"/>
+  <line x1="90" y1="360" x2="250" y2="360" stroke="rgba(180,140,80,.18)"/>
+  <line x1="250" y1="205" x2="250" y2="360" stroke="rgba(80,200,80,.2)"/>
+  <line x1="90" y1="205" x2="90" y2="360" stroke="rgba(255,150,50,.2)"/>
+  <line x1="250" y1="360" x2="170" y2="430" stroke="rgba(150,100,255,.22)"/>
+  <line x1="90" y1="360" x2="170" y2="430" stroke="rgba(150,100,255,.22)"/>
+  <line x1="170" y1="430" x2="170" y2="495" stroke="rgba(180,140,80,.28)"/>
+</g>
+
+<!-- ══ NODES (ABOVE = emerald tint, BELOW = gold tint) ══ -->
+
+<!-- ① Kether — "真実にして確かなり" -->
+<g class="nd-hover" data-name="ケテル — AIN SOPH AUR の凝縮点" data-phrase="真実にして、疑いなく、確かなり" data-body="エメラルドタブレット第1節。宇宙の源、無限の光が最初に凝縮した点。上位三角形の頂点。">
+  <circle cx="170" cy="55" r="28" fill="url(#gW2)" filter="url(#bl8)" opacity=".5"/>
+  <circle cx="170" cy="55" r="19" fill="#e8f8f0" stroke="#80ffcc" stroke-width="2"/>
+  <text x="170" y="51" font-family="Noto Serif JP" font-size="8" font-weight="600" fill="#0a2018" text-anchor="middle" dominant-baseline="middle">ケテル</text>
+  <text x="170" y="61" font-family="Cinzel" font-size="5.5" fill="rgba(0,40,20,.6)" text-anchor="middle">Kether · 真実</text>
+</g>
+
+<!-- ② Chokmah -->
+<g class="nd-hover" data-name="コクマー — 父性原理" data-phrase="上にあるものは下にあるものの如く（父）" data-body="能動原理・知恵。宇宙的な父。エメラルドタブレットの「太陽が父」に対応。">
+  <circle cx="250" cy="110" r="16" fill="#1e2830" stroke="rgba(128,255,200,.5)" stroke-width="1.5"/>
+  <text x="250" y="107" font-family="Noto Serif JP" font-size="7" fill="#aae8cc" text-anchor="middle" dominant-baseline="middle">コクマー</text>
+  <text x="250" y="116" font-family="Cinzel" font-size="5" fill="rgba(128,255,200,.4)" text-anchor="middle">☯ 父・能動</text>
+</g>
+
+<!-- ③ Binah -->
+<g class="nd-hover" data-name="ビナー — 母性原理" data-phrase="月が母" data-body="受動原理・理解。宇宙的な母。エメラルドタブレットの「月が母」に対応。形を与える力。">
+  <circle cx="90" cy="110" r="16" fill="#0c1018" stroke="rgba(128,200,255,.4)" stroke-width="1.5"/>
+  <text x="90" y="107" font-family="Noto Serif JP" font-size="7" fill="#aaccee" text-anchor="middle" dominant-baseline="middle">ビナー</text>
+  <text x="90" y="116" font-family="Cinzel" font-size="5" fill="rgba(128,200,255,.4)" text-anchor="middle">☯ 母・受動</text>
+</g>
+
+<!-- ④ Chesed -->
+<g class="nd-hover" data-name="ケセド — 慈悲・拡大" data-phrase="風がそれを腹に宿した" data-body="拡大・慈悲。エメラルドタブレットの「風」に対応。上から下への流出エネルギー。">
+  <circle cx="250" cy="205" r="15" fill="#081430" stroke="rgba(80,130,255,.5)" stroke-width="1.5"/>
+  <text x="250" y="202" font-family="Noto Serif JP" font-size="7" fill="#99bbff" text-anchor="middle" dominant-baseline="middle">ケセド</text>
+  <text x="250" y="211" font-family="Cinzel" font-size="5" fill="rgba(100,150,255,.4)" text-anchor="middle">♃ 風・流出</text>
+</g>
+
+<!-- ⑤ Geburah -->
+<g class="nd-hover" data-name="ゲブラー — 力・裁き" data-phrase="大地がそれを養った" data-body="制限・力。エメラルドタブレットの「大地」に対応。形を固定し制限する力。">
+  <circle cx="90" cy="205" r="15" fill="#1a0808" stroke="rgba(255,80,80,.5)" stroke-width="1.5"/>
+  <text x="90" y="202" font-family="Noto Serif JP" font-size="7" fill="#ff9999" text-anchor="middle" dominant-baseline="middle">ゲブラー</text>
+  <text x="90" y="211" font-family="Cinzel" font-size="5" fill="rgba(255,100,100,.4)" text-anchor="middle">♂ 大地・制限</text>
+</g>
+
+<!-- ⑥ Tifaret — MIRROR CENTER ★ -->
+<g class="nd-hover" data-name="ティファレト — 宇宙と人間の鏡面" data-phrase="上にあるものは下にあるものの如く — この鏡面" data-body="生命の木の中心。エメラルドタブレットの「As above so below」が実現する場所。太陽・金。マクロとミクロの接点。">
+  <circle cx="170" cy="280" r="36" fill="url(#gYl2)" filter="url(#bl10)" opacity=".6"/>
+  <circle cx="170" cy="280" r="24" fill="#181000" stroke="#f0c020" stroke-width="2.5"/>
+  <circle cx="170" cy="280" r="19" fill="none" stroke="rgba(64,200,144,.3)" stroke-width="1"/>
+  <!-- emerald cross overlay -->
+  <line x1="150" y1="280" x2="190" y2="280" stroke="rgba(64,200,144,.25)" stroke-width="1"/>
+  <line x1="170" y1="260" x2="170" y2="300" stroke="rgba(64,200,144,.25)" stroke-width="1"/>
+  <text x="170" y="274" font-family="Noto Serif JP" font-size="8.5" font-weight="600" fill="#ffe060" text-anchor="middle" dominant-baseline="middle">ティファレト</text>
+  <text x="170" y="285" font-family="Cinzel" font-size="5" fill="rgba(240,192,32,.55)" text-anchor="middle">☉ 金 · 鏡面 · As above</text>
+</g>
+
+<!-- ⑦ Netzach -->
+<g class="nd-hover" data-name="ネツァク — 感情・金星" data-phrase="一者の奇跡を成し遂げるために" data-body="感情・欲求・生命力。ミクロコスモスの感情領域。金星・銅。">
+  <circle cx="250" cy="360" r="15" fill="#081808" stroke="rgba(80,200,80,.5)" stroke-width="1.5"/>
+  <text x="250" y="357" font-family="Noto Serif JP" font-size="7" fill="#88dd88" text-anchor="middle" dominant-baseline="middle">ネツァク</text>
+  <text x="250" y="366" font-family="Cinzel" font-size="5" fill="rgba(80,200,80,.4)" text-anchor="middle">♀ 感情・欲求</text>
+</g>
+
+<!-- ⑧ Hod -->
+<g class="nd-hover" data-name="ホド — 知性・水星" data-phrase="全ての闇はそれに向かって上昇する" data-body="知性・言語・魔術。ミクロコスモスの思考領域。水星・水銀。変容を媒介する。">
+  <circle cx="90" cy="360" r="15" fill="#160a00" stroke="rgba(255,140,40,.5)" stroke-width="1.5"/>
+  <text x="90" y="357" font-family="Noto Serif JP" font-size="7" fill="#ffaa66" text-anchor="middle" dominant-baseline="middle">ホド</text>
+  <text x="90" y="366" font-family="Cinzel" font-size="5" fill="rgba(255,140,40,.4)" text-anchor="middle">☿ 知性・言語</text>
+</g>
+
+<!-- ⑨ Yesod -->
+<g class="nd-hover" data-name="イェソド — 潜在意識・月" data-phrase="地から天へ上昇し、再び地へ降下せよ" data-body="潜在意識・夢・直感。エメラルドタブレットの「上昇と降下」の折り返し点。月・銀。">
+  <circle cx="170" cy="430" r="17" fill="#0e0820" stroke="rgba(160,100,255,.6)" stroke-width="1.5"/>
+  <circle cx="170" cy="430" r="22" fill="url(#gPu2)" filter="url(#bl5)" opacity=".4"/>
+  <text x="170" y="427" font-family="Noto Serif JP" font-size="7.5" fill="#cc99ff" text-anchor="middle" dominant-baseline="middle">イェソド</text>
+  <text x="170" y="437" font-family="Cinzel" font-size="5" fill="rgba(160,100,255,.5)" text-anchor="middle">☽ 潜在意識</text>
+</g>
+
+<!-- ⑩ Malkuth -->
+<g class="nd-hover" data-name="マルクト — 物質世界・地球" data-phrase="これが世界の栄光である" data-body="エメラルドタブレット最終節。物質世界・人間の肉体。四元素の統合。上昇と降下の終着点にして出発点。">
+  <circle cx="170" cy="497" r="22" fill="url(#gEm)" filter="url(#bl5)" opacity=".4"/>
+  <path d="M170,478 L170,497 L189,497 A19,19 0 0,0 170,478Z" fill="#c8a850" opacity=".8"/>
+  <path d="M170,497 L189,497 A19,19 0 0,1 170,516 L170,497Z" fill="#607840" opacity=".8"/>
+  <path d="M170,516 L170,497 L151,497 A19,19 0 0,0 170,516Z" fill="#8b4030" opacity=".8"/>
+  <path d="M170,497 L151,497 A19,19 0 0,1 170,478 L170,497Z" fill="#1a1a1a" opacity=".8"/>
+  <circle cx="170" cy="497" r="19" fill="none" stroke="rgba(64,200,144,.5)" stroke-width="1.5"/>
+  <text x="170" y="494" font-family="Noto Serif JP" font-size="7.5" fill="#e8d890" text-anchor="middle" dominant-baseline="middle">マルクト</text>
+  <text x="170" y="504" font-family="Cinzel" font-size="5" fill="rgba(200,168,80,.5)" text-anchor="middle">⊕ 世界の栄光</text>
+</g>
+
+<!-- ── EMERALD PHRASE BANNERS ── -->
+<!-- Above zone -->
+<text x="170" y="34" font-family="Cinzel" font-size="6.5" fill="rgba(64,200,144,.35)" text-anchor="middle" letter-spacing=".15em">太陽が父 · 月が母 · 風が宿し · 大地が養う</text>
+
+<!-- Below zone -->
+<text x="170" y="610" font-family="Cinzel" font-size="6.5" fill="rgba(201,168,76,.3)" text-anchor="middle" letter-spacing=".15em">これが世界の栄光 · Solve et Coagula</text>
+
+<!-- Pillar labels -->
+<text x="90" y="26" font-family="Cinzel" font-size="7" fill="rgba(64,200,144,.22)" text-anchor="middle" letter-spacing=".12em">厳しさの柱</text>
+<text x="170" y="26" font-family="Cinzel" font-size="7" fill="rgba(64,200,144,.3)" text-anchor="middle" letter-spacing=".12em">均衡の柱</text>
+<text x="250" y="26" font-family="Cinzel" font-size="7" fill="rgba(64,200,144,.22)" text-anchor="middle" letter-spacing=".12em">慈悲の柱</text>
+</svg>
+
+<!-- INFO -->
+<div class="info">
+  <div class="sec">
+    <div class="sec-t">✦ As Above · So Below</div>
+    <div class="sec-body">
+      エメラルドタブレット最大のキーワード。<br><br>
+      生命の木では<b>ティファレト（金・太陽）</b>がちょうど中間に位置し、上と下を繋ぐ<b>「鏡面」</b>として機能する。<br><br>
+      <em>上半分（ケテル〜ティファレト）</em><br>
+      → マクロコスモス・宇宙・神の世界<br><br>
+      <em>下半分（ティファレト〜マルクト）</em><br>
+      → ミクロコスモス・人間・物質世界<br><br>
+      両者は<b>完全に対称</b>であり、片方を理解することはもう片方を理解することと同じ。
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-t">✦ 四元素の配置</div>
+    <div class="sec-body">
+      タブレットの<b>「父・母・風・大地」</b>が上位四セフィロトに対応する。<br><br>
+      <b>コクマー</b> = 太陽（父・能動）<br>
+      <b>ビナー</b> = 月（母・受動）<br>
+      <b>ケセド</b> = 風（流出・拡大）<br>
+      <b>ゲブラー</b> = 大地（制限・固定）<br><br>
+      そしてこの4つが交差する中心に<b>ティファレト（金）</b>が生まれる。
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-t">✦ 各ノードをタップ</div>
+    <div class="sec-body">
+      図の各セフィロトにカーソルを当てると、エメラルドタブレットの対応フレーズが表示されます。
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ TAB 2: CIRCULATION ══════════ -->
+<div class="panel" id="circulation">
+
+<svg class="main-svg" viewBox="0 0 340 580" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="upFlow" x1="0%" y1="100%" x2="0%" y2="0%">
+    <stop offset="0%" stop-color="#40c890" stop-opacity="0"/>
+    <stop offset="40%" stop-color="#40c890" stop-opacity=".5"/>
+    <stop offset="100%" stop-color="#80ffcc" stop-opacity=".9"/>
+  </linearGradient>
+  <linearGradient id="downFlow" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#f0c020" stop-opacity="0"/>
+    <stop offset="40%" stop-color="#f0c020" stop-opacity=".5"/>
+    <stop offset="100%" stop-color="#c8a850" stop-opacity=".9"/>
+  </linearGradient>
+  <marker id="arrowUp" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+    <path d="M0,8 L4,0 L8,8 Z" fill="rgba(64,200,144,.8)"/>
+  </marker>
+  <marker id="arrowDown" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+    <path d="M0,0 L4,8 L8,0 Z" fill="rgba(201,168,76,.8)"/>
+  </marker>
+  <filter id="bl6b"><feGaussianBlur stdDeviation="6"/></filter>
+</defs>
+
+<!-- Background circles suggesting circulation -->
+<circle cx="170" cy="290" r="250" fill="none" stroke="rgba(64,200,144,.04)" stroke-width="60"/>
+<circle cx="170" cy="290" r="180" fill="none" stroke="rgba(201,168,76,.04)" stroke-width="40"/>
+
+<!-- SOLVE arc (left, ascending) -->
+<path d="M 170 520 A 160 160 0 0 1 170 60" fill="none" stroke="url(#upFlow)" stroke-width="2.5" marker-end="url(#arrowUp)"/>
+<!-- COAGULA arc (right, descending) -->
+<path d="M 170 60 A 160 160 0 0 1 170 520" fill="none" stroke="url(#downFlow)" stroke-width="2.5" marker-end="url(#arrowDown)"/>
+
+<!-- Solve label -->
+<text x="28" y="296" font-family="Cinzel" font-size="9" fill="rgba(64,200,144,.7)" text-anchor="middle" transform="rotate(-90,28,296)" letter-spacing=".2em">SOLVE · 溶解 · 上昇</text>
+<!-- Coagula label -->
+<text x="312" y="296" font-family="Cinzel" font-size="9" fill="rgba(201,168,76,.7)" text-anchor="middle" transform="rotate(90,312,296)" letter-spacing=".2em">COAGULA · 凝固 · 降下</text>
+
+<!-- Tree paths (faint) -->
+<g stroke-dasharray="3 5" stroke-width="1" fill="none" opacity=".3">
+  <line x1="170" y1="75" x2="250" y2="125" stroke="#40c890"/>
+  <line x1="170" y1="75" x2="90" y2="125" stroke="#40c890"/>
+  <line x1="90" y1="125" x2="250" y2="125" stroke="#40c890"/>
+  <line x1="170" y1="75" x2="170" y2="290" stroke="#ffe040"/>
+  <line x1="250" y1="125" x2="250" y2="215" stroke="#6699ff"/>
+  <line x1="90" y1="125" x2="90" y2="215" stroke="#ff6666"/>
+  <line x1="90" y1="215" x2="250" y2="215" stroke="#cc88cc"/>
+  <line x1="250" y1="215" x2="170" y2="290" stroke="#cccc44"/>
+  <line x1="90" y1="215" x2="170" y2="290" stroke="#cccc44"/>
+  <line x1="170" y1="290" x2="250" y2="365" stroke="#44cc44"/>
+  <line x1="170" y1="290" x2="90" y2="365" stroke="#ff9944"/>
+  <line x1="170" y1="290" x2="170" y2="435" stroke="#9966ff"/>
+  <line x1="90" y1="365" x2="250" y2="365" stroke="#aa8844"/>
+  <line x1="250" y1="215" x2="250" y2="365" stroke="#44aa44"/>
+  <line x1="90" y1="215" x2="90" y2="365" stroke="#ff8833"/>
+  <line x1="250" y1="365" x2="170" y2="435" stroke="#9966ff"/>
+  <line x1="90" y1="365" x2="170" y2="435" stroke="#9966ff"/>
+  <line x1="170" y1="435" x2="170" y2="500" stroke="#c8a850"/>
+</g>
+
+<!-- Stage markers on left arc -->
+<!-- Nigredo -->
+<circle cx="58" cy="490" r="6" fill="#222" stroke="rgba(64,200,144,.4)" stroke-width="1"/>
+<text x="68" y="493" font-family="Cinzel" font-size="8" fill="rgba(64,200,144,.55)">ニグレド · 鉛 · マルクト</text>
+<!-- Albedo -->
+<circle cx="42" cy="380" r="6" fill="#102030" stroke="rgba(64,200,144,.5)" stroke-width="1"/>
+<text x="52" y="383" font-family="Cinzel" font-size="8" fill="rgba(64,200,144,.6)">アルベド · 銀 · イェソド</text>
+<!-- Citrinitas -->
+<circle cx="46" cy="240" r="6" fill="#180a00" stroke="rgba(64,200,144,.6)" stroke-width="1"/>
+<text x="56" y="243" font-family="Cinzel" font-size="8" fill="rgba(64,200,144,.7)">キトリニタス · 銅</text>
+<!-- Rubedo -->
+<circle cx="62" cy="110" r="6" fill="#1a0808" stroke="rgba(64,200,144,.7)" stroke-width="1"/>
+<text x="72" y="113" font-family="Cinzel" font-size="8" fill="rgba(128,255,200,.8)">ルベド · 金 · ティファレト</text>
+
+<!-- Stage markers on right arc (descent) -->
+<text x="168" y="108" font-family="Cinzel" font-size="7.5" fill="rgba(201,168,76,.5)" text-anchor="end">神の意志が流出</text>
+<text x="168" y="230" font-family="Cinzel" font-size="7.5" fill="rgba(201,168,76,.5)" text-anchor="end">慈悲と力に分化</text>
+<text x="168" y="355" font-family="Cinzel" font-size="7.5" fill="rgba(201,168,76,.5)" text-anchor="end">感情・知性に分化</text>
+<text x="168" y="455" font-family="Cinzel" font-size="7.5" fill="rgba(201,168,76,.5)" text-anchor="end">潜在意識へ</text>
+<text x="168" y="510" font-family="Cinzel" font-size="7.5" fill="rgba(201,168,76,.5)" text-anchor="end">物質世界へ凝固</text>
+
+<!-- NODES -->
+<g transform="translate(0,20)">
+<!-- Kether -->
+<g><circle cx="170" cy="55" r="18" fill="#e8f8f0" stroke="#80ffcc" stroke-width="1.8"/>
+<text x="170" y="52" font-family="Noto Serif JP" font-size="7.5" font-weight="600" fill="#0a2018" text-anchor="middle" dominant-baseline="middle">ケテル</text>
+<text x="170" y="61" font-family="Cinzel" font-size="5" fill="rgba(0,40,20,.5)" text-anchor="middle">AIN SOPH AUR</text></g>
+
+<g><circle cx="250" cy="105" r="14" fill="#1e2830" stroke="rgba(128,255,200,.45)" stroke-width="1.3"/>
+<text x="250" cy="105" font-family="Noto Serif JP" font-size="7" fill="#aae8cc" text-anchor="middle" dominant-baseline="middle" y="105">コクマー</text></g>
+
+<g><circle cx="90" cy="105" r="14" fill="#0c1018" stroke="rgba(128,200,255,.4)" stroke-width="1.3"/>
+<text x="90" y="105" font-family="Noto Serif JP" font-size="7" fill="#aaccee" text-anchor="middle" dominant-baseline="middle">ビナー</text></g>
+
+<g><circle cx="250" cy="195" r="13" fill="#081430" stroke="rgba(80,130,255,.45)" stroke-width="1.3"/>
+<text x="250" y="195" font-family="Noto Serif JP" font-size="6.5" fill="#99bbff" text-anchor="middle" dominant-baseline="middle">ケセド</text></g>
+
+<g><circle cx="90" cy="195" r="13" fill="#1a0808" stroke="rgba(255,80,80,.45)" stroke-width="1.3"/>
+<text x="90" y="195" font-family="Noto Serif JP" font-size="6.5" fill="#ff9999" text-anchor="middle" dominant-baseline="middle">ゲブラー</text></g>
+
+<!-- Tifaret CENTER -->
+<g>
+  <circle cx="170" cy="270" r="28" fill="rgba(255,224,50,.15)" filter="url(#bl6b)"/>
+  <circle cx="170" cy="270" r="22" fill="#181000" stroke="#f0c020" stroke-width="2.2"/>
+  <text x="170" y="266" font-family="Noto Serif JP" font-size="8" fill="#ffe060" text-anchor="middle" dominant-baseline="middle">ティファレト</text>
+  <text x="170" y="276" font-family="Cinzel" font-size="5" fill="rgba(240,192,32,.5)" text-anchor="middle">金 · 鏡面</text>
+</g>
+
+<g><circle cx="250" cy="345" r="13" fill="#081808" stroke="rgba(80,200,80,.45)" stroke-width="1.3"/>
+<text x="250" y="345" font-family="Noto Serif JP" font-size="6.5" fill="#88dd88" text-anchor="middle" dominant-baseline="middle">ネツァク</text></g>
+
+<g><circle cx="90" cy="345" r="13" fill="#160a00" stroke="rgba(255,140,40,.45)" stroke-width="1.3"/>
+<text x="90" y="345" font-family="Noto Serif JP" font-size="6.5" fill="#ffaa66" text-anchor="middle" dominant-baseline="middle">ホド</text></g>
+
+<g><circle cx="170" cy="415" r="15" fill="#0e0820" stroke="rgba(160,100,255,.55)" stroke-width="1.3"/>
+<text x="170" y="415" font-family="Noto Serif JP" font-size="7" fill="#cc99ff" text-anchor="middle" dominant-baseline="middle">イェソド</text></g>
+
+<g>
+  <path d="M170,464 L170,480 L186,480 A16,16 0 0,0 170,464Z" fill="#c8a850" opacity=".85"/>
+  <path d="M170,480 L186,480 A16,16 0 0,1 170,496 L170,480Z" fill="#607840" opacity=".85"/>
+  <path d="M170,496 L170,480 L154,480 A16,16 0 0,0 170,496Z" fill="#8b4030" opacity=".85"/>
+  <path d="M170,480 L154,480 A16,16 0 0,1 170,464 L170,480Z" fill="#1a1a1a" opacity=".85"/>
+  <circle cx="170" cy="480" r="16" fill="none" stroke="rgba(200,168,80,.55)" stroke-width="1.3"/>
+  <text x="170" y="480" font-family="Noto Serif JP" font-size="7" fill="#e8d890" text-anchor="middle" dominant-baseline="middle">マルクト</text>
+</g>
+</g>
+
+<!-- Center labels -->
+<text x="170" y="295" font-family="Cinzel" font-size="6.5" fill="rgba(64,200,144,.5)" text-anchor="middle" letter-spacing=".15em">↑ 地から天へ · Ascent</text>
+<text x="170" y="305" font-family="Cinzel" font-size="6.5" fill="rgba(201,168,76,.5)" text-anchor="middle" letter-spacing=".15em">↓ 天から地へ · Descent</text>
+</svg>
+
+<div class="info">
+  <div class="sec">
+    <div class="sec-t">✦ Solve et Coagula — 円環構造</div>
+    <div class="sec-body">
+      エメラルドタブレットの<b>「地から天へ上昇し、再び地へ降下せよ」</b>は直線ではなく<b>円環</b>。<br><br>
+      <em>左弧（緑）= SOLVE · 溶解 · 上昇</em><br>
+      マルクトからケテルへの魂の上昇。錬金術の4段階（ニグレド→アルベド→キトリニタス→ルベド）がここに対応。<br><br>
+      <em>右弧（金）= COAGULA · 凝固 · 降下</em><br>
+      ケテルからマルクトへの神の意志の流出。10のセフィロトへの段階的な分化がここに対応。<br><br>
+      この円環は<b>終わりなく繰り返される</b>。悟りは終点ではなく、また地上に戻ってくる。
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-t">✦ ティファレトが鍵</div>
+    <div class="sec-body">
+      上昇と降下の<b>交差点</b>がティファレト（金）。<br>
+      ここが「As above, so below」の<b>鏡面</b>であり、錬金術のルベド（赤化・完成）の到達点。<br><br>
+      ここを経由せずに上も下もない、というのがカバラとエメラルドタブレットの共通メッセージ。
+    </div>
+  </div>
+
+  <div class="phrase-card">
+    <div class="latin">Solve et Coagula</div>
+    <div class="jp">溶解せよ、そして凝固せよ</div>
+    <div class="meaning">古いものを完全に壊し、より高い次元で再構築せよ。錬金術最大の格言。</div>
+  </div>
+
+  <div class="phrase-card">
+    <div class="latin">地から天へ上昇し、再び地へ降下せよ</div>
+    <div class="jp">Ascend to Heaven, Descend to Earth</div>
+    <div class="meaning">エメラルドタブレット第8〜10節。円環の完成が「賢者の石」の獲得。</div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ TAB 3: MACRO/MICRO ══════════ -->
+<div class="panel" id="macro">
+
+<svg class="main-svg" viewBox="0 0 340 600" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="cosmosGrad" cx="50%" cy="20%" r="60%">
+    <stop offset="0%" stop-color="rgba(64,200,144,.08)"/>
+    <stop offset="100%" stop-color="rgba(64,200,144,0)"/>
+  </radialGradient>
+  <radialGradient id="humanGrad" cx="50%" cy="80%" r="60%">
+    <stop offset="0%" stop-color="rgba(201,168,76,.08)"/>
+    <stop offset="100%" stop-color="rgba(201,168,76,0)"/>
+  </radialGradient>
+  <filter id="blm"><feGaussianBlur stdDeviation="4"/></filter>
+</defs>
+
+<!-- Zone backgrounds -->
+<rect x="12" y="10" width="316" height="268" rx="8" fill="url(#cosmosGrad)" stroke="rgba(64,200,144,.08)" stroke-width="1"/>
+<rect x="12" y="318" width="316" height="268" rx="8" fill="url(#humanGrad)" stroke="rgba(201,168,76,.08)" stroke-width="1"/>
+
+<!-- Zone headers -->
+<text x="170" y="24" font-family="Cinzel" font-size="8" fill="rgba(64,200,144,.6)" text-anchor="middle" letter-spacing=".25em">MACROCOSMOS — 宇宙・神的世界</text>
+<text x="170" y="580" font-family="Cinzel" font-size="8" fill="rgba(201,168,76,.6)" text-anchor="middle" letter-spacing=".25em">MICROCOSMOS — 人間・物質世界</text>
+
+<!-- Correspondence lines (horizontal, across mirror) -->
+<line x1="12" y1="295" x2="328" y2="295" stroke="rgba(128,200,144,.6)" stroke-width="1.5"/>
+<text x="170" y="290" font-family="Cinzel" font-size="7.5" fill="rgba(64,200,144,.8)" text-anchor="middle" letter-spacing=".2em">AS ABOVE, SO BELOW · AS WITHIN, SO WITHOUT</text>
+<text x="170" y="302" font-family="Noto Serif JP" font-size="7" fill="rgba(64,200,144,.4)" text-anchor="middle">上にあるものは下にあるものの如く · 内にあるものは外にあるものの如く</text>
+
+<!-- MACRO correspondence labels (left side) -->
+<text x="14" y="65" font-family="Cinzel" font-size="7" fill="rgba(64,200,144,.4)" text-anchor="start">宇宙意識</text>
+<text x="14" y="120" font-family="Cinzel" font-size="7" fill="rgba(64,200,144,.35)" text-anchor="start">創造原理</text>
+<text x="14" y="195" font-family="Cinzel" font-size="7" fill="rgba(64,200,144,.3)" text-anchor="start">宇宙の力</text>
+<text x="14" y="260" font-family="Cinzel" font-size="7" fill="rgba(64,200,144,.35)" text-anchor="start">太陽・中心</text>
+
+<!-- MICRO correspondence labels (left side) -->
+<text x="14" y="365" font-family="Cinzel" font-size="7" fill="rgba(201,168,76,.35)" text-anchor="start">感情・欲求</text>
+<text x="14" y="435" font-family="Cinzel" font-size="7" fill="rgba(201,168,76,.35)" text-anchor="start">潜在意識</text>
+<text x="14" y="495" font-family="Cinzel" font-size="7" fill="rgba(201,168,76,.4)" text-anchor="start">肉体・物質</text>
+
+<!-- Dashed correspondence lines -->
+<line x1="60" y1="60" x2="60" y2="500" stroke="rgba(64,200,144,.06)" stroke-width="1" stroke-dasharray="3 6"/>
+
+<!-- Tree paths -->
+<g stroke-dasharray="3 5" stroke-width="1" fill="none" opacity=".35">
+  <line x1="170" y1="58" x2="250" y2="113" stroke="#40c890"/>
+  <line x1="170" y1="58" x2="90" y2="113" stroke="#40c890"/>
+  <line x1="90" y1="113" x2="250" y2="113" stroke="#40c890"/>
+  <line x1="170" y1="58" x2="170" y2="270" stroke="#ffe040"/>
+  <line x1="250" y1="113" x2="250" y2="200" stroke="#6699ff"/>
+  <line x1="90" y1="113" x2="90" y2="200" stroke="#ff6666"/>
+  <line x1="90" y1="200" x2="250" y2="200" stroke="#cc88cc"/>
+  <line x1="250" y1="200" x2="170" y2="270" stroke="#cccc44"/>
+  <line x1="90" y1="200" x2="170" y2="270" stroke="#cccc44"/>
+  <line x1="170" y1="270" x2="250" y2="355" stroke="#44cc44"/>
+  <line x1="170" y1="270" x2="90" y2="355" stroke="#ff9944"/>
+  <line x1="170" y1="270" x2="170" y2="430" stroke="#9966ff"/>
+  <line x1="90" y1="355" x2="250" y2="355" stroke="#aa8844"/>
+  <line x1="250" y1="200" x2="250" y2="355" stroke="#44aa44"/>
+  <line x1="90" y1="200" x2="90" y2="355" stroke="#ff8833"/>
+  <line x1="250" y1="355" x2="170" y2="430" stroke="#9966ff"/>
+  <line x1="90" y1="355" x2="170" y2="430" stroke="#9966ff"/>
+  <line x1="170" y1="430" x2="170" y2="498" stroke="#c8a850"/>
+</g>
+
+<!-- NODES with macro/micro annotations -->
+
+<!-- Kether — 宇宙意識 -->
+<g>
+  <circle cx="170" cy="58" r="18" fill="#e8f8f0" stroke="#80ffcc" stroke-width="2"/>
+  <text x="170" y="54" font-family="Noto Serif JP" font-size="7.5" font-weight="600" fill="#0a2018" text-anchor="middle" dominant-baseline="middle">ケテル</text>
+  <text x="170" y="63" font-family="Cinzel" font-size="5" fill="rgba(0,40,20,.5)" text-anchor="middle">宇宙意識</text>
+  <!-- annotation right -->
+  <line x1="189" y1="58" x2="240" y2="58" stroke="rgba(64,200,144,.2)" stroke-width=".8" stroke-dasharray="3 3"/>
+  <text x="243" y="61" font-family="Cinzel" font-size="6.5" fill="rgba(64,200,144,.45)">= AIN SOPH AUR</text>
+</g>
+
+<g>
+  <circle cx="250" cy="113" r="14" fill="#1e2830" stroke="rgba(128,255,200,.4)" stroke-width="1.3"/>
+  <text x="250" y="113" font-family="Noto Serif JP" font-size="6.5" fill="#aae8cc" text-anchor="middle" dominant-baseline="middle">コクマー</text>
+</g>
+<g>
+  <circle cx="90" cy="113" r="14" fill="#0c1018" stroke="rgba(128,200,255,.4)" stroke-width="1.3"/>
+  <text x="90" y="113" font-family="Noto Serif JP" font-size="6.5" fill="#aaccee" text-anchor="middle" dominant-baseline="middle">ビナー</text>
+</g>
+
+<!-- Chesed with annotation -->
+<g>
+  <circle cx="250" cy="200" r="13" fill="#081430" stroke="rgba(80,130,255,.45)" stroke-width="1.3"/>
+  <text x="250" y="200" font-family="Noto Serif JP" font-size="6.5" fill="#99bbff" text-anchor="middle" dominant-baseline="middle">ケセド</text>
+  <line x1="264" y1="200" x2="310" y2="200" stroke="rgba(64,200,144,.15)" stroke-width=".8" stroke-dasharray="3 3"/>
+  <text x="312" y="203" font-family="Cinzel" font-size="6" fill="rgba(64,200,144,.35)">風</text>
+</g>
+<g>
+  <circle cx="90" cy="200" r="13" fill="#1a0808" stroke="rgba(255,80,80,.45)" stroke-width="1.3"/>
+  <text x="90" y="200" font-family="Noto Serif JP" font-size="6.5" fill="#ff9999" text-anchor="middle" dominant-baseline="middle">ゲブラー</text>
+  <line x1="76" y1="200" x2="30" y2="200" stroke="rgba(64,200,144,.15)" stroke-width=".8" stroke-dasharray="3 3"/>
+  <text x="28" y="203" font-family="Cinzel" font-size="6" fill="rgba(64,200,144,.35)" text-anchor="end">大地</text>
+</g>
+
+<!-- Tifaret MIRROR -->
+<g>
+  <circle cx="170" cy="270" r="28" fill="rgba(255,224,50,.12)" filter="url(#blm)"/>
+  <circle cx="170" cy="270" r="22" fill="#181000" stroke="#f0c020" stroke-width="2.2"/>
+  <circle cx="170" cy="270" r="18" fill="none" stroke="rgba(64,200,144,.25)" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="170" y="265" font-family="Noto Serif JP" font-size="8" fill="#ffe060" text-anchor="middle" dominant-baseline="middle">ティファレト</text>
+  <text x="170" y="275" font-family="Cinzel" font-size="5" fill="rgba(64,200,144,.5)" text-anchor="middle">↕ 宇宙 ＝ 人間</text>
+  <!-- Annotation both sides -->
+  <line x1="193" y1="270" x2="310" y2="270" stroke="rgba(255,200,50,.2)" stroke-width=".8" stroke-dasharray="3 3"/>
+  <text x="312" y="273" font-family="Cinzel" font-size="6" fill="rgba(255,200,50,.45)">太陽 ☉</text>
+  <line x1="147" y1="270" x2="30" y2="270" stroke="rgba(255,200,50,.2)" stroke-width=".8" stroke-dasharray="3 3"/>
+  <text x="28" y="273" font-family="Cinzel" font-size="6" fill="rgba(255,200,50,.45)" text-anchor="end">心臓 ♥</text>
+</g>
+
+<!-- Below nodes -->
+<g>
+  <circle cx="250" cy="355" r="13" fill="#081808" stroke="rgba(80,200,80,.45)" stroke-width="1.3"/>
+  <text x="250" y="355" font-family="Noto Serif JP" font-size="6.5" fill="#88dd88" text-anchor="middle" dominant-baseline="middle">ネツァク</text>
+  <line x1="264" y1="355" x2="310" y2="355" stroke="rgba(201,168,76,.15)" stroke-width=".8" stroke-dasharray="3 3"/>
+  <text x="312" y="358" font-family="Cinzel" font-size="6" fill="rgba(201,168,76,.35)">感情</text>
+</g>
+<g>
+  <circle cx="90" cy="355" r="13" fill="#160a00" stroke="rgba(255,140,40,.45)" stroke-width="1.3"/>
+  <text x="90" y="355" font-family="Noto Serif JP" font-size="6.5" fill="#ffaa66" text-anchor="middle" dominant-baseline="middle">ホド</text>
+  <line x1="76" y1="355" x2="30" y2="355" stroke="rgba(201,168,76,.15)" stroke-width=".8" stroke-dasharray="3 3"/>
+  <text x="28" y="358" font-family="Cinzel" font-size="6" fill="rgba(201,168,76,.35)" text-anchor="end">思考</text>
+</g>
+
+<g>
+  <circle cx="170" cy="430" r="15" fill="#0e0820" stroke="rgba(160,100,255,.55)" stroke-width="1.3"/>
+  <text x="170" y="430" font-family="Noto Serif JP" font-size="7" fill="#cc99ff" text-anchor="middle" dominant-baseline="middle">イェソド</text>
+  <line x1="186" y1="430" x2="310" y2="430" stroke="rgba(201,168,76,.15)" stroke-width=".8" stroke-dasharray="3 3"/>
+  <text x="312" y="433" font-family="Cinzel" font-size="6" fill="rgba(201,168,76,.35)">夢・無意識</text>
+</g>
+
+<!-- Malkuth with annotation -->
+<g>
+  <path d="M170,479 L170,498 L189,498 A19,19 0 0,0 170,479Z" fill="#c8a850" opacity=".8"/>
+  <path d="M170,498 L189,498 A19,19 0 0,1 170,517 L170,498Z" fill="#607840" opacity=".8"/>
+  <path d="M170,517 L170,498 L151,498 A19,19 0 0,0 170,517Z" fill="#8b4030" opacity=".8"/>
+  <path d="M170,498 L151,498 A19,19 0 0,1 170,479 L170,498Z" fill="#1a1a1a" opacity=".8"/>
+  <circle cx="170" cy="498" r="19" fill="none" stroke="rgba(201,168,76,.55)" stroke-width="1.5"/>
+  <text x="170" y="495" font-family="Noto Serif JP" font-size="7.5" fill="#e8d890" text-anchor="middle" dominant-baseline="middle">マルクト</text>
+  <text x="170" y="505" font-family="Cinzel" font-size="5" fill="rgba(200,168,80,.5)" text-anchor="middle">肉体・物質</text>
+  <line x1="190" y1="498" x2="310" y2="498" stroke="rgba(201,168,76,.2)" stroke-width=".8" stroke-dasharray="3 3"/>
+  <text x="312" y="501" font-family="Cinzel" font-size="6" fill="rgba(201,168,76,.45)">四元素</text>
+</g>
+</svg>
+
+<div class="info">
+  <div class="sec">
+    <div class="sec-t">✦ マクロ／ミクロの二重構造</div>
+    <div class="sec-body">
+      エメラルドタブレットの<b>「上にあるものは下にあるものの如く」</b>は、生命の木が<b>二つの顔</b>を持つことを意味する。<br><br>
+      同じ図が<em>宇宙の地図</em>であり、同時に<em>人間の内側の地図</em>でもある。
+    </div>
+  </div>
+
+  <table style="width:100%;border-collapse:collapse;font-size:9.5px;">
+    <tr style="border-bottom:1px solid rgba(64,200,144,.15);">
+      <th style="font-family:Cinzel,serif;font-size:8px;color:var(--emerald);padding:5px 6px;text-align:left;">セフィロト</th>
+      <th style="font-family:Cinzel,serif;font-size:8px;color:var(--emerald);padding:5px 6px;text-align:left;">宇宙（マクロ）</th>
+      <th style="font-family:Cinzel,serif;font-size:8px;color:var(--gold);padding:5px 6px;text-align:left;">人間（ミクロ）</th>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(255,255,255,.04);">
+      <td style="padding:4px 6px;color:var(--dim);">ケテル</td>
+      <td style="padding:4px 6px;color:rgba(128,255,200,.6);">宇宙意識・神</td>
+      <td style="padding:4px 6px;color:rgba(201,168,76,.6);">純粋意識・魂の核</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(255,255,255,.04);">
+      <td style="padding:4px 6px;color:var(--dim);">コクマー</td>
+      <td style="padding:4px 6px;color:rgba(128,255,200,.6);">宇宙の父・陽</td>
+      <td style="padding:4px 6px;color:rgba(201,168,76,.6);">直感・閃き</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(255,255,255,.04);">
+      <td style="padding:4px 6px;color:var(--dim);">ビナー</td>
+      <td style="padding:4px 6px;color:rgba(128,255,200,.6);">宇宙の母・陰</td>
+      <td style="padding:4px 6px;color:rgba(201,168,76,.6);">理解・受容</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(255,255,255,.04);background:rgba(255,220,50,.04);">
+      <td style="padding:4px 6px;color:#ffe060;font-weight:600;">ティファレト</td>
+      <td style="padding:4px 6px;color:rgba(255,220,50,.7);">太陽・宇宙の中心</td>
+      <td style="padding:4px 6px;color:rgba(255,220,50,.7);">心臓・真の自己</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(255,255,255,.04);">
+      <td style="padding:4px 6px;color:var(--dim);">ネツァク</td>
+      <td style="padding:4px 6px;color:rgba(128,255,200,.6);">自然・生命力</td>
+      <td style="padding:4px 6px;color:rgba(201,168,76,.6);">感情・欲求</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(255,255,255,.04);">
+      <td style="padding:4px 6px;color:var(--dim);">ホド</td>
+      <td style="padding:4px 6px;color:rgba(128,255,200,.6);">言語・情報</td>
+      <td style="padding:4px 6px;color:rgba(201,168,76,.6);">思考・言葉</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(255,255,255,.04);">
+      <td style="padding:4px 6px;color:var(--dim);">イェソド</td>
+      <td style="padding:4px 6px;color:rgba(128,255,200,.6);">月・潮汐</td>
+      <td style="padding:4px 6px;color:rgba(201,168,76,.6);">夢・潜在意識</td>
+    </tr>
+    <tr>
+      <td style="padding:4px 6px;color:var(--dim);">マルクト</td>
+      <td style="padding:4px 6px;color:rgba(128,255,200,.6);">地球・物質宇宙</td>
+      <td style="padding:4px 6px;color:rgba(201,168,76,.6);">肉体・五感</td>
+    </tr>
+  </table>
+
+  <div class="phrase-card">
+    <div class="latin">As within, so without</div>
+    <div class="jp">内にあるものは外にあるものの如く</div>
+    <div class="meaning">エメラルドタブレットの拡張版。自分の内側を変えれば外の世界が変わる、という思想。現代の「引き寄せの法則」の遠い祖先。</div>
+  </div>
+</div>
+</div>
+
+<!-- TOOLTIP JS -->
+<script>
+function show(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+const tt=document.getElementById('tt');
+const ttName=document.getElementById('tt-name');
+const ttPhrase=document.getElementById('tt-phrase');
+const ttBody=document.getElementById('tt-body');
+
+document.querySelectorAll('.nd-hover').forEach(el=>{
+  el.style.cursor='pointer';
+  el.addEventListener('mouseenter',e=>{
+    ttName.textContent=el.dataset.name||'';
+    ttPhrase.textContent=el.dataset.phrase||'';
+    ttBody.textContent=el.dataset.body||'';
+    tt.style.display='block';
+  });
+  el.addEventListener('mousemove',e=>{
+    tt.style.left=(e.clientX+14)+'px';
+    tt.style.top=(e.clientY-20)+'px';
+  });
+  el.addEventListener('mouseleave',()=>{tt.style.display='none';});
+});
+</script>
+
+<div class="foot">✦ &nbsp; As above so below · The One Thing · Emerald Tablet &nbsp; ✦</div>
+</body>
+</html>
