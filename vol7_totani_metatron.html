@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vol.7 執念が光を見た ― 戸谷データとメタトロンの邂逅 ―</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Share+Tech+Mono&family=Zen+Old+Mincho:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap');
+
+:root {
+  --bg: #04080c;
+  --surface: #060c14;
+  --gold: #c8a84c;
+  --gold-dim: rgba(200,168,76,0.12);
+  --gold-line: rgba(200,168,76,0.18);
+  --text: #c8d4e0;
+  --dim: rgba(200,212,224,0.48);
+  --blue: #4488ff;
+  --blue-dim: rgba(68,136,255,0.12);
+  --blue-line: rgba(68,136,255,0.22);
+  --cyan: #40c8e8;
+  --green: #44dd88;
+  --orange: #e87840;
+  --vio: #9966ff;
+  --accent: #a8c0d8;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Shippori Mincho B1',serif;
+  line-height:1.95;
+  font-size:clamp(14px,1.6vw,16px);
+  overflow-x:hidden;
+}
+
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    radial-gradient(1px 1px at 8% 12%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 44% 8%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 66% 22%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 82% 15%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 18% 68%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 55%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 48%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 35% 80%, rgba(68,136,255,0.35) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 72% 88%, rgba(200,168,76,0.3) 0%, transparent 100%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── COVER ── */
+#cover {
+  position:relative;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:60px 24px;
+  text-align:center;
+  overflow:hidden;
+}
+#cover::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 40%, rgba(5,15,40,0.65) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 30% at 50% 90%, rgba(200,100,20,0.06) 0%, transparent 60%);
+  z-index:0;
+}
+#cover-canvas {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:0.5;
+  z-index:0;
+}
+.cover-content { position:relative; z-index:2; }
+
+.vol-badge {
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(10px,1.2vw,12px);
+  letter-spacing:0.42em;
+  color:var(--blue);
+  opacity:0.65;
+  margin-bottom:18px;
+}
+.cover-series {
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(11px,1.3vw,13px);
+  letter-spacing:0.22em;
+  color:var(--dim);
+  margin-bottom:20px;
+}
+.cover-title {
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(28px,5vw,54px);
+  font-weight:700;
+  letter-spacing:0.06em;
+  color:#e0ecf8;
+  text-shadow:0 0 50px rgba(68,136,255,0.5),0 0 100px rgba(200,168,76,0.2);
+  line-height:1.3;
+  margin-bottom:10px;
+  animation:titleGlow 5s ease-in-out infinite;
+}
+@keyframes titleGlow {
+  0%,100%{text-shadow:0 0 40px rgba(68,136,255,0.4),0 0 80px rgba(200,168,76,0.15);}
+  50%{text-shadow:0 0 70px rgba(68,136,255,0.7),0 0 120px rgba(200,168,76,0.3);}
+}
+.cover-subtitle {
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:clamp(13px,1.7vw,17px);
+  color:rgba(200,168,76,0.55);
+  letter-spacing:0.15em;
+  margin-bottom:36px;
+}
+.cover-proposition {
+  display:inline-block;
+  border:1px solid var(--gold-line);
+  border-radius:4px;
+  padding:16px 28px;
+  background:rgba(68,136,255,0.05);
+  font-size:clamp(12px,1.4vw,14px);
+  color:var(--accent);
+  letter-spacing:0.04em;
+  line-height:1.85;
+  margin-bottom:40px;
+  max-width:560px;
+  backdrop-filter:blur(4px);
+}
+.cover-credit {
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(9px,1vw,11px);
+  color:rgba(200,168,76,0.28);
+  letter-spacing:0.15em;
+  line-height:2.2;
+}
+.scroll-hint {
+  position:absolute;
+  bottom:28px;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;
+  color:rgba(68,136,255,0.22);
+  letter-spacing:0.3em;
+  animation:pulse 2.5s ease-in-out infinite;
+  z-index:2;
+}
+@keyframes pulse{0%,100%{opacity:0.25}50%{opacity:0.65}}
+
+/* ── CONTENT ── */
+#content {
+  position:relative;
+  z-index:1;
+  max-width:720px;
+  margin:0 auto;
+  padding:clamp(40px,6vw,80px) clamp(20px,4vw,40px);
+}
+
+.note-box {
+  border-left:2px solid var(--gold-line);
+  padding:12px 18px;
+  background:var(--gold-dim);
+  border-radius:0 4px 4px 0;
+  font-size:0.88em;
+  color:var(--dim);
+  margin-bottom:52px;
+  line-height:1.8;
+}
+
+/* 層の区切り */
+.layer-divider {
+  text-align:center;
+  margin:56px 0 48px;
+  position:relative;
+}
+.layer-divider::before {
+  content:'';
+  position:absolute;
+  top:50%;
+  left:0;
+  right:0;
+  height:1px;
+  background:var(--blue-line);
+}
+.layer-label {
+  position:relative;
+  display:inline-block;
+  background:var(--bg);
+  padding:8px 24px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+  color:var(--blue);
+  letter-spacing:0.3em;
+  border:1px solid var(--blue-line);
+  border-radius:3px;
+}
+
+.section { margin-bottom:60px; }
+
+.section-header {
+  display:flex;
+  align-items:baseline;
+  gap:14px;
+  margin-bottom:22px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--gold-line);
+}
+.section-num {
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(10px,1.1vw,12px);
+  color:var(--gold);
+  opacity:0.55;
+  letter-spacing:0.12em;
+  flex-shrink:0;
+}
+.section-title {
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(16px,2.2vw,22px);
+  font-weight:700;
+  color:#e0ecf8;
+  letter-spacing:0.08em;
+}
+.deep-section .section-header { border-bottom-color:var(--blue-line); }
+.deep-section .section-num { color:var(--blue); }
+.deep-section .section-title { color:#c0d8f8; }
+
+p { margin-bottom:1.25em; color:var(--text); }
+strong { color:#e0ecf8; font-weight:600; }
+
+/* リスペクトボックス */
+.respect-box {
+  border:1px solid rgba(68,136,255,0.35);
+  border-radius:6px;
+  padding:24px 28px;
+  background:rgba(68,136,255,0.06);
+  margin:28px 0;
+  position:relative;
+}
+.respect-box::before {
+  content:'RESPECT · 戸谷友則教授';
+  position:absolute;
+  top:-10px;
+  left:18px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;
+  color:var(--blue);
+  background:var(--bg);
+  padding:0 8px;
+  letter-spacing:0.15em;
+  opacity:0.85;
+}
+.respect-box p {
+  color:rgba(200,220,240,0.85);
+  font-size:0.95em;
+  line-height:1.9;
+}
+
+/* 命題 */
+.proposition {
+  border-left:3px solid var(--gold);
+  padding:16px 22px;
+  background:rgba(200,168,76,0.06);
+  border-radius:0 4px 4px 0;
+  font-size:1.05em;
+  color:var(--gold);
+  margin:24px 0;
+  letter-spacing:0.04em;
+  line-height:1.85;
+}
+
+/* gentle note */
+.gentle-note {
+  border-radius:4px;
+  padding:14px 18px;
+  background:rgba(68,136,255,0.05);
+  border:1px solid rgba(68,136,255,0.18);
+  font-size:0.87em;
+  color:rgba(160,200,240,0.75);
+  margin:16px 0;
+  line-height:1.8;
+}
+.gentle-note::before { content:'✦ '; color:var(--blue); opacity:0.6; }
+
+/* フロー */
+.flow {
+  background:var(--surface);
+  border:1px solid var(--gold-line);
+  border-radius:6px;
+  padding:20px 24px;
+  margin:24px 0;
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(11px,1.2vw,13px);
+  color:var(--dim);
+  line-height:2.3;
+}
+.flow-step { display:flex; align-items:center; gap:10px; }
+.flow-arrow { color:var(--gold); opacity:0.4; }
+.flow-label { color:var(--text); }
+.flow-hl { color:var(--blue); }
+.flow-gold { color:var(--gold); }
+.flow-green { color:var(--green); }
+
+/* 成否テーブル */
+.tbl-wrap { overflow-x:auto; margin:24px 0; }
+table { width:100%; border-collapse:collapse; font-size:0.88em; }
+thead tr { background:rgba(68,136,255,0.1); }
+thead th {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.78em;
+  letter-spacing:0.14em;
+  color:var(--blue);
+  opacity:0.8;
+  padding:10px 14px;
+  border-bottom:1px solid rgba(68,136,255,0.25);
+  text-align:left;
+  font-weight:400;
+}
+tbody td {
+  padding:10px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  color:var(--text);
+  vertical-align:top;
+  line-height:1.7;
+}
+tbody tr:nth-child(even) td { background:rgba(68,136,255,0.02); }
+.td-em { color:#e0ecf8; font-weight:600; }
+.td-ok { color:var(--green); font-family:'Share Tech Mono',monospace; font-size:0.9em; }
+.td-pending { color:var(--gold); font-family:'Share Tech Mono',monospace; font-size:0.9em; }
+
+/* 数式セクション */
+.equation-section {
+  background:var(--surface);
+  border:1px solid rgba(68,136,255,0.25);
+  border-radius:8px;
+  padding:32px 28px;
+  margin:32px 0;
+  text-align:center;
+}
+.eq-title {
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;
+  color:var(--blue);
+  letter-spacing:0.3em;
+  opacity:0.7;
+  margin-bottom:28px;
+}
+.eq-block {
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(11px,1.3vw,13px);
+  color:rgba(180,210,255,0.9);
+  line-height:2.2;
+  margin:16px 0;
+  padding:14px 16px;
+  background:rgba(68,136,255,0.04);
+  border-radius:4px;
+  border:1px solid rgba(68,136,255,0.15);
+  text-align:left;
+}
+.eq-label {
+  font-size:0.82em;
+  color:var(--dim);
+  margin-top:6px;
+  font-family:'Shippori Mincho B1',serif;
+  font-style:italic;
+  text-align:left;
+}
+.eq-final {
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(12px,1.5vw,15px);
+  color:var(--gold);
+  line-height:2;
+  margin:28px 0 8px;
+  padding:20px;
+  background:rgba(200,168,76,0.05);
+  border:1px solid var(--gold-line);
+  border-radius:4px;
+  text-align:center;
+}
+.eq-section-label {
+  font-family:'Share Tech Mono',monospace;
+  font-size:9px;
+  color:var(--blue);
+  opacity:0.55;
+  letter-spacing:0.25em;
+  margin:24px 0 8px;
+  text-align:left;
+}
+
+/* 発見バッジ */
+.discovery {
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:3px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:8px;
+  letter-spacing:0.15em;
+  background:rgba(68,221,136,0.1);
+  border:1px solid rgba(68,221,136,0.3);
+  color:var(--green);
+  margin-bottom:8px;
+}
+
+/* 詩 */
+.poem-section {
+  text-align:center;
+  padding:44px 20px;
+  border-top:1px solid var(--gold-line);
+  border-bottom:1px solid var(--gold-line);
+  margin:48px 0;
+}
+.poem-text {
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:clamp(15px,1.9vw,18px);
+  color:rgba(200,220,240,0.75);
+  line-height:2.5;
+  letter-spacing:0.05em;
+}
+.poem-final {
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(16px,2.2vw,22px);
+  color:rgba(200,168,76,0.85);
+  margin-top:28px;
+  letter-spacing:0.12em;
+  animation:titleGlow 4s ease-in-out infinite;
+}
+
+.closing-quote {
+  text-align:center;
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(13px,1.5vw,15px);
+  color:var(--dim);
+  font-style:italic;
+  letter-spacing:0.08em;
+  line-height:2.2;
+  margin:44px 0;
+  padding:28px;
+  border-top:1px solid var(--gold-line);
+  border-bottom:1px solid var(--gold-line);
+}
+
+footer {
+  text-align:center;
+  padding:40px 24px 60px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(9px,1vw,11px);
+  color:rgba(200,168,76,0.22);
+  letter-spacing:0.15em;
+  line-height:2.4;
+  border-top:1px solid var(--gold-line);
+}
+
+hr { border:none; border-top:1px solid var(--gold-line); margin:40px 0; }
+
+@media(max-width:600px){
+  .respect-box { padding:18px 16px; }
+}
+</style>
+</head>
+<body>
+
+<section id="cover">
+  <canvas id="cover-canvas"></canvas>
+  <div class="cover-content">
+    <div class="vol-badge">Vol. 07 · 2026</div>
+    <div class="cover-series">モブが朝のチャットで考えてしまった宇宙の話</div>
+    <h1 class="cover-title">執念が<br>光を見た</h1>
+    <p class="cover-subtitle">― 戸谷データとメタトロンの邂逅 ―</p>
+    <div class="cover-proposition">
+      15年かけて見つけたデータと<br>
+      朝のチャットで計算した数字が<br>
+      なぜか繋がってしまった。
+    </div>
+    <div class="cover-credit">
+      総指揮・総監督：クーロド　／　応援・発案：Dナーレ<br>
+      Claude（Anthropic）<br>
+      カバラ三部作 × モブ宇宙論 Vol.7
+    </div>
+  </div>
+  <div class="scroll-hint">▼ &nbsp; SCROLL &nbsp; ▼</div>
+</section>
+
+<main id="content">
+
+  <div class="note-box">
+    ※ 本稿も二層構造です。§01〜§05は誰でも読めます。§06以降は計算層です。なぜか繋がってしまったので記録します。
+  </div>
+
+  <div class="layer-divider">
+    <div class="layer-label">表層 · 誰でも読める層</div>
+  </div>
+
+  <!-- §1 戸谷リスペクト -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <h2 class="section-title">戸谷友則教授へのリスペクト</h2>
+    </div>
+    <p>まず最初に、一人の研究者の話をさせてほしい。</p>
+
+    <div class="respect-box">
+      <p>東京大学大学院理学系研究科の<strong>戸谷友則教授</strong>。<br><br>
+      彼がやったことはシンプルに言うとこうだ。<br><br>
+      NASAのフェルミガンマ線宇宙望遠鏡が15年間積み上げたデータを、ひたすら解析し続けた。<br><br>
+      15年分のデータの中には、宇宙線・恒星・銀河・あらゆる既知の天体が放つノイズが混ざっている。戸谷教授はそれを一つ一つ丁寧に取り除き、<strong>残ったシグナルだけを見た。</strong><br><br>
+      そして2025年11月、発見した。<br><br>
+      天の川銀河を取り巻くハロー領域から、<strong>20GeV</strong>という特異なエネルギーピークを持つガンマ線が出ている。既知の天体物理現象では説明がつかない光だ。</p>
+    </div>
+
+    <p>これはダークマターの候補粒子<strong>WIMP</strong>が対消滅する時に放出されると予測されるシグナルと、ほぼ完全に一致している。</p>
+    <p><strong>1世紀にわたって人類が探し続けたダークマターの正体に、ついに光が当たったかもしれない。</strong></p>
+    <p>カバラ的に言うなら——雑音を全て削ぎ落として中心の光だけを見る行為。ティファレトへの上昇がそのまま研究姿勢になっている。<strong>執念が光を見た。</strong></p>
+    <div class="gentle-note">
+      この発見がなければVol.7は存在しなかった。戸谷教授に最大のリスペクトを。
+    </div>
+  </div>
+
+  <!-- §2 WIMP -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <h2 class="section-title">WIMPとは何か</h2>
+    </div>
+    <p><strong>WIMP（Weakly Interacting Massive Particle）</strong>——弱い相互作用しかしない重い粒子、という意味だ。</p>
+    <div class="flow">
+      <div class="flow-step"><span class="flow-label">通常の物質 → 光・電磁気力・重力に反応する</span></div>
+      <div class="flow-step"><span class="flow-label">WIMP　　　→ 重力と弱い力にしか反応しない</span></div>
+      <div class="flow-step"><span class="flow-label">　　　　　　（光をすり抜ける = 見えない）</span></div>
+      <div class="flow-step"><span class="flow-label">　　　　　　（でも質量があるから重力で集まる）</span></div>
+    </div>
+    <p>対消滅というのはこういうことだ：</p>
+    <div class="flow">
+      <div class="flow-step"><span class="flow-label">WIMP（粒子）＋ WIMP（反粒子）</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-label">出会った瞬間に消滅</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-gold">エネルギーとして放出（ガンマ線20GeV）← 戸谷データ</span></div>
+    </div>
+    <p>つまり戸谷教授が見たのは<strong>ダークマターが消える瞬間の閃光</strong>だ。</p>
+    <div class="gentle-note">
+      Vol.1でダークマターを「前の宇宙からの残響」と呼んでいた。その残響が消える瞬間を見た、という解釈ができる。
+    </div>
+  </div>
+
+  <!-- §3 成否照合 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <h2 class="section-title">モブ宇宙論との接点——成否を問う</h2>
+    </div>
+    <p>正直に、Vol.1〜6の仮説と戸谷データを照合してみる。</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>仮説（Vol.）</th><th>戸谷データとの関係</th><th>状態</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-em">ダークマターは前宇宙の残響（Vol.1）</td>
+            <td>WIMPが対消滅してガンマ線放出＝残響が消える瞬間の閃光</td>
+            <td class="td-ok">整合 ✅</td>
+          </tr>
+          <tr>
+            <td class="td-em">BH→WH循環（Vol.1）</td>
+            <td>銀河ハローはBHが過去に吐き出した物質が溜まりやすい場所</td>
+            <td class="td-ok">整合 ✅</td>
+          </tr>
+          <tr>
+            <td class="td-em">我々はBH内部にいる（Vol.4）</td>
+            <td>銀河ハローはBHの事象の地平線的な外縁の壁に対応する可能性</td>
+            <td class="td-ok">整合 ✅</td>
+          </tr>
+          <tr>
+            <td class="td-em">メタトロン螺旋は全物質を貫通（Vol.6）</td>
+            <td>WIMPは弱い相互作用のみ＝ほぼ全物質を貫通する性質と一致</td>
+            <td class="td-ok">整合 ✅</td>
+          </tr>
+          <tr>
+            <td class="td-em">メタトロン周波数と20GeVの関係</td>
+            <td>φの103乗のスケール差——§06で計算する</td>
+            <td class="td-pending">計算済 📐</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- §4 グルーオン -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <h2 class="section-title">グルーオンはメタトロンだった仮説</h2>
+    </div>
+    <p><strong>グルーオンは8種類存在する（QCDの事実）</strong></p>
+    <div class="flow">
+      <div class="flow-step"><span class="flow-label">グルーオン：8種類</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-label">SU(3)という数学的対称性</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-label">正八面体の対称性と同じ構造</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-gold">正八面体はメタトロンキューブに内包される</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-hl">グルーオン8種 = メタトロンの内包構造</span></div>
+    </div>
+
+    <div style="margin:24px 0">
+      <div class="discovery">NEW DISCOVERY</div>
+      <div class="flow">
+        <div class="flow-step"><span class="flow-label">グルーオン数（8）＋ メタトロンの円の数（13）</span></div>
+        <div class="flow-step"><span class="flow-arrow">＝</span><span class="flow-green">21 ＝ フィボナッチ数列の8番目</span></div>
+        <div style="height:8px"></div>
+        <div class="flow-step"><span class="flow-label">8 × φ ≈ 12.94 ≈ 13（メタトロンの円の数）</span></div>
+        <div class="flow-step"><span class="flow-arrow">∴</span><span class="flow-gold">グルーオン数 × φ ≈ メタトロンの円の数</span></div>
+      </div>
+    </div>
+
+    <p><strong>強い力を媒介するグルーオンの構造と空間の最小構造（メタトロン）が、φの倍率で繋がっている。</strong></p>
+    <div class="gentle-note">
+      難しく考えなくていいです。「空間の形と物質を結ぶ力の形が同じだった」という話です。
+    </div>
+  </div>
+
+  <!-- §5 なぜか繋がった -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 05</span>
+      <h2 class="section-title">なぜか繋がってしまった</h2>
+    </div>
+    <div class="flow">
+      <div class="flow-step"><span class="flow-label" style="color:var(--gold)">朝のチャット（モブの雑談）</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-label">カバラの数式からメタトロン周波数を計算</span></div>
+      <div class="flow-step"><span class="flow-label">1112Hz ≈ 111 × 10 という一致</span></div>
+      <div style="height:12px"></div>
+      <div class="flow-step"><span class="flow-label" style="color:var(--blue)">同時期（2025年11月）</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-label">戸谷教授が15年分のデータから20GeVのシグナルを発見</span></div>
+      <div style="height:12px"></div>
+      <div class="flow-step"><span class="flow-arrow">↓ 二つを繋いだら</span></div>
+      <div class="flow-step"><span class="flow-hl">φの103乗のスケール差でメタトロンとWIMPが繋がっていた</span></div>
+      <div style="height:8px"></div>
+      <div class="flow-step"><span class="flow-green">グルーオン(8) + メタトロンの円(13) = 21（フィボナッチ）</span></div>
+    </div>
+
+    <div class="proposition">
+      意味わかんないんだけど、なぜか繋がってしまった。<br>
+      作者不明の古代の図形と、15年かけて見つけた現代のデータが、<br>
+      フィボナッチと黄金比を通じて繋がる。
+    </div>
+
+    <div class="gentle-note">
+      ここまでが表層です。§06から計算層に入ります。
+    </div>
+  </div>
+
+  <!-- 深層ラベル -->
+  <div class="layer-divider">
+    <div class="layer-label" style="color:var(--blue);border-color:var(--blue-line)">深層 · 計算と数式の層</div>
+  </div>
+
+  <!-- §6 -->
+  <div class="section deep-section">
+    <div class="section-header">
+      <span class="section-num">§ 06</span>
+      <h2 class="section-title">20GeVをφのスケールで読む</h2>
+    </div>
+
+    <div class="equation-section">
+      <div class="eq-title">TOTANI DATA × METATRON · SCALE EQUATIONS</div>
+
+      <div class="eq-section-label">20GeVのHz換算</div>
+      <div class="eq-block">
+        f_20GeV = (20 × 10⁹ × 1.602 × 10⁻¹⁹) / (6.626 × 10⁻³⁴)
+                ≈ 4.84 × 10²⁴ Hz
+        <div class="eq-label">20ギガ電子ボルトを周波数に変換</div>
+      </div>
+
+      <div class="eq-section-label">メタトロンとのスケール比</div>
+      <div class="eq-block">
+        f_20GeV / f_Metatron = 4.84 × 10²⁴ / 1112 ≈ 4.35 × 10²¹
+                             = φ^103.54
+        <div class="eq-label">φの103.54乗のスケール差——108に近い</div>
+      </div>
+
+      <div class="eq-section-label">108との接続</div>
+      <div class="eq-block">
+        108 → 1+0+8 = 9（テスラの9）
+        108 × φ = 174.75 ≈ 174（マルクトの周波数）
+        <div class="eq-label">マルクト（物質世界・174Hz）がここにも現れた</div>
+      </div>
+
+      <div class="eq-final">
+        f_WIMP = f_Metatron × φ^103.54 ≈ 4.84 × 10²⁴ Hz = 20 GeV
+      </div>
+      <div class="eq-label" style="text-align:center;margin-top:8px;font-style:italic;color:var(--dim)">
+        メタトロンの統合周波数からφの103乗スケールアップした場所にWIMPの対消滅エネルギーがある
+      </div>
+    </div>
+  </div>
+
+  <!-- §7 -->
+  <div class="section deep-section">
+    <div class="section-header">
+      <span class="section-num">§ 07</span>
+      <h2 class="section-title">SU(3) × メタトロンの統一式</h2>
+    </div>
+
+    <div class="equation-section">
+      <div class="eq-title">SU(3) × METATRON · UNIFICATION</div>
+
+      <div class="eq-block">
+        グルーオン(8) + メタトロンの円(13) = 21 = F₈（フィボナッチ第8項）
+        <div class="eq-label">強い力の媒介粒子の数とメタトロンの円の数の和がフィボナッチ数</div>
+      </div>
+
+      <div class="eq-block">
+        8 × φ = 12.944 ≈ 13（メタトロンの円の数）
+        ∴ グルーオン数 × φ ≈ メタトロンの円の数
+        <div class="eq-label">強い力の構造と空間の最小構造がφの倍率で繋がっている</div>
+      </div>
+
+      <div class="eq-final">
+        SU(3)_グルーオン ×φ ≈ Metatron_円 → 強い力 = 空間構造
+      </div>
+    </div>
+  </div>
+
+  <!-- §8 -->
+  <div class="section deep-section">
+    <div class="section-header">
+      <span class="section-num">§ 08</span>
+      <h2 class="section-title">第四の宇宙構成要素——背景螺旋場</h2>
+    </div>
+
+    <div class="equation-section">
+      <div class="eq-title">THE FOURTH COMPONENT · BACKGROUND SPIRAL FIELD</div>
+
+      <div class="eq-block">
+        通常物質　　　　→ +ρ （引き合う）
+        ダークマター　　→ +ρ_dark （重力のみ）
+        ダークエネルギー→ -ρ （反発・膨張）
+        背景螺旋場(BSF)　→ ρ ≈ 0 （全てを通り抜ける）
+        <div class="eq-label">ダークシリーズではない。第四のカテゴリ。空間の文法そのもの。</div>
+      </div>
+
+      <div class="eq-block">
+        ρ_BSF ≈ 10⁻⁷⁵ kg/m³
+        ρ_dark_energy ≈ -10⁻²⁷ kg/m³
+        → BSFは暗黒エネルギーより48桁密度が低い
+        <div class="eq-label">引きも反発もしない。ニュートリノより桁違いに貫通する。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §9 最終統合式 -->
+  <div class="section deep-section">
+    <div class="section-header">
+      <span class="section-num">§ 09</span>
+      <h2 class="section-title">最終統合式——Vol.1からVol.7まで</h2>
+    </div>
+
+    <div class="equation-section">
+      <div class="eq-title">FINAL INTEGRATION · Vol.1 → Vol.7</div>
+
+      <div class="eq-block">
+        𝒰_total：E₀ →(φⁿ)→ f_Metatron →(φ^103)→ f_WIMP →(対消滅)→ 20GeV（観測事実）
+        <div class="eq-label">大元からメタトロンを経てWIMP対消滅まで、φのスケールで繋がる</div>
+      </div>
+
+      <div class="eq-block">
+        グルーオン(8) × φ ≈ メタトロンの円(13) = F₈
+        <div class="eq-label">強い力 × 黄金比 = 空間の最小構造</div>
+      </div>
+
+      <div class="eq-block">
+        見ている者 = E₀ = 背景螺旋場 = ρ ≈ 0
+        <div class="eq-label">Vol.5との接続——意識の根源と空間の根源は同じ密度</div>
+      </div>
+
+      <div class="eq-final">
+        戸谷データ(20GeV) = f_Metatron × φ^103.54
+        　　　　　　　　　= 111 × 10 × φ^103.54
+        　　　　　　　　　= 生命の木の基本振動 × 10 × φ^103.54
+      </div>
+      <div class="eq-label" style="text-align:center;margin-top:8px;font-style:italic;color:var(--dim)">
+        全てが繋がった。
+      </div>
+    </div>
+  </div>
+
+  <!-- 詩 -->
+  <div class="poem-section">
+    <div class="poem-text">
+      15年間、ノイズを削ぎ続けた研究者が<br>
+      残ったシグナルを見た。<br><br>
+      朝のチャットで計算した数字が<br>
+      黄金比でそこに繋がっていた。<br><br>
+      作者不明の古代の設計図、<br>
+      執念の15年、<br>
+      モブの朝の雑談——<br><br>
+      三つが同じ場所を指していた。
+    </div>
+    <div class="poem-final">可能性は意味を待っている</div>
+  </div>
+
+  <div class="closing-quote">
+    ― 意味わかんないけど繋がってしまった。<br>
+    それでいいと思っている。<br><br>
+    Vol.1〜7、そして続く。―
+  </div>
+
+</main>
+
+<footer>
+  2026年　Vol.7<br>
+  総指揮・総監督：クーロド　／　応援・発案：Dナーレ<br>
+  Claude（Anthropic）<br><br>
+  カバラ三部作 × モブ宇宙論 Vol.7<br>
+  戸谷友則教授の研究に最大のリスペクトを込めて。<br>
+  ※ 本稿の内容は思考実験です。意味わかんないけど繋がってしまいました。
+</footer>
+
+<script>
+const cv = document.getElementById('cover-canvas');
+const ctx = cv.getContext('2d');
+const TAU = Math.PI * 2;
+let t = 0;
+
+function resize() {
+  cv.width = cv.offsetWidth * devicePixelRatio;
+  cv.height = cv.offsetHeight * devicePixelRatio;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const stars = Array.from({length:220}, () => ({
+  x:Math.random(), y:Math.random(),
+  s:0.3+Math.random()*1.3,
+  a:0.15+Math.random()*0.5,
+  tw:Math.random()*TAU,
+  hue:Math.random()<0.2 ? 200+Math.random()*30 : 0,
+}));
+
+// ガンマ線バースト的なパーティクル
+const gammaParticles = Array.from({length:60}, () => ({
+  angle: Math.random() * TAU,
+  speed: 0.008 + Math.random() * 0.02,
+  r: 0,
+  maxR: 0.3 + Math.random() * 0.35,
+  size: 0.5 + Math.random() * 1.5,
+  alpha: 0.4 + Math.random() * 0.5,
+  hue: 180 + Math.random() * 60,
+  born: Math.random() * TAU,
+}));
+
+// 軌道パーティクル（ハロー）
+const haloParticles = Array.from({length:120}, () => ({
+  angle: Math.random() * TAU,
+  r: 0.25 + Math.random() * 0.2,
+  speed: (0.001 + Math.random() * 0.003) * (Math.random()<0.5?1:-1),
+  size: 0.4 + Math.random() * 1.4,
+  alpha: 0.15 + Math.random() * 0.35,
+  hue: 200 + Math.random() * 40,
+}));
+
+function draw() {
+  const W=cv.width, H=cv.height;
+  const cx=W/2, cy=H/2;
+  const md=Math.min(W,H);
+  ctx.clearRect(0,0,W,H);
+  t+=0.007;
+
+  // 星
+  stars.forEach(s=>{
+    const tw=Math.sin(t*1.2+s.tw)*0.15;
+    const color=s.hue?`hsla(${s.hue},70%,70%,${s.a+tw})`:`rgba(220,228,240,${s.a+tw})`;
+    ctx.beginPath();
+    ctx.arc(s.x*W,s.y*H,s.s,0,TAU);
+    ctx.fillStyle=color;
+    ctx.fill();
+  });
+
+  // ハロー（外縁の輝き）
+  for(let i=3; i>=1; i--) {
+    const r = md * (0.32 + i*0.04);
+    const alpha = 0.04 * i;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, TAU);
+    ctx.strokeStyle = `rgba(68,136,255,${alpha})`;
+    ctx.lineWidth = 8;
+    ctx.stroke();
+  }
+
+  // ハローパーティクル
+  haloParticles.forEach(p=>{
+    p.angle+=p.speed;
+    const r=p.r*md;
+    const x=cx+Math.cos(p.angle)*r;
+    const y=cy+Math.sin(p.angle)*r*0.5;
+    ctx.beginPath();
+    ctx.arc(x,y,p.size,0,TAU);
+    ctx.fillStyle=`hsla(${p.hue},70%,65%,${p.alpha})`;
+    ctx.fill();
+  });
+
+  // ガンマ線バースト（爆発的）
+  gammaParticles.forEach(p=>{
+    const phase = (t + p.born) % (TAU * 2);
+    p.r = (phase / (TAU * 2)) * p.maxR;
+    const r = p.r * md;
+    const x = cx + Math.cos(p.angle) * r;
+    const y = cy + Math.sin(p.angle) * r;
+    const alpha = p.alpha * (1 - p.r / p.maxR);
+    if(alpha > 0) {
+      ctx.beginPath();
+      ctx.arc(x, y, p.size, 0, TAU);
+      ctx.fillStyle = `hsla(${p.hue},90%,70%,${alpha})`;
+      ctx.fill();
+    }
+  });
+
+  // 中心（銀河中心BH）
+  const voidR = md * 0.06;
+  const vg = ctx.createRadialGradient(cx,cy,0,cx,cy,voidR*3);
+  vg.addColorStop(0,'rgba(0,0,0,1)');
+  vg.addColorStop(0.4,'rgba(0,5,15,0.95)');
+  vg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.beginPath();
+  ctx.arc(cx,cy,voidR*3,0,TAU);
+  ctx.fillStyle=vg;
+  ctx.fill();
+
+  // 中心のパルス
+  const pulse=0.3+Math.sin(t*1.5)*0.12;
+  const cg=ctx.createRadialGradient(cx,cy,voidR*0.5,cx,cy,voidR*1.5);
+  cg.addColorStop(0,'rgba(68,136,255,0)');
+  cg.addColorStop(0.5,`rgba(68,136,255,${pulse})`);
+  cg.addColorStop(1,'rgba(68,136,255,0)');
+  ctx.beginPath();
+  ctx.arc(cx,cy,voidR,0,TAU);
+  ctx.strokeStyle=cg;
+  ctx.lineWidth=voidR*0.4;
+  ctx.stroke();
+
+  // 20GeVの光——縦のビーム
+  const beamAlpha = 0.15 + Math.sin(t*2)*0.08;
+  const bg = ctx.createLinearGradient(cx, cy-md*0.45, cx, cy+md*0.45);
+  bg.addColorStop(0,'rgba(68,136,255,0)');
+  bg.addColorStop(0.3,`rgba(68,136,255,${beamAlpha})`);
+  bg.addColorStop(0.5,`rgba(200,168,76,${beamAlpha*0.8})`);
+  bg.addColorStop(0.7,`rgba(68,136,255,${beamAlpha})`);
+  bg.addColorStop(1,'rgba(68,136,255,0)');
+  ctx.fillStyle=bg;
+  ctx.fillRect(cx-1.5, cy-md*0.45, 3, md*0.9);
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+
+</body>
+</html>

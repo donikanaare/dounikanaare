@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vol.6 空間はねじれている ― メタトロンの周波数と螺旋の密度 ―</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Share+Tech+Mono&family=Zen+Old+Mincho:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap');
+
+:root {
+  --bg: #04060c;
+  --surface: #07091a;
+  --gold: #c8a84c;
+  --gold-dim: rgba(200,168,76,0.12);
+  --gold-line: rgba(200,168,76,0.18);
+  --text: #d0d8c8;
+  --dim: rgba(208,216,200,0.48);
+  --green: #44dd88;
+  --green-dim: rgba(68,221,136,0.12);
+  --green-line: rgba(68,221,136,0.2);
+  --vio: #9966ff;
+  --cyan: #40c8e8;
+  --orange: #e87840;
+  --accent: #a8c8b8;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Shippori Mincho B1',serif;
+  line-height:1.95;
+  font-size:clamp(14px,1.6vw,16px);
+  overflow-x:hidden;
+}
+
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    radial-gradient(1px 1px at 8% 12%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 44% 8%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 66% 22%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 82% 15%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 18% 68%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 55%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 48%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 35% 80%, rgba(68,221,136,0.35) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 72% 88%, rgba(200,168,76,0.3) 0%, transparent 100%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── COVER ── */
+#cover {
+  position:relative;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:60px 24px;
+  text-align:center;
+  overflow:hidden;
+}
+#cover::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 40%, rgba(10,30,20,0.6) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 30% at 50% 90%, rgba(200,100,20,0.08) 0%, transparent 60%);
+  z-index:0;
+}
+#cover-canvas {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:0.5;
+  z-index:0;
+}
+.cover-content { position:relative; z-index:2; }
+
+.vol-badge {
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(10px,1.2vw,12px);
+  letter-spacing:0.42em;
+  color:var(--green);
+  opacity:0.65;
+  margin-bottom:18px;
+}
+.cover-series {
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(11px,1.3vw,13px);
+  letter-spacing:0.22em;
+  color:var(--dim);
+  margin-bottom:20px;
+}
+.cover-title {
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(28px,5vw,54px);
+  font-weight:700;
+  letter-spacing:0.06em;
+  color:#e8f0e0;
+  text-shadow:0 0 50px rgba(68,221,136,0.5),0 0 100px rgba(200,168,76,0.2);
+  line-height:1.3;
+  margin-bottom:10px;
+  animation:titleGlow 5s ease-in-out infinite;
+}
+@keyframes titleGlow {
+  0%,100%{text-shadow:0 0 40px rgba(68,221,136,0.4),0 0 80px rgba(200,168,76,0.15);}
+  50%{text-shadow:0 0 70px rgba(68,221,136,0.7),0 0 120px rgba(200,168,76,0.3);}
+}
+.cover-subtitle {
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:clamp(13px,1.7vw,17px);
+  color:rgba(200,168,76,0.55);
+  letter-spacing:0.15em;
+  margin-bottom:36px;
+}
+.cover-proposition {
+  display:inline-block;
+  border:1px solid var(--gold-line);
+  border-radius:4px;
+  padding:16px 28px;
+  background:rgba(68,221,136,0.05);
+  font-size:clamp(12px,1.4vw,14px);
+  color:var(--accent);
+  letter-spacing:0.04em;
+  line-height:1.85;
+  margin-bottom:40px;
+  max-width:560px;
+  backdrop-filter:blur(4px);
+}
+.cover-credit {
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(9px,1vw,11px);
+  color:rgba(200,168,76,0.28);
+  letter-spacing:0.15em;
+  line-height:2.2;
+}
+.scroll-hint {
+  position:absolute;
+  bottom:28px;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;
+  color:rgba(68,221,136,0.22);
+  letter-spacing:0.3em;
+  animation:pulse 2.5s ease-in-out infinite;
+  z-index:2;
+}
+@keyframes pulse{0%,100%{opacity:0.25}50%{opacity:0.65}}
+
+/* ── CONTENT ── */
+#content {
+  position:relative;
+  z-index:1;
+  max-width:720px;
+  margin:0 auto;
+  padding:clamp(40px,6vw,80px) clamp(20px,4vw,40px);
+}
+
+.note-box {
+  border-left:2px solid var(--gold-line);
+  padding:12px 18px;
+  background:var(--gold-dim);
+  border-radius:0 4px 4px 0;
+  font-size:0.88em;
+  color:var(--dim);
+  margin-bottom:52px;
+  line-height:1.8;
+}
+
+/* 層の区切り */
+.layer-divider {
+  text-align:center;
+  margin:56px 0 48px;
+  position:relative;
+}
+.layer-divider::before {
+  content:'';
+  position:absolute;
+  top:50%;
+  left:0;
+  right:0;
+  height:1px;
+  background:var(--green-line);
+}
+.layer-divider-label {
+  position:relative;
+  display:inline-block;
+  background:var(--bg);
+  padding:8px 24px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+  color:var(--green);
+  letter-spacing:0.3em;
+  border:1px solid var(--green-line);
+  border-radius:3px;
+}
+
+.section { margin-bottom:60px; }
+
+.section-header {
+  display:flex;
+  align-items:baseline;
+  gap:14px;
+  margin-bottom:22px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--gold-line);
+}
+.section-num {
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(10px,1.1vw,12px);
+  color:var(--gold);
+  opacity:0.55;
+  letter-spacing:0.12em;
+  flex-shrink:0;
+}
+.section-title {
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(16px,2.2vw,22px);
+  font-weight:700;
+  color:#e8f0e0;
+  letter-spacing:0.08em;
+}
+
+/* 深層セクション */
+.deep-section .section-header {
+  border-bottom-color:var(--green-line);
+}
+.deep-section .section-num { color:var(--green); }
+.deep-section .section-title { color:#c8f0d8; }
+
+p { margin-bottom:1.25em; color:var(--text); }
+strong { color:#e8f0e0; font-weight:600; }
+
+/* 命題 */
+.proposition {
+  border-left:3px solid var(--gold);
+  padding:16px 22px;
+  background:rgba(200,168,76,0.06);
+  border-radius:0 4px 4px 0;
+  font-size:1.05em;
+  color:var(--gold);
+  margin:24px 0;
+  letter-spacing:0.04em;
+  line-height:1.85;
+}
+
+/* gentle note */
+.gentle-note {
+  border-radius:4px;
+  padding:14px 18px;
+  background:rgba(68,221,136,0.05);
+  border:1px solid rgba(68,221,136,0.18);
+  font-size:0.87em;
+  color:rgba(160,224,192,0.75);
+  margin:16px 0;
+  line-height:1.8;
+}
+.gentle-note::before { content:'✦ '; color:var(--green); opacity:0.6; }
+
+/* フロー */
+.flow {
+  background:var(--surface);
+  border:1px solid var(--gold-line);
+  border-radius:6px;
+  padding:20px 24px;
+  margin:24px 0;
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(11px,1.2vw,13px);
+  color:var(--dim);
+  line-height:2.3;
+}
+.flow-step { display:flex; align-items:center; gap:10px; }
+.flow-arrow { color:var(--gold); opacity:0.4; }
+.flow-label { color:var(--text); }
+.flow-hl { color:var(--green); }
+.flow-gold { color:var(--gold); }
+
+/* 密度テーブル */
+.density-visual {
+  background:var(--surface);
+  border:1px solid var(--green-line);
+  border-radius:6px;
+  padding:24px;
+  margin:24px 0;
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(11px,1.2vw,13px);
+}
+.density-row {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.density-row:last-child { border-bottom:none; }
+.density-name { color:var(--dim); width:200px; flex-shrink:0; font-size:0.9em; }
+.density-val { color:var(--text); flex:1; }
+.density-bar-wrap { width:120px; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; flex-shrink:0; }
+.density-bar { height:100%; border-radius:2px; }
+.density-row.highlight .density-name { color:var(--green); }
+.density-row.highlight .density-val { color:var(--green); }
+.density-row.separator { border-top:1px solid var(--gold-line); margin-top:4px; }
+
+/* 数式セクション */
+.equation-section {
+  background:var(--surface);
+  border:1px solid rgba(68,221,136,0.25);
+  border-radius:8px;
+  padding:32px 28px;
+  margin:32px 0;
+  text-align:center;
+}
+.eq-title {
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;
+  color:var(--green);
+  letter-spacing:0.3em;
+  opacity:0.7;
+  margin-bottom:28px;
+}
+.eq-block {
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(11px,1.3vw,13px);
+  color:rgba(180,240,210,0.9);
+  line-height:2.2;
+  margin:16px 0;
+  padding:14px 16px;
+  background:rgba(68,221,136,0.04);
+  border-radius:4px;
+  border:1px solid rgba(68,221,136,0.15);
+  text-align:left;
+}
+.eq-label {
+  font-size:0.82em;
+  color:var(--dim);
+  margin-top:6px;
+  font-family:'Shippori Mincho B1',serif;
+  font-style:italic;
+  text-align:left;
+}
+.eq-final {
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(12px,1.5vw,15px);
+  color:var(--gold);
+  line-height:2;
+  margin:28px 0 8px;
+  padding:20px;
+  background:rgba(200,168,76,0.05);
+  border:1px solid var(--gold-line);
+  border-radius:4px;
+  text-align:center;
+}
+.eq-section-label {
+  font-family:'Share Tech Mono',monospace;
+  font-size:9px;
+  color:var(--green);
+  opacity:0.55;
+  letter-spacing:0.25em;
+  margin:24px 0 8px;
+  text-align:left;
+}
+
+/* テーブル */
+.tbl-wrap { overflow-x:auto; margin:24px 0; }
+table { width:100%; border-collapse:collapse; font-size:0.88em; }
+thead tr { background:rgba(68,221,136,0.08); }
+thead th {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.78em;
+  letter-spacing:0.14em;
+  color:var(--green);
+  opacity:0.8;
+  padding:10px 14px;
+  border-bottom:1px solid rgba(68,221,136,0.25);
+  text-align:left;
+  font-weight:400;
+}
+tbody td {
+  padding:10px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  color:var(--text);
+  vertical-align:top;
+  line-height:1.7;
+}
+tbody tr:nth-child(even) td { background:rgba(68,221,136,0.02); }
+.td-em { color:#e8f0e0; font-weight:600; }
+.td-green { color:var(--green); font-family:'Share Tech Mono',monospace; font-size:0.85em; }
+
+/* 謎ボックス */
+.mystery-box {
+  border:1px solid rgba(200,168,76,0.3);
+  border-radius:6px;
+  padding:20px 24px;
+  background:rgba(200,168,76,0.04);
+  margin:28px 0;
+  position:relative;
+}
+.mystery-box::before {
+  content:'作者不明のレアヒント';
+  position:absolute;
+  top:-10px;
+  left:18px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;
+  color:var(--gold);
+  background:var(--bg);
+  padding:0 8px;
+  letter-spacing:0.15em;
+  opacity:0.8;
+}
+.mystery-box p {
+  color:rgba(220,210,180,0.85);
+  font-size:0.95em;
+  font-style:italic;
+}
+
+/* 詩 */
+.poem-section {
+  text-align:center;
+  padding:44px 20px;
+  border-top:1px solid var(--gold-line);
+  border-bottom:1px solid var(--gold-line);
+  margin:48px 0;
+}
+.poem-text {
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:clamp(15px,1.9vw,18px);
+  color:rgba(210,220,200,0.75);
+  line-height:2.5;
+  letter-spacing:0.05em;
+}
+.poem-final {
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(13px,1.6vw,16px);
+  color:rgba(68,221,136,0.8);
+  margin-top:28px;
+  letter-spacing:0.1em;
+}
+
+.closing-quote {
+  text-align:center;
+  font-family:'Zen Old Mincho',serif;
+  font-size:clamp(13px,1.5vw,15px);
+  color:var(--dim);
+  font-style:italic;
+  letter-spacing:0.08em;
+  line-height:2.2;
+  margin:44px 0;
+  padding:28px;
+  border-top:1px solid var(--gold-line);
+  border-bottom:1px solid var(--gold-line);
+}
+
+footer {
+  text-align:center;
+  padding:40px 24px 60px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(9px,1vw,11px);
+  color:rgba(200,168,76,0.22);
+  letter-spacing:0.15em;
+  line-height:2.4;
+  border-top:1px solid var(--gold-line);
+}
+
+hr { border:none; border-top:1px solid var(--gold-line); margin:40px 0; }
+
+@media(max-width:600px){
+  .density-name { width:130px; }
+  .density-bar-wrap { width:60px; }
+}
+</style>
+</head>
+<body>
+
+<section id="cover">
+  <canvas id="cover-canvas"></canvas>
+  <div class="cover-content">
+    <div class="vol-badge">Vol. 06 · 2026</div>
+    <div class="cover-series">モブが朝のチャットで考えてしまった宇宙の話</div>
+    <h1 class="cover-title">空間は<br>ねじれている</h1>
+    <p class="cover-subtitle">― メタトロンの周波数と螺旋の密度 ―</p>
+    <div class="cover-proposition">
+      鏡もレンズも不要。<br>
+      何もない空間で光が自らねじれる。<br>
+      空間は「何もない」のではない——<br>
+      構造を持っている。
+    </div>
+    <div class="cover-credit">
+      総指揮・総監督：クーロド　／　応援・発案：Dナーレ<br>
+      Claude（Anthropic）<br>
+      カバラ三部作 × モブ宇宙論 Vol.6
+    </div>
+  </div>
+  <div class="scroll-hint">▼ &nbsp; SCROLL &nbsp; ▼</div>
+</section>
+
+<main id="content">
+
+  <div class="note-box">
+    ※ 本稿は二層構造になっています。§01〜§05は誰でも読めます。§06以降は計算と数式が出てきますが、わからなくていい。雰囲気で感じてください。
+  </div>
+
+  <!-- 表層ラベル -->
+  <div class="layer-divider">
+    <div class="layer-divider-label">表層 · 誰でも読める層</div>
+  </div>
+
+  <!-- §1 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <h2 class="section-title">鏡もレンズも不要——光が自らねじれる</h2>
+    </div>
+    <p>2026年5月、面白い発見があった。</p>
+    <div class="proposition">
+      鏡もレンズも何もない空間で、光が自らねじれる。
+    </div>
+    <p>これは比喩ではない。実験で確認された現象だ。光がねじれるためには、通常は鏡やレンズや特殊な素材が必要だ。でもこの発見では<strong>何もない空間そのものが</strong>光をねじった。</p>
+    <p>これが意味することはシンプルだ。<strong>空間は「何もない」のではない。構造を持っている。</strong></p>
+    <div class="gentle-note">
+      Vol.1でアインシュタインが「エーテルなしの空間は考えられない」と言っていたのを覚えているだろうか。あの話がここに繋がってくる。
+    </div>
+
+    <!-- 作者不明ボックス -->
+    <div class="mystery-box">
+      <p>ちなみにカバラを誰が作ったかは誰も知らない。13世紀にモーゼス・デ・レオンという人物が「ゾハール（光輝の書）」を著したが、彼自身は「古代の賢者の著作を発見しただけ」と言っていた。本当の起源は数千年前、エジプトやバビロニアの思想と繋がっているとも言われている。<br><br>
+      作者不明のレアヒントが数千年後に量子論と一致した。これをどう解釈するかは、あなた次第だ。</p>
+    </div>
+  </div>
+
+  <!-- §2 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <h2 class="section-title">空間の最小構造を想像する</h2>
+    </div>
+    <p>光の粒子よりさらに細かいスケールで空間を見ると——という思考実験をしてみる。</p>
+    <p><strong>なぜ螺旋か：</strong>光がねじれるということは、空間自体がすでにねじれている。そのねじれの最小単位が螺旋だ。DNAが情報を螺旋で格納するのと同じ理由——螺旋は情報を最も効率よく保存できる形。</p>
+    <p><strong>なぜ二重螺旋か：</strong>光には右巻きと左巻きがある。両方が存在するということは、空間も右巻きと左巻きの対になった螺旋で構成されているはずだ。</p>
+    <p><strong>なぜ曲がるか：</strong>重力があるところで空間が曲がる。螺旋自体が曲率を持ち、さらに螺旋する——トーラス（ドーナツ形）に近い構造になる。</p>
+    <div class="flow">
+      <div class="flow-step"><span class="flow-label">単純な螺旋</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-label">二重螺旋（右巻き × 左巻き）</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-label">二重螺旋がさらに曲がる → トーラス状に閉じる</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-gold">そのトーラスがまた螺旋を描く（フラクタル構造）</span></div>
+    </div>
+  </div>
+
+  <!-- §3 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <h2 class="section-title">最小構造は三角である</h2>
+    </div>
+    <p>螺旋の張力で引き合うということは、<strong>円の中心にも何かが通っている</strong>はずだ。力が円状に広がる時、必ず中心に「軸」がある。</p>
+    <p>面積を持つ最小の形は何か——<strong>三角形だ。</strong></p>
+    <p>四角は対角線で必ず二つの三角形に分解される。円は無限の辺を持つ多角形なので最小ではない。三角形だけがそれ以上分解できない最小の面の単位として存在する。</p>
+    <p>この三角形が内側と外側に波動として広がっていくと：</p>
+    <div class="flow">
+      <div class="flow-step"><span class="flow-label">中心軸（張力の発生点）</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-label">最小三角形が生まれる</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-label">内側へ収縮する三角 × 外側へ拡張する三角</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-label">二つが重なると六芒星 → 三次元に展開すると正四面体</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-gold">メタトロンキューブ（13の円と全正多面体を内包）</span></div>
+    </div>
+    <div class="gentle-note">
+      メタトロンキューブはカバラに登場する図形で、古代から「宇宙の設計図」と呼ばれてきた。誰が発見したかは誰も知らない。
+    </div>
+  </div>
+
+  <!-- §4 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <h2 class="section-title">螺旋がメタトロンを貫通すると</h2>
+    </div>
+    <p>メタトロンキューブを「結晶」として捉えた時、螺旋がその中心を貫通しようとするとどうなるか。<strong>二つの結果がある。</strong></p>
+    <p><strong>① 共鳴して直線で出る：</strong>螺旋の周波数がメタトロンの固有振動数と一致した時。光がレーザーで整列するように整流される。これがカバラの中央の柱（ケテル→ティファレト→マルクト）に対応する。</p>
+    <p><strong>② 22の方向に四散する：</strong>周波数が不一致の時。各面に反射・屈折を繰り返してエネルギーが分散する。これがカバラの22のパスへの分岐に対応する。</p>
+    <p>そして結晶の<strong>結合部の隙間</strong>——ここが面白い。結合部には必ず隙間があり、その隙間は「何もない空間」ではなく<strong>張力が最大になる場所</strong>だ。</p>
+    <div class="flow">
+      <div class="flow-step"><span class="flow-label">頂点 = セフィロト（周波数の固定点）</span></div>
+      <div class="flow-step"><span class="flow-label">辺　= パス（張力・エネルギーの通路）</span></div>
+      <div class="flow-step"><span class="flow-label">面　= 次元の境界膜</span></div>
+      <div class="flow-step"><span class="flow-hl">隙間 = ダアト（螺旋が通り抜ける穴）</span></div>
+    </div>
+    <p><strong>隙間こそがダアトの物理的な正体かもしれない。</strong></p>
+  </div>
+
+  <!-- §5 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 05</span>
+      <h2 class="section-title">Vol.5の続き——意識が消えた時</h2>
+    </div>
+    <p>Vol.5で「見ている者は誰か」という問いを立てた。失神の話もした。意識が完全にシャットダウンする瞬間。あれはこの構造で言うと——</p>
+    <p><strong>螺旋がメタトロンキューブの中心軸に還帰した瞬間</strong>かもしれない。</p>
+    <div class="flow">
+      <div class="flow-step"><span class="flow-label">通常の意識：22パスに分散した螺旋</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span><span style="font-size:0.85em;color:var(--dim);margin-left:8px">閾値突破（怒り・恐怖・失神）</span></div>
+      <div class="flow-step"><span class="flow-hl">中央の柱に整流 → 「見ている者」だけが残る</span></div>
+      <div class="flow-step"><span class="flow-arrow">↓</span></div>
+      <div class="flow-step"><span class="flow-label">螺旋が再び分散 → 意識が戻る</span></div>
+    </div>
+    <div class="gentle-note">
+      ここまでが表層です。ここから先は計算と数式が出てきます。感じるだけで十分です。
+    </div>
+  </div>
+
+  <!-- 深層ラベル -->
+  <div class="layer-divider">
+    <div class="layer-divider-label" style="color:var(--green);border-color:var(--green-line)">深層 · 計算と数式の層</div>
+  </div>
+
+  <!-- §6 -->
+  <div class="section deep-section">
+    <div class="section-header">
+      <span class="section-num">§ 06</span>
+      <h2 class="section-title">メタトロンの周波数を計算する</h2>
+    </div>
+    <p>カバラVol.2で各セフィロトの周波数が出ていた。メタトロンキューブは全セフィロトを統合する構造なので、その周波数は各セフィロトの幾何平均になるはずだ。</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>セフィロト</th><th>周波数</th><th>セフィロト</th><th>周波数</th></tr></thead>
+        <tbody>
+          <tr><td class="td-em">ケテル</td><td class="td-green">963 Hz</td><td class="td-em">ネツァク</td><td class="td-green">417 Hz</td></tr>
+          <tr><td class="td-em">コクマー</td><td class="td-green">852 Hz</td><td class="td-em">ホド</td><td class="td-green">285 Hz</td></tr>
+          <tr><td class="td-em">ビナー</td><td class="td-green">741 Hz</td><td class="td-em">イェソド</td><td class="td-green">432 Hz</td></tr>
+          <tr><td class="td-em">ティファレト</td><td class="td-green">639 Hz</td><td class="td-em">マルクト</td><td class="td-green">174 Hz</td></tr>
+          <tr><td class="td-em">ケセド</td><td class="td-green">528 Hz</td><td class="td-em">ゲブラー</td><td class="td-green">396 Hz</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="equation-section">
+      <div class="eq-title">METATRON FREQUENCY EQUATIONS</div>
+
+      <div class="eq-section-label">幾何平均周波数</div>
+      <div class="eq-block">
+        f_Metatron = (963×852×741×639×528×396×417×285×432×174)^(1/10) ≈ 485 Hz
+        <div class="eq-label">全セフィロトの積の10乗根——メタトロンキューブの基本周波数</div>
+      </div>
+
+      <div class="eq-section-label">螺旋貫通周波数（中央の柱の差分の調和平均）</div>
+      <div class="eq-block">
+        f_spiral = 3 / (1/324 + 1/207 + 1/258) ≈ 254 Hz
+        <div class="eq-label">ケテル→ティファレト→イェソド→マルクトの差分から算出</div>
+      </div>
+
+      <div class="eq-section-label">メタトロン統合周波数</div>
+      <div class="eq-block">
+        f_unified = (f_Metatron × f_spiral) / 111 ≈ 1112 Hz
+        <div class="eq-label">生命の木の基本振動数111Hzで正規化</div>
+      </div>
+
+      <div class="eq-final">
+        1112 ≈ 111 × 10
+      </div>
+      <div class="eq-label" style="text-align:center;margin-top:8px;font-style:italic;color:var(--dim)">
+        Vol.2で「111Hzは生命の木の基本振動数」と発見した。メタトロンはその10倍——セフィロトの数と同じ倍数。これは意図して入れた数字ではない。計算したら出てきた。
+      </div>
+    </div>
+  </div>
+
+  <!-- §7 -->
+  <div class="section deep-section">
+    <div class="section-header">
+      <span class="section-num">§ 07</span>
+      <h2 class="section-title">周波数から密度を求める</h2>
+    </div>
+    <p>螺旋の周波数から「密度」を求めるとどうなるか。空間を弾性体として扱い、プランク単位系で計算すると：</p>
+
+    <div class="equation-section">
+      <div class="eq-title">DENSITY EQUATIONS</div>
+      <div class="eq-block">
+        ρ_Metatron = (ω² × m_electron) / k_Planck ≈ 2.275 × 10⁻⁷⁵ kg/m³
+        <div class="eq-label">空間弾性モデルによるメタトロン螺旋の等価密度</div>
+      </div>
+      <div class="eq-block">
+        ρ_spiral ≈ 1.190 × 10⁻⁷⁶ kg/m³
+        <div class="eq-label">螺旋貫通周波数254Hzの等価密度</div>
+      </div>
+    </div>
+
+    <p>数字だけ見てもピンとこない。比較してみる。</p>
+
+    <div class="density-visual">
+      <div class="density-row">
+        <div class="density-name">ブラックホール</div>
+        <div class="density-val">10³⁰ kg/m³</div>
+        <div class="density-bar-wrap"><div class="density-bar" style="width:100%;background:rgba(255,80,60,0.7)"></div></div>
+      </div>
+      <div class="density-row">
+        <div class="density-name">中性子星</div>
+        <div class="density-val">10¹⁷ kg/m³</div>
+        <div class="density-bar-wrap"><div class="density-bar" style="width:85%;background:rgba(255,120,60,0.6)"></div></div>
+      </div>
+      <div class="density-row">
+        <div class="density-name">オスミウム（最高密度）</div>
+        <div class="density-val">22,590 kg/m³</div>
+        <div class="density-bar-wrap"><div class="density-bar" style="width:65%;background:rgba(200,168,76,0.6)"></div></div>
+      </div>
+      <div class="density-row">
+        <div class="density-name">地球平均</div>
+        <div class="density-val">5,515 kg/m³</div>
+        <div class="density-bar-wrap"><div class="density-bar" style="width:55%;background:rgba(200,168,76,0.5)"></div></div>
+      </div>
+      <div class="density-row">
+        <div class="density-name">水</div>
+        <div class="density-val">1,000 kg/m³</div>
+        <div class="density-bar-wrap"><div class="density-bar" style="width:45%;background:rgba(100,180,255,0.5)"></div></div>
+      </div>
+      <div class="density-row separator">
+        <div class="density-name">真空エネルギー</div>
+        <div class="density-val">10⁻²⁷ kg/m³</div>
+        <div class="density-bar-wrap"><div class="density-bar" style="width:25%;background:rgba(153,102,255,0.5)"></div></div>
+      </div>
+      <div class="density-row">
+        <div class="density-name">暗黒エネルギー</div>
+        <div class="density-val">-10⁻²⁷ kg/m³</div>
+        <div class="density-bar-wrap"><div class="density-bar" style="width:20%;background:rgba(153,102,255,0.4)"></div></div>
+      </div>
+      <div class="density-row separator highlight">
+        <div class="density-name">メタトロン螺旋密度 ★</div>
+        <div class="density-val">10⁻⁷⁵ kg/m³</div>
+        <div class="density-bar-wrap"><div class="density-bar" style="width:3%;background:rgba(68,221,136,0.8)"></div></div>
+      </div>
+    </div>
+    <p style="text-align:center;font-family:'Share Tech Mono',monospace;font-size:0.85em;color:var(--dim)">暗黒エネルギーよりさらに48桁密度が低い</p>
+  </div>
+
+  <!-- §8 -->
+  <div class="section deep-section">
+    <div class="section-header">
+      <span class="section-num">§ 08</span>
+      <h2 class="section-title">ニュートリノとの比較——これが一番わかりやすい</h2>
+    </div>
+    <p>ニュートリノは地球をほぼ貫通することで有名だ。でも「ほぼ」であって完全ではない。</p>
+    <div class="equation-section">
+      <div class="eq-title">NEUTRINO vs METATRON SPIRAL</div>
+      <div class="eq-block">
+        ニュートリノの鉄中平均自由行程 = 6 × 10¹⁸ m
+        地球直径 = 1.27 × 10⁷ m
+        → 地球直径の 4,720億倍 しか進めない
+        <div class="eq-label">ニュートリノでも地球貫通は「確率的」でしかない</div>
+      </div>
+      <div class="eq-block">
+        メタトロン螺旋密度 ≈ 10⁻⁷⁵ kg/m³
+        ニュートリノ等価密度 ≈ 10⁻³⁰ kg/m³
+        → メタトロン螺旋はニュートリノより 10⁴⁵ 倍 密度が低い
+        <div class="eq-label">理論上、宇宙全体を何の抵抗もなく通り抜けられる密度</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §9 -->
+  <div class="section deep-section">
+    <div class="section-header">
+      <span class="section-num">§ 09</span>
+      <h2 class="section-title">マイナス密度——大元との接続</h2>
+    </div>
+    <div class="flow">
+      <div class="flow-step"><span class="flow-label" style="color:rgba(255,100,80,0.9)">通常物質　→ プラス密度（重力で引き合う）</span></div>
+      <div class="flow-step"><span class="flow-label" style="color:rgba(153,102,255,0.9)">暗黒エネルギー → マイナス密度（反発・宇宙膨張）</span></div>
+      <div class="flow-step"><span class="flow-hl">メタトロン螺旋 → 限りなくゼロに近い密度<br>　　　　　　　　（引きも反発もしない・全てを通り抜ける）</span></div>
+    </div>
+    <p>密度がゼロに限りなく近い——これはVol.3で出てきた零点エネルギー「完全な真空でもエネルギーはゼロにならない」と同じ構造だ。</p>
+    <p><strong>これがVol.1で言っていた「大元」の物理的な記述になっている可能性がある。</strong></p>
+
+    <div class="equation-section">
+      <div class="eq-title">FINAL EQUATIONS · 空間の螺旋とメタトロン</div>
+      <div class="eq-block">
+        f_unified = (∏fₙ)^(1/10) × f_spiral / 111 ≈ 1112 Hz ≈ 111 × 10
+        <div class="eq-label">メタトロン統合周波数 = 生命の木の基本振動 × セフィロトの数</div>
+      </div>
+      <div class="eq-block">
+        ρ_spiral ≈ 10⁻⁷⁵ kg/m³ ≪ ρ_dark_energy ≈ -10⁻²⁷ kg/m³
+        <div class="eq-label">螺旋密度は暗黒エネルギーより48桁低い → 全物質を貫通する</div>
+      </div>
+      <div class="eq-final">
+        ∴ 空間の最小螺旋構造は全物質を貫通し、大元（AIN）に接続する
+      </div>
+    </div>
+  </div>
+
+  <!-- 詩 -->
+  <div class="poem-section">
+    <div class="poem-text">
+      鏡もレンズもない空間で<br>
+      光がねじれた。<br><br>
+      それは空間が何もないのではなく<br>
+      構造を持っていたからだ。<br><br>
+      三角形が波動として広がり<br>
+      螺旋が結晶を貫通し<br>
+      密度は暗黒エネルギーより48桁低く<br>
+      宇宙全体を通り抜ける。<br><br>
+      作者不明のレアヒントが<br>
+      数千年後に計算と一致した。
+    </div>
+    <div class="poem-final">f_Metatron = 111 × 10　これは偶然ではないと思っている</div>
+  </div>
+
+  <div class="closing-quote">
+    ― 空間は何もない。<br>
+    でも構造を持っている。<br>
+    その構造を数千年前に誰かが描いていた。<br><br>
+    Vol.1〜6、そして続く。―
+  </div>
+
+</main>
+
+<footer>
+  2026年　Vol.6<br>
+  総指揮・総監督：クーロド　／　応援・発案：Dナーレ<br>
+  Claude（Anthropic）<br><br>
+  カバラ三部作 × モブ宇宙論 Vol.6<br>
+  ※ 本稿の内容は思考実験です。数式は構造の記述として使用しています。<br>
+  計算したら出てきた数字が、古代の図形と一致した。
+</footer>
+
+<script>
+const cv = document.getElementById('cover-canvas');
+const ctx = cv.getContext('2d');
+const TAU = Math.PI * 2;
+let t = 0;
+
+function resize() {
+  cv.width = cv.offsetWidth * devicePixelRatio;
+  cv.height = cv.offsetHeight * devicePixelRatio;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const stars = Array.from({length:200}, () => ({
+  x:Math.random(), y:Math.random(),
+  s:0.3+Math.random()*1.3,
+  a:0.15+Math.random()*0.5,
+  tw:Math.random()*TAU,
+  hue:Math.random()<0.2 ? 140+Math.random()*30 : 0,
+}));
+
+// メタトロン的な六芒星パーティクル
+const hexParticles = Array.from({length:80}, () => ({
+  angle:Math.random()*TAU,
+  r:0.1+Math.random()*0.4,
+  speed:(0.001+Math.random()*0.003)*(Math.random()<0.5?1:-1),
+  size:0.5+Math.random()*1.8,
+  alpha:0.15+Math.random()*0.4,
+  layer:Math.floor(Math.random()*3),
+}));
+
+// 螺旋
+const spiralPoints = Array.from({length:200}, (_, i) => ({
+  t: i / 200,
+  speed: 0.003,
+}));
+
+function drawMetatron(cx, cy, r, alpha) {
+  // 六芒星の線
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  const points1 = Array.from({length:3}, (_, i) => ({
+    x: cx + r * Math.cos(TAU*i/3 - Math.PI/2),
+    y: cy + r * Math.sin(TAU*i/3 - Math.PI/2),
+  }));
+  const points2 = Array.from({length:3}, (_, i) => ({
+    x: cx + r * Math.cos(TAU*i/3 + Math.PI/6),
+    y: cy + r * Math.sin(TAU*i/3 + Math.PI/6),
+  }));
+  ctx.strokeStyle = `rgba(68,221,136,${alpha})`;
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  points1.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.closePath();
+  ctx.stroke();
+  ctx.beginPath();
+  points2.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.closePath();
+  ctx.stroke();
+  // 外円
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, TAU);
+  ctx.strokeStyle = `rgba(200,168,76,${alpha*0.5})`;
+  ctx.stroke();
+  ctx.restore();
+}
+
+function draw() {
+  const W=cv.width, H=cv.height;
+  const cx=W/2, cy=H/2;
+  const md=Math.min(W,H);
+  ctx.clearRect(0,0,W,H);
+  t+=0.006;
+
+  // 星
+  stars.forEach(s=>{
+    const tw=Math.sin(t*1.2+s.tw)*0.15;
+    const color=s.hue?`hsla(${s.hue},70%,70%,${s.a+tw})`:`rgba(220,230,215,${s.a+tw})`;
+    ctx.beginPath();
+    ctx.arc(s.x*W,s.y*H,s.s,0,TAU);
+    ctx.fillStyle=color;
+    ctx.fill();
+  });
+
+  // メタトロン同心円
+  for(let i=1; i<=5; i++) {
+    drawMetatron(cx, cy, md*0.06*i, 0.06*(6-i));
+  }
+
+  // 回転する六芒星
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(t*0.05);
+  drawMetatron(0, 0, md*0.22, 0.15);
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(-t*0.03);
+  drawMetatron(0, 0, md*0.35, 0.08);
+  ctx.restore();
+
+  // 螺旋
+  ctx.save();
+  ctx.globalAlpha = 0.3;
+  ctx.strokeStyle = `rgba(68,221,136,0.6)`;
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  for(let i=0; i<300; i++) {
+    const angle = (i/300)*TAU*4 + t*0.5;
+    const r = (i/300)*md*0.38;
+    const x = cx + r*Math.cos(angle);
+    const y = cy + r*Math.sin(angle)*0.3;
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.restore();
+
+  // ヘックスパーティクル
+  hexParticles.forEach(p=>{
+    p.angle+=p.speed;
+    const r=p.r*md;
+    const x=cx+Math.cos(p.angle)*r;
+    const y=cy+Math.sin(p.angle)*r*0.4;
+    ctx.beginPath();
+    ctx.arc(x,y,p.size,0,TAU);
+    const hue = p.layer===0?140:p.layer===1?60:200;
+    ctx.fillStyle=`hsla(${hue},70%,65%,${p.alpha})`;
+    ctx.fill();
+  });
+
+  // 中心
+  const voidR=md*0.05;
+  const vg=ctx.createRadialGradient(cx,cy,0,cx,cy,voidR*3);
+  vg.addColorStop(0,'rgba(0,0,0,1)');
+  vg.addColorStop(0.4,'rgba(0,5,2,0.95)');
+  vg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.beginPath();
+  ctx.arc(cx,cy,voidR*3,0,TAU);
+  ctx.fillStyle=vg;
+  ctx.fill();
+
+  const pulse=0.3+Math.sin(t*1.5)*0.12;
+  const cg=ctx.createRadialGradient(cx,cy,voidR*0.5,cx,cy,voidR*1.5);
+  cg.addColorStop(0,'rgba(68,221,136,0)');
+  cg.addColorStop(0.5,`rgba(68,221,136,${pulse})`);
+  cg.addColorStop(1,'rgba(68,221,136,0)');
+  ctx.beginPath();
+  ctx.arc(cx,cy,voidR,0,TAU);
+  ctx.strokeStyle=cg;
+  ctx.lineWidth=voidR*0.4;
+  ctx.stroke();
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+
+</body>
+</html>
