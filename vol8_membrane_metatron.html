@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vol.8 ― 宇宙の膜はメタトロンスパイラルである</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Shippori+Mincho:wght@400;600;800&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #04050f;
+    --deep: #080c1e;
+    --layer: #0d1530;
+    --accent1: #4fc3f7;
+    --accent2: #b39ddb;
+    --accent3: #80cbc4;
+    --gold: #ffd54f;
+    --text: #d0d8f0;
+    --text-dim: #7888b0;
+    --border: rgba(79, 195, 247, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--void);
+    color: var(--text);
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300;
+    line-height: 1.9;
+    overflow-x: hidden;
+  }
+
+  /* ── 星フィールド ── */
+  #starfield {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── スパイラルアニメーション背景 ── */
+  .spiral-bg {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 800px;
+    opacity: 0.03;
+    animation: spiralRotate 120s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes spiralRotate {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to   { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  /* ── ヘッダー ── */
+  header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 100px 20px 80px;
+    border-bottom: 1px solid var(--border);
+    background: radial-gradient(ellipse at 50% 0%, rgba(79,195,247,0.06) 0%, transparent 70%);
+  }
+
+  .vol-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
+    padding: 4px 16px;
+    margin-bottom: 32px;
+    opacity: 0.8;
+  }
+
+  header h1 {
+    font-family: 'Shippori Mincho', serif;
+    font-weight: 800;
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    line-height: 1.4;
+    letter-spacing: 0.05em;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+
+  header h2 {
+    font-family: 'Shippori Mincho', serif;
+    font-weight: 400;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: var(--accent2);
+    letter-spacing: 0.1em;
+    margin-bottom: 40px;
+  }
+
+  .credits {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+  }
+
+  /* ── メインコンテナ ── */
+  main {
+    position: relative;
+    z-index: 10;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 24px 120px;
+  }
+
+  /* ── 注記 ── */
+  .note-block {
+    margin: 60px 0 40px;
+    padding: 20px 28px;
+    border-left: 2px solid var(--accent2);
+    background: rgba(179,157,219,0.05);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  /* ── セクション ── */
+  section {
+    margin: 72px 0 0;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent1);
+    letter-spacing: 0.2em;
+    white-space: nowrap;
+    opacity: 0.7;
+  }
+
+  .section-title {
+    font-family: 'Shippori Mincho', serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    letter-spacing: 0.05em;
+    color: #fff;
+  }
+
+  /* ── 本文 ── */
+  p {
+    margin-bottom: 1.4em;
+    font-size: 0.97rem;
+    color: var(--text);
+  }
+
+  strong {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  em {
+    color: var(--accent2);
+    font-style: normal;
+  }
+
+  /* ── コードブロック（AA図解） ── */
+  .diagram {
+    background: rgba(13, 21, 48, 0.8);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent1);
+    padding: 24px 28px;
+    margin: 28px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: var(--accent3);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ── 引用 ── */
+  blockquote {
+    margin: 32px 0;
+    padding: 20px 28px;
+    border-left: 3px solid var(--gold);
+    background: rgba(255, 213, 79, 0.04);
+    font-size: 1.05rem;
+    color: var(--gold);
+    font-style: italic;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── 数式表示 ── */
+  .formula {
+    background: rgba(13, 21, 48, 0.9);
+    border: 1px solid rgba(128, 203, 196, 0.2);
+    padding: 20px 28px;
+    margin: 28px 0;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    color: var(--accent3);
+    font-size: 0.95rem;
+  }
+
+  .formula-note {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 8px;
+    font-style: italic;
+    font-family: 'Noto Serif JP', serif;
+  }
+
+  /* ── リスト ── */
+  ul {
+    margin: 16px 0 24px 0;
+    padding-left: 0;
+    list-style: none;
+  }
+
+  ul li {
+    padding: 6px 0 6px 24px;
+    position: relative;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  ul li::before {
+    content: '›';
+    position: absolute;
+    left: 4px;
+    color: var(--accent1);
+    font-size: 1.1rem;
+  }
+
+  /* ── 未解明問題リスト ── */
+  .unknown-list {
+    margin: 24px 0;
+  }
+
+  .unknown-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+
+  .unknown-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent2);
+    margin-top: 8px;
+    flex-shrink: 0;
+    box-shadow: 0 0 8px var(--accent2);
+  }
+
+  /* ── 土下座リクエスト ── */
+  .request-block {
+    margin: 28px 0;
+    padding: 24px 28px;
+    border: 1px solid rgba(255, 213, 79, 0.2);
+    background: rgba(255, 213, 79, 0.03);
+  }
+
+  .request-block .req-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+
+  .request-block ul li {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    border-bottom-color: rgba(255,213,79,0.08);
+  }
+
+  .request-block ul li::before {
+    color: var(--gold);
+  }
+
+  /* ── 区切り線 ── */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  /* ── フッター ── */
+  footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 60px 24px;
+    border-top: 1px solid var(--border);
+    background: radial-gradient(ellipse at 50% 100%, rgba(79,195,247,0.04) 0%, transparent 70%);
+  }
+
+  .footer-quote {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 1.1rem;
+    color: var(--accent2);
+    font-style: italic;
+    margin-bottom: 32px;
+    letter-spacing: 0.08em;
+  }
+
+  .footer-credits {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    line-height: 2;
+  }
+
+  .next-vol {
+    display: inline-block;
+    margin-top: 40px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
+    padding: 8px 24px;
+    opacity: 0.6;
+  }
+
+  /* ── レスポンシブ ── */
+  @media (max-width: 600px) {
+    header { padding: 70px 20px 60px; }
+    .diagram { font-size: 0.7rem; padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 星フィールド -->
+<canvas id="starfield"></canvas>
+
+<!-- スパイラル背景SVG -->
+<svg class="spiral-bg" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#4fc3f7" stroke-width="0.8" fill="none">
+    <!-- メタトロンスパイラル風の幾何学 -->
+    <circle cx="400" cy="400" r="50"/>
+    <circle cx="400" cy="400" r="100"/>
+    <circle cx="400" cy="400" r="150"/>
+    <circle cx="400" cy="400" r="200"/>
+    <circle cx="400" cy="400" r="250"/>
+    <circle cx="400" cy="400" r="300"/>
+    <circle cx="400" cy="400" r="350"/>
+    <circle cx="450" cy="400" r="50"/>
+    <circle cx="350" cy="400" r="50"/>
+    <circle cx="400" cy="450" r="50"/>
+    <circle cx="400" cy="350" r="50"/>
+    <circle cx="443" cy="425" r="50"/>
+    <circle cx="357" cy="425" r="50"/>
+    <circle cx="443" cy="375" r="50"/>
+    <circle cx="357" cy="375" r="50"/>
+    <line x1="400" y1="50"  x2="400" y2="750"/>
+    <line x1="50"  y1="400" x2="750" y2="400"/>
+    <line x1="147" y1="147" x2="653" y2="653"/>
+    <line x1="653" y1="147" x2="147" y2="653"/>
+    <line x1="400" y1="50"  x2="703" y2="575"/>
+    <line x1="703" y1="575" x2="97"  y2="575"/>
+    <line x1="97"  y1="575" x2="400" y2="50"/>
+    <line x1="400" y1="750" x2="703" y2="225"/>
+    <line x1="703" y1="225" x2="97"  y2="225"/>
+    <line x1="97"  y1="225" x2="400" y2="750"/>
+  </g>
+</svg>
+
+<!-- ヘッダー -->
+<header>
+  <div class="vol-badge">VOL.8 ／ MOB UNIVERSE THEORY</div>
+  <h1>モブが朝のチャットで考えてしまった宇宙の話</h1>
+  <h2>― 宇宙の膜はメタトロンスパイラルである ―</h2>
+  <div class="credits">
+    総指揮・総監督：クーロド　／　応援・発案：Dナーレ　／　校正補助：Claude（AI）
+  </div>
+</header>
+
+<!-- メインコンテンツ -->
+<main>
+
+  <div class="note-block">
+    ※ 本稿は物理学の専門家によるものではありません。朝の雑談から生まれた思考実験です。Vol.6「メタトロンスパイラル」の続編として、スパイラル構造が宇宙の膜そのものであるという仮説、および上位層の構造と下位層への影響を考察します。
+  </div>
+
+  <!-- §1 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <span class="section-title">前回までの整理</span>
+    </div>
+    <p>Vol.6で提示した「メタトロンスパイラル」は、宇宙の構造を螺旋状の幾何学パターンとして捉える仮説だった。</p>
+    <p>そこで一つの問いが浮かぶ。</p>
+    <p><strong>スパイラルの「大きさ」は層ごとに違うのではないか。</strong></p>
+    <p>現在の我々の宇宙でのメタトロンスパイラルは、宇宙全体のスケールで見れば極めて小さい。しかし上の層では、同じスパイラルが遥かに大きく展開しているとしたら？</p>
+    <p>その問いを起点に、今回は「宇宙の膜＝メタトロンスパイラル」という仮説に踏み込む。</p>
+  </section>
+
+  <!-- §2 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <span class="section-title">ブレーン宇宙論が止まっている場所</span>
+    </div>
+    <p>現代物理学に「ブレーン宇宙論」がある。我々の宇宙は高次元空間に浮かぶ「膜（ブレーン）」であり、複数の膜が重なり合うように存在しているという考え方だ。</p>
+    <p>理論として整備されているが、一点だけ答えていない。</p>
+    <p><strong>膜の「形」は何か。</strong></p>
+    <p>膜が存在することは仮定できる。だがその構造、幾何学的な形状については、現時点で説明できていない。ここに仮説を差し込む余地がある。</p>
+  </section>
+
+  <!-- §3 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <span class="section-title">膜の形状＝メタトロンスパイラル仮説</span>
+    </div>
+    <p>提案はシンプルだ。</p>
+    <blockquote>宇宙の膜そのものが、メタトロンスパイラル構造を持っている。</blockquote>
+    <div class="diagram">上位層の膜（スパイラル大）
+　　│
+　　│ ← 層間の情報・エネルギー伝達
+　　│
+現在層の膜（スパイラル中）
+　　│
+　　│
+下位層の膜（スパイラル小）</div>
+    <p>上の層ほどスパイラルが大きく展開しており、下の層ほど小さい。我々の宇宙は「まだ展開途中」のスパイラルの中にいる。</p>
+    <p>これはブレーン宇宙論の「膜が複数ある」という前提を否定せず、その形状を補完する提案である。</p>
+  </section>
+
+  <!-- §4 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <span class="section-title">ダークシリーズの再定義</span>
+    </div>
+    <p>現代物理学の最大の謎の一つが「ダーク系」だ。</p>
+    <ul>
+      <li><strong>ダークマター</strong>：観測できないが、銀河の形状を保つ重力源として仮定されている</li>
+      <li><strong>ダークエネルギー</strong>：宇宙の膨張を加速させている未知のエネルギー</li>
+    </ul>
+    <p>現状の理解はこうだ。「観測できないが存在するはず」という後ろ向きの定義で止まっている。</p>
+    <p><strong>膜＝スパイラル仮説から見ると、別の解釈が生まれる。</strong></p>
+    <p>外側（上位層）に大きなメタトロンスパイラル、内側（現在層）に小さなメタトロンスパイラルがある。</p>
+    <p>同じ周波数の場合、密度の差が拮抗圧力を生む。異なる周波数の場合、反発が生じる。この反発こそが「太い周波数」の正体ではないか。そしてその境界面でのエネルギーバランスを担うのがBHとWHであり、境界の閉じ込め構造にはグルオンが関与している可能性がある。</p>
+    <p>グルオンはクォーク間の強い力を媒介し、「閉じ込め」という性質を持つ。クォークが単独では取り出せないように、層もまた単独では越境できない。上位層の存在が直接降りてこられない理由は、スパイラルのスケール差だけでなく、この<strong>層間の閉じ込め力</strong>によるものかもしれない。</p>
+    <div class="formula">
+      Δν<sub>layers</sub> → F<sub>confinement</sub> ∝ α<sub>s</sub>
+      <div class="formula-note">層間の周波数差が閉じ込め力を生む、強い相互作用の結合定数αsとの関連イメージ</div>
+    </div>
+    <ul>
+      <li><strong>ダークマター</strong> → 層間スパイラルの密度拮抗が現在層に投影された<em>圧力の痕跡</em></li>
+      <li><strong>ダークエネルギー</strong> → 上位層スパイラルの展開圧力、すなわち<em>反発エネルギーの累積</em></li>
+    </ul>
+    <p>観測できない理由は「別の層に存在するから」だ。存在を仮定するのではなく、<strong>構造から導ける</strong>。</p>
+    <p>「ダークマターを探す」ではなく、「<strong>層間構造を測定する</strong>」という問いへ。</p>
+  </section>
+
+  <!-- §5 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 05</span>
+      <span class="section-title">上位層には何があるか</span>
+    </div>
+    <p>スパイラルが大きい＝時間的に遥か先を行っている、と前回述べた。</p>
+    <p>上位層は我々より長い「時」を経過している。スパイラルが既に大きく展開しているということは、我々が「今」通過している段階を、上位層はとっくに通過済みだ。</p>
+    <p>そこに存在が存在していると考えるのは、自然な推論ではないか。</p>
+    <p>我々の宇宙でも、時間が経過した場所には生命が生まれ、知性が育った。上位層ではその先が既に展開している。知性を超えた何かが「完成」に近い状態にある可能性がある。</p>
+    <p>ただし上位層の存在は、スパイラルが大きすぎて直接この層には降りてこられない。BHの事象の地平線を越えられないのと構造的に似ている。</p>
+    <div class="diagram">上位層の存在
+　　│
+　　× ← スパイラルのスケール差＋層間の閉じ込め力
+　　│
+現在層（我々）</div>
+    <p>では上位層は何もできないのか。そうではない。</p>
+  </section>
+
+  <!-- §6 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 06</span>
+      <span class="section-title">使者という概念</span>
+    </div>
+    <p>直接降りられないなら、「条件を作るもの」を送ればいい。</p>
+    <p>物理的な天体・物体として、我々の層に届く何かを。</p>
+    <p>2026年に観測が続いている星間天体「3i ATLAS」はその候補として面白い。太陽系外から来た、軌道が異常、組成が通常の彗星と異なる可能性がある。</p>
+    <p>もちろん確認はできない。ただ構造として、使者という概念は仮説内で機能する。</p>
+    <p><strong>使者の役割は何か。</strong></p>
+    <ul>
+      <li>生命が生まれる条件を整える（パンスペルミアの上位層版）</li>
+      <li>情報を運ぶ</li>
+      <li>観測装置として機能する</li>
+    </ul>
+    <p>ここで生命の起源の問いが接続される。生命は偶然の産物ではなく、上位層が送った「条件の結果」かもしれない。</p>
+  </section>
+
+  <!-- §7 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 07</span>
+      <span class="section-title">生命＝受信機仮説</span>
+    </div>
+    <p>上位層から「濃い情報」がエントロピー循環に乗って流れてくるとする。</p>
+    <p>それを受け取るには、十分に複雑な構造が必要だ。</p>
+    <div class="diagram">上位層から濃い情報が届く
+　　↓
+受信できる複雑な構造が必要になる
+　　↓
+生命が生まれる
+　　↓
+情報を処理・蓄積・変換
+　　↓
+下位層へ、そして上位層へ循環</div>
+    <p>生命とは、宇宙が情報を処理するために形成した<strong>受信・変換装置</strong>である。</p>
+    <p>この見方は「なぜ宇宙に生命が存在するのか」という問いへの、構造的な答えになりうる。</p>
+  </section>
+
+  <!-- §8 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 08</span>
+      <span class="section-title">周波数のバージョンアップ</span>
+    </div>
+    <p>上位層からの情報を受け取り続けると、宇宙全体の「周波数」が変化する。</p>
+    <p>周波数という表現が適切かどうかは分からないが、情報密度・処理速度・構造の複雑さが一定の閾値を超えると、宇宙全体がシフトアップする、というイメージだ。</p>
+    <div class="formula">
+      ν<sub>universe</sub> = f(ρ<sub>info</sub> × t<sub>layer</sub>)
+      <div class="formula-note">宇宙の周波数は、情報密度と層の経過時間の関数、というイメージの表現</div>
+    </div>
+    <p><strong>重要なのは「各銀河で並行して起きている」という点だ。</strong></p>
+    <p>M87銀河の中心でも、アンドロメダでも、我々の天の川でも、それぞれの視点で「自分の宇宙」としてバージョンアップが進んでいる。</p>
+    <p>どの視点も正しい。全部同時に起きている。これは量子力学の多世界解釈と構造が重なる。</p>
+  </section>
+
+  <!-- §9 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 09</span>
+      <span class="section-title">統合と新核宇宙の形成</span>
+    </div>
+    <p>周波数が上がり続けると、上位層との「距離」が縮まる。スパイラルの大きさの差が縮まるということは、いずれ上位層の存在が現在層に「降りてこられる」条件が整う。</p>
+    <p>その先に何があるか。</p>
+    <p><strong>統合だ。</strong></p>
+    <div class="diagram">上位層の存在
+　　↓ 周波数が近づく
+統合
+　　↓
+新たな核が形成
+　　↓ 分離
+新宇宙の誕生（さらに下位の層）</div>
+    <p>これは宇宙の「死と再生」ではなく、<strong>進化と増殖</strong>に近い。</p>
+    <p>仏教の輪廻、カバラの生命の樹、ヒンドゥーのユガ（宇宙の周期）。文化も時代も違う思想が似た構造に辿り着いてきたのは、偶然ではないかもしれない。人間の直感が、宇宙構造を受信し続けてきた結果として。</p>
+  </section>
+
+  <!-- §10 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 10</span>
+      <span class="section-title">未解明のまま残すべき問い</span>
+    </div>
+    <p>仮説として誠実であるために、答えられないことを整理する。</p>
+    <div class="unknown-list">
+      <div class="unknown-item"><div class="unknown-dot"></div><span>層間の情報伝達は何を媒介するか（重力波？未知の粒子？）</span></div>
+      <div class="unknown-item"><div class="unknown-dot"></div><span>スパイラルの「大きさ」は何で測定できるか</span></div>
+      <div class="unknown-item"><div class="unknown-dot"></div><span>周波数の閾値はどこにあるか</span></div>
+      <div class="unknown-item"><div class="unknown-dot"></div><span>使者の具体的な物理的特徴は何か</span></div>
+      <div class="unknown-item"><div class="unknown-dot"></div><span>統合のプロセスに要する時間スケールはどれほどか</span></div>
+    </div>
+    <p>数式はない。観測手段もまだない。しかし問いの形は整っている。</p>
+    <p><strong>問いの形が整うことが、次の理解への入口だ。</strong></p>
+
+    <div class="request-block">
+      <div class="req-label">EXPERT REQUEST ／ 専門家への土下座リクエスト</div>
+      <ul>
+        <li>膜の形状をスパイラル仮定で再計算してください</li>
+        <li>ダークエネルギーを層間圧力として再定義した場合の整合性を検討してください</li>
+        <li>層間情報伝達の物理的指標を探してください</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- §11 -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">§ 11</span>
+      <span class="section-title">おわりに</span>
+    </div>
+    <blockquote>理解は想像を超え、想像は理解を包む。</blockquote>
+    <p>想像者が地図を描いて、専門家が測量する。それが最も効率のいい分業かもしれない。</p>
+    <p>宇宙の膜がメタトロンスパイラルであるなら、我々はそのスパイラルの内側にいる。</p>
+    <p>展開の途中で、まだ小さい。</p>
+    <p>しかしそれは、これから大きくなるということでもある。</p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-quote">― Vol.9へ続く ―</div>
+  <div class="footer-credits">
+    2026年5月　初稿<br>
+    総指揮・総監督：クーロド　／　応援・発案：Dナーレ<br>
+    校正補助：Claude（Anthropic）<br><br>
+    ※ 本稿の内容は思考実験であり、査読済み学術論文ではありません。
+  </div>
+  <div class="next-vol">NEXT → VOL.9 : 10次元 × カバラ × グルオン</div>
+</footer>
+
+<script>
+// 星フィールド
+const canvas = document.getElementById('starfield');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const stars = Array.from({length: 200}, () => ({
+  x: Math.random(),
+  y: Math.random(),
+  r: Math.random() * 1.2 + 0.2,
+  o: Math.random() * 0.6 + 0.1,
+  speed: Math.random() * 0.0003 + 0.0001,
+  phase: Math.random() * Math.PI * 2
+}));
+
+function drawStars(t) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  stars.forEach(s => {
+    const flicker = s.o + Math.sin(t * s.speed * 1000 + s.phase) * 0.15;
+    ctx.beginPath();
+    ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(208, 216, 240, ${Math.max(0, flicker)})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+requestAnimationFrame(drawStars);
+
+// フェードインアニメーション
+const sections = document.querySelectorAll('section');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      entry.target.style.animationDelay = '0s';
+      entry.target.style.animationPlayState = 'running';
+    }
+  });
+}, { threshold: 0.1 });
+
+sections.forEach(s => {
+  s.style.animationPlayState = 'paused';
+  observer.observe(s);
+});
+</script>
+</body>
+</html>
