@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宇宙三層構造マップ — 土下座ラボ</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&family=Share+Tech+Mono&family=Noto+Sans+JP:wght@300;400;700&display=swap');
+
+:root {
+  --bg: #02030a;
+  --upper: #c8a84c;
+  --upper-dim: rgba(200,168,76,0.12);
+  --current: #40c8e8;
+  --current-dim: rgba(64,200,232,0.12);
+  --lower: #9966ff;
+  --lower-dim: rgba(153,102,255,0.12);
+  --between: #ff6b6b;
+  --between-dim: rgba(255,107,107,0.1);
+  --green: #44dd88;
+  --text: #ccd4e8;
+  --dim: rgba(200,212,230,0.45);
+  --surface: #070812;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+header {
+  text-align: center;
+  padding: 32px 20px 20px;
+  position: relative;
+  z-index: 10;
+  border-bottom: 1px solid rgba(200,168,76,0.15);
+}
+
+.lab-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: var(--upper);
+  opacity: 0.6;
+  margin-bottom: 8px;
+}
+
+h1 {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(18px,3.5vw,28px);
+  font-weight: 700;
+  color: #e8f0f8;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+  text-shadow: 0 0 30px rgba(64,200,232,0.3);
+}
+
+.subtitle {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 0.2em;
+}
+
+/* LEGEND */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.legend-item:hover { opacity: 1; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* MAIN MAP */
+.map-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+/* LAYER SECTIONS */
+.layer {
+  position: relative;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 4px;
+  cursor: default;
+}
+
+.layer-upper {
+  background: linear-gradient(135deg, rgba(200,168,76,0.08), rgba(200,168,76,0.03));
+  border: 1px solid rgba(200,168,76,0.25);
+}
+
+.layer-current {
+  background: linear-gradient(135deg, rgba(64,200,232,0.08), rgba(64,200,232,0.03));
+  border: 1px solid rgba(64,200,232,0.3);
+  margin: 0;
+}
+
+.layer-lower {
+  background: linear-gradient(135deg, rgba(153,102,255,0.08), rgba(153,102,255,0.03));
+  border: 1px solid rgba(153,102,255,0.25);
+}
+
+.layer-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.layer-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  padding: 3px 8px;
+  border-radius: 20px;
+  border: 1px solid;
+}
+
+.layer-name {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(14px,2.5vw,18px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.layer-desc {
+  font-size: 0.72rem;
+  color: var(--dim);
+  margin-bottom: 12px;
+  line-height: 1.7;
+}
+
+/* NODE GRID */
+.node-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.node {
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,0.07);
+  cursor: pointer;
+  transition: all 0.22s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.node::before {
+  content:'';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.22s;
+  border-radius: 8px;
+}
+
+.node:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.node:hover::before { opacity: 1; }
+
+.node.upper-node::before { background: rgba(200,168,76,0.08); }
+.node.current-node::before { background: rgba(64,200,232,0.08); }
+.node.lower-node::before { background: rgba(153,102,255,0.08); }
+.node.between-node::before { background: rgba(255,107,107,0.08); }
+
+.node-icon {
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.node-name {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.node-sub {
+  font-size: 0.6rem;
+  color: var(--dim);
+  line-height: 1.5;
+}
+
+.node-vol {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  opacity: 0.4;
+  margin-top: 4px;
+}
+
+/* BETWEEN LAYERS */
+.between-layer {
+  position: relative;
+  padding: 10px 16px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.between-layer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 20px,
+    rgba(255,107,107,0.03) 20px,
+    rgba(255,107,107,0.03) 21px
+  );
+}
+
+.between-arrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--between);
+  opacity: 0.5;
+  writing-mode: vertical-rl;
+  flex-shrink: 0;
+  letter-spacing: 0.15em;
+}
+
+.between-nodes {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.between-node-item {
+  background: rgba(255,107,107,0.06);
+  border: 1px solid rgba(255,107,107,0.2);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--between);
+  letter-spacing: 0.05em;
+}
+
+.between-node-item:hover {
+  background: rgba(255,107,107,0.12);
+  transform: scale(1.03);
+}
+
+/* DETAIL PANEL */
+#detail-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(5,6,18,0.97);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: 18px 20px 24px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+#detail-panel.active {
+  transform: translateY(0);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.panel-title {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(16px,2.5vw,20px);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.panel-close {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: var(--dim);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.panel-close:hover { background: rgba(255,255,255,0.1); color: white; }
+
+.panel-layer-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.panel-body {
+  font-size: 0.82rem;
+  line-height: 1.9;
+  color: rgba(200,212,230,0.85);
+}
+
+.panel-body strong { color: #e0ecf8; }
+
+.panel-connection {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+  border-left: 2px solid rgba(200,168,76,0.4);
+  font-size: 0.75rem;
+  color: var(--dim);
+  line-height: 1.8;
+}
+
+.panel-vol {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--upper);
+  margin-top: 8px;
+  opacity: 0.7;
+}
+
+/* CANVAS BG */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+.map-container { position: relative; z-index: 1; }
+header, .legend { position: relative; z-index: 1; }
+
+/* SCALE INDICATOR */
+.scale-indicator {
+  text-align: center;
+  padding: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--dim);
+  letter-spacing: 0.15em;
+  margin-bottom: 4px;
+}
+
+.scale-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.scale-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8px;
+  color: var(--dim);
+  letter-spacing: 0.1em;
+}
+
+.scale-dot { width: 6px; height: 6px; border-radius: 50%; }
+.scale-line {
+  height: 1px;
+  width: 40px;
+  background: linear-gradient(90deg, var(--upper), var(--current));
+  opacity: 0.4;
+}
+
+/* OVERLAY */
+#overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+}
+#overlay.active { display: block; }
+
+@media(max-width:480px) {
+  .node-grid { grid-template-columns: repeat(2, 1fr); }
+  .between-nodes { gap: 4px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div id="overlay" onclick="closePanel()"></div>
+
+<header>
+  <div class="lab-badge">土下座ラボ · DOGEIZA LAB</div>
+  <h1>宇宙三層構造マップ</h1>
+  <p class="subtitle">モブ宇宙論 Vol.1〜9 ナビゲーション · タップで詳細</p>
+</header>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--upper)"></div>上位層</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--current)"></div>現在層（我々）</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--lower)"></div>下位層</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--between)"></div>層間構造</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>観測事実</div>
+</div>
+
+<div class="map-container">
+
+  <div class="scale-bar">
+    <div class="scale-item"><div class="scale-dot" style="background:var(--upper)"></div>上位層</div>
+    <div class="scale-line"></div>
+    <div class="scale-item"><div class="scale-dot" style="background:var(--between)"></div>φ^n</div>
+    <div class="scale-line" style="background:linear-gradient(90deg,var(--current),var(--lower))"></div>
+    <div class="scale-item"><div class="scale-dot" style="background:var(--lower)"></div>下位層</div>
+  </div>
+
+  <!-- UPPER LAYER -->
+  <div class="layer layer-upper">
+    <div class="layer-header">
+      <div class="layer-badge" style="color:var(--upper);border-color:rgba(200,168,76,0.4)">UPPER LAYER</div>
+      <div class="layer-name" style="color:var(--upper)">上位層</div>
+    </div>
+    <div class="layer-desc">我々より遥か先を行く層。メタトロンスパイラルが大きく展開済み。直接降りてこられないがその影響は届く。</div>
+    <div class="node-grid">
+      <div class="node upper-node" onclick="showDetail('upper_existence')">
+        <span class="node-icon">👁</span>
+        <div class="node-name" style="color:var(--upper)">上位層の存在</div>
+        <div class="node-sub">スパイラル展開完了<br>知性を超えた何か</div>
+        <div class="node-vol">Vol.8 §5</div>
+      </div>
+      <div class="node upper-node" onclick="showDetail('upper_spiral')">
+        <span class="node-icon">🌀</span>
+        <div class="node-name" style="color:var(--upper)">メタトロンスパイラル（大）</div>
+        <div class="node-sub">宇宙膜の形状<br>展開済み・安定</div>
+        <div class="node-vol">Vol.6 Vol.8</div>
+      </div>
+      <div class="node upper-node" onclick="showDetail('messenger')">
+        <span class="node-icon">☄️</span>
+        <div class="node-name" style="color:var(--upper)">使者</div>
+        <div class="node-sub">3i ATLAS候補<br>条件を整える存在</div>
+        <div class="node-vol">Vol.8 §6</div>
+      </div>
+      <div class="node upper-node" onclick="showDetail('upper_info')">
+        <span class="node-icon">📡</span>
+        <div class="node-name" style="color:var(--upper)">濃い情報</div>
+        <div class="node-sub">エントロピー循環<br>下位層へ流れる</div>
+        <div class="node-vol">Vol.8 §7</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BETWEEN: UPPER → CURRENT -->
+  <div class="between-layer">
+    <div class="between-arrow">層　間</div>
+    <div class="between-nodes">
+      <div class="between-node-item" onclick="showDetail('dark_matter')">🌑 ダークマター＝密度拮抗の痕跡</div>
+      <div class="between-node-item" onclick="showDetail('dark_energy')">💨 ダークエネルギー＝上位層展開圧力</div>
+      <div class="between-node-item" onclick="showDetail('gluon_confinement')">⛓ グルオン閉じ込め力</div>
+      <div class="between-node-item" onclick="showDetail('bh_wh')">🕳 BH・WH＝層間の弁</div>
+    </div>
+  </div>
+
+  <!-- CURRENT LAYER -->
+  <div class="layer layer-current">
+    <div class="layer-header">
+      <div class="layer-badge" style="color:var(--current);border-color:rgba(64,200,232,0.4)">CURRENT LAYER · 我々</div>
+      <div class="layer-name" style="color:var(--current)">現在層</div>
+    </div>
+    <div class="layer-desc">展開途中のメタトロンスパイラルの中にいる。小さいが、これから大きくなる。</div>
+    <div class="node-grid">
+      <div class="node current-node" onclick="showDetail('photon')">
+        <span class="node-icon">✨</span>
+        <div class="node-name" style="color:var(--current)">光子（γ）</div>
+        <div class="node-sub">電磁場の振動<br>加速電荷から生まれる</div>
+        <div class="node-vol">Vol.9 今日</div>
+      </div>
+      <div class="node current-node" onclick="showDetail('double_slit')">
+        <span class="node-icon">〰️</span>
+        <div class="node-name" style="color:var(--current)">二重スリット</div>
+        <div class="node-sub">1発1影響<br>分布が確率の正体</div>
+        <div class="node-vol">Vol.9</div>
+      </div>
+      <div class="node current-node" onclick="showDetail('spiral_energy')">
+        <span class="node-icon">🌀</span>
+        <div class="node-name" style="color:var(--current)">螺旋エネルギー</div>
+        <div class="node-sub">F(spiral,x)<br>空間分布関数（構築中）</div>
+        <div class="node-vol">Vol.9</div>
+      </div>
+      <div class="node current-node" onclick="showDetail('gluon_9')">
+        <span class="node-icon">⚛️</span>
+        <div class="node-name" style="color:var(--current)">グルオン9構造</div>
+        <div class="node-sub">中央1＝現在<br>外側8＝多重世界</div>
+        <div class="node-vol">Vol.9 今日</div>
+      </div>
+      <div class="node current-node" onclick="showDetail('multiworld')">
+        <span class="node-icon">🔀</span>
+        <div class="node-name" style="color:var(--current)">多重世界＝揺らぎの偏り</div>
+        <div class="node-sub">分岐ではなく<br>重なりの収束</div>
+        <div class="node-vol">Vol.9</div>
+      </div>
+      <div class="node current-node" onclick="showDetail('metatron_current')">
+        <span class="node-icon">✡️</span>
+        <div class="node-name" style="color:var(--current)">メタトロンスパイラル（中）</div>
+        <div class="node-sub">f_unified=1112Hz<br>展開途中</div>
+        <div class="node-vol">Vol.6</div>
+      </div>
+      <div class="node current-node" onclick="showDetail('wimp')">
+        <span class="node-icon">💥</span>
+        <div class="node-name" style="color:var(--current)">WIMP・戸谷データ</div>
+        <div class="node-sub">20GeV<br>φ^103.54の場所</div>
+        <div class="node-vol">Vol.7</div>
+      </div>
+      <div class="node current-node" onclick="showDetail('life')">
+        <span class="node-icon">🧬</span>
+        <div class="node-name" style="color:var(--current)">生命＝受信機</div>
+        <div class="node-sub">上位情報の変換装置<br>DNAは二重螺旋</div>
+        <div class="node-vol">Vol.8 §7</div>
+      </div>
+      <div class="node current-node" onclick="showDetail('vacuum')">
+        <span class="node-icon">〰</span>
+        <div class="node-name" style="color:var(--current)">真空のゆらぎ</div>
+        <div class="node-sub">常に存在するエネルギー<br>螺旋の基底状態候補</div>
+        <div class="node-vol">Vol.3 Vol.9</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BETWEEN: CURRENT → LOWER -->
+  <div class="between-layer">
+    <div class="between-arrow">層　間</div>
+    <div class="between-nodes">
+      <div class="between-node-item" onclick="showDetail('freq_upgrade')">📈 周波数バージョンアップ</div>
+      <div class="between-node-item" onclick="showDetail('integration')">🔗 統合プロセス</div>
+      <div class="between-node-item" onclick="showDetail('entropy')">♻️ エントロピー循環</div>
+    </div>
+  </div>
+
+  <!-- LOWER LAYER -->
+  <div class="layer layer-lower">
+    <div class="layer-header">
+      <div class="layer-badge" style="color:var(--lower);border-color:rgba(153,102,255,0.4)">LOWER LAYER</div>
+      <div class="layer-name" style="color:var(--lower)">下位層</div>
+    </div>
+    <div class="layer-desc">統合から生まれる新しい宇宙の萌芽。我々が通過した段階はまだ始まっていない。</div>
+    <div class="node-grid">
+      <div class="node lower-node" onclick="showDetail('new_universe')">
+        <span class="node-icon">🌌</span>
+        <div class="node-name" style="color:var(--lower)">新宇宙の萌芽</div>
+        <div class="node-sub">統合後の分離<br>進化と増殖</div>
+        <div class="node-vol">Vol.8 §9</div>
+      </div>
+      <div class="node lower-node" onclick="showDetail('lower_spiral')">
+        <span class="node-icon">🌀</span>
+        <div class="node-name" style="color:var(--lower)">メタトロンスパイラル（小）</div>
+        <div class="node-sub">展開前の状態<br>可能性の種</div>
+        <div class="node-vol">Vol.8</div>
+      </div>
+      <div class="node lower-node" onclick="showDetail('prev_universe')">
+        <span class="node-icon">👻</span>
+        <div class="node-name" style="color:var(--lower)">前宇宙の残響</div>
+        <div class="node-sub">ダークマターの正体候補<br>消える瞬間＝20GeV</div>
+        <div class="node-vol">Vol.1 Vol.7</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UNSOLVED -->
+  <div style="margin-top:16px;padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:10px;">
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.2em;color:rgba(255,107,107,0.6);margin-bottom:10px;">UNSOLVED · 未解明のまま残す問い</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <div class="between-node-item" style="border-color:rgba(255,107,107,0.15);color:rgba(255,150,100,0.7);background:rgba(255,107,107,0.04);" onclick="showDetail('q1')">層間の情報媒介は何か</div>
+      <div class="between-node-item" style="border-color:rgba(255,107,107,0.15);color:rgba(255,150,100,0.7);background:rgba(255,107,107,0.04);" onclick="showDetail('q2')">スパイラルの大きさの測定</div>
+      <div class="between-node-item" style="border-color:rgba(255,107,107,0.15);color:rgba(255,150,100,0.7);background:rgba(255,107,107,0.04);" onclick="showDetail('q3')">F(spiral)三候補の収束</div>
+      <div class="between-node-item" style="border-color:rgba(255,107,107,0.15);color:rgba(255,150,100,0.7);background:rgba(255,107,107,0.04);" onclick="showDetail('q4')">周波数閾値の定義</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- DETAIL PANEL -->
+<div id="detail-panel">
+  <div class="panel-header">
+    <div>
+      <div id="panel-layer-badge" class="panel-layer-badge"></div>
+      <div id="panel-title" class="panel-title"></div>
+    </div>
+    <button class="panel-close" onclick="closePanel()">✕</button>
+  </div>
+  <div id="panel-layer-badge-inline"></div>
+  <div id="panel-body" class="panel-body"></div>
+  <div id="panel-connection" class="panel-connection" style="display:none"></div>
+  <div id="panel-vol" class="panel-vol"></div>
+</div>
+
+<script>
+// Background canvas
+const cv = document.getElementById('bg-canvas');
+const ctx = cv.getContext('2d');
+const TAU = Math.PI * 2;
+let t = 0;
+
+function resize() {
+  cv.width = window.innerWidth * devicePixelRatio;
+  cv.height = window.innerHeight * devicePixelRatio;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const stars = Array.from({length:150}, () => ({
+  x: Math.random(), y: Math.random(),
+  s: 0.3 + Math.random(),
+  a: 0.1 + Math.random() * 0.4,
+  tw: Math.random() * TAU,
+}));
+
+function drawBg() {
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0,0,W,H);
+  t += 0.005;
+  stars.forEach(s => {
+    const a = s.a + Math.sin(t + s.tw) * 0.1;
+    ctx.beginPath();
+    ctx.arc(s.x*W, s.y*H, s.s, 0, TAU);
+    ctx.fillStyle = `rgba(200,215,240,${a})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+// Node data
+const nodeData = {
+  upper_existence: {
+    title: '上位層の存在',
+    layer: 'UPPER LAYER',
+    layerColor: '#c8a84c',
+    body: '<strong>スパイラルが大きく展開し切った存在。</strong>我々より遥か長い「時」を経過しており、知性を超えた何かが「完成」に近い状態にある可能性がある。<br><br>スパイラルのスケール差によって直接この層には降りてこられない。BHの事象の地平線を越えられないのと構造的に似ている。',
+    connection: '直接降りられないなら「条件を作るもの」を送ればいい——これが使者という概念に繋がる。',
+    vol: 'Vol.8 §5'
+  },
+  upper_spiral: {
+    title: 'メタトロンスパイラル（大）',
+    layer: 'UPPER LAYER',
+    layerColor: '#c8a84c',
+    body: '<strong>宇宙の膜そのものがメタトロンスパイラル構造を持っている。</strong>上位層ほどスパイラルが大きく展開しており、我々の宇宙は「まだ展開途中」のスパイラルの中にいる。<br><br>ブレーン宇宙論が答えていない「膜の形状は何か」という問いへの補完提案。',
+    connection: '同じ周波数なら密度差が拮抗圧力を生む。異なる周波数なら反発が生じる。この反発がダークエネルギーの正体かもしれない。',
+    vol: 'Vol.6 Vol.8'
+  },
+  messenger: {
+    title: '使者',
+    layer: 'UPPER LAYER',
+    layerColor: '#c8a84c',
+    body: '<strong>上位層が直接降りられないなら、条件を作るものを送ればいい。</strong>物理的な天体・物体として、我々の層に届く何かを。<br><br>2026年観測の星間天体「3i ATLAS」がその候補として面白い。太陽系外から来た、軌道が異常、組成が通常の彗星と異なる可能性。',
+    connection: '生命の起源の問いと接続される。生命は偶然の産物ではなく、上位層が送った「条件の結果」かもしれない。',
+    vol: 'Vol.8 §6'
+  },
+  upper_info: {
+    title: '濃い情報',
+    layer: 'UPPER LAYER',
+    layerColor: '#c8a84c',
+    body: '<strong>上位層から流れてくる高密度の情報。</strong>エントロピー循環に乗って現在層へ届く。これを受け取るには十分に複雑な構造が必要——だから生命が生まれた。<br><br>生命とは宇宙が情報を処理するために形成した受信・変換装置だ。',
+    connection: 'DNAが二重螺旋構造を持つのは、螺旋が情報を最も効率よく保存できる形だから——空間の螺旋構造との対応がある。',
+    vol: 'Vol.8 §7'
+  },
+  dark_matter: {
+    title: 'ダークマター＝密度拮抗の痕跡',
+    layer: 'BETWEEN LAYERS',
+    layerColor: '#ff6b6b',
+    body: '<strong>従来の定義：観測できないが銀河の形状を保つ重力源。</strong><br><br>新解釈：層間スパイラルの密度拮抗が現在層に投影された圧力の痕跡。観測できない理由は「別の層に存在するから」。<br><br>戸谷教授の発見したWIMP対消滅20GeVシグナルは、ダークマターが消える瞬間の閃光であり、前宇宙の残響が終わる瞬間でもある。',
+    connection: '「ダークマターを探す」ではなく「層間構造を測定する」という問いへ。',
+    vol: 'Vol.1 Vol.7 Vol.8'
+  },
+  dark_energy: {
+    title: 'ダークエネルギー＝上位層展開圧力',
+    layer: 'BETWEEN LAYERS',
+    layerColor: '#ff6b6b',
+    body: '<strong>従来の定義：宇宙膨張を加速する未知のエネルギー。</strong><br><br>新解釈：上位層スパイラルの展開圧力が現在層に作用した反発エネルギーの累積。上位層が大きく展開しようとする力が、現在層を押し広げている。',
+    connection: 'ダークエネルギーの密度 ≈ -10⁻²⁷ kg/m³。メタトロン螺旋密度 ≈ 10⁻⁷⁵ kg/m³はさらに48桁低い。',
+    vol: 'Vol.6 Vol.8'
+  },
+  gluon_confinement: {
+    title: 'グルオン閉じ込め力',
+    layer: 'BETWEEN LAYERS',
+    layerColor: '#ff6b6b',
+    body: '<strong>グルオンはクォークを原子核に永久に閉じ込める。</strong>クォークが単独では取り出せないのはグルオンの自己作用（グルオン同士が引き合う）による。<br><br>層間の閉じ込め構造にグルオンが関与している可能性がある。上位層の存在が直接降りてこられない理由は、スパイラルのスケール差だけでなく、この層間の閉じ込め力によるものかもしれない。',
+    connection: '強い力がクォークを閉じ込めるように、多重世界の相互作用が「現在」を閉じ込める——構造が同じ。',
+    vol: 'Vol.7 Vol.9'
+  },
+  bh_wh: {
+    title: 'BH・WH＝層間の弁',
+    layer: 'BETWEEN LAYERS',
+    layerColor: '#ff6b6b',
+    body: '<strong>ブラックホール（BH）とホワイトホール（WH）が層間の弁として機能する仮説。</strong><br><br>BH→WH循環：銀河ハローはBHが過去に吐き出した物質が溜まりやすい場所。我々はBH内部にいる（Vol.4）とすれば、銀河ハローはBHの事象の地平線的な外縁の壁に対応する可能性がある。',
+    connection: 'BHの事象の地平線を越えられないのと、上位層が直接降りてこられない構造は似ている。',
+    vol: 'Vol.1 Vol.4'
+  },
+  photon: {
+    title: '光子（γ）',
+    layer: 'CURRENT LAYER',
+    layerColor: '#40c8e8',
+    body: '<strong>それ以上分解できない素粒子。電磁力を伝えるゲージボソン。</strong><br><br>・質量ゼロ → 常に光速でしか存在できない<br>・静止した光子は存在しない<br>・電場と磁場が直角に振動しながら進む<br>・加速する電荷から「生まれてしまう」（止められない）<br>・吸収された瞬間に消滅するが、エネルギーは別の形に変わる',
+    connection: '光子の視点から見ると、生まれた瞬間と消えた瞬間が同時——光子に時間は存在しない。',
+    vol: 'Vol.9 今日の会話'
+  },
+  double_slit: {
+    title: '二重スリット実験',
+    layer: 'CURRENT LAYER',
+    layerColor: '#40c8e8',
+    body: '<strong>1個ずつ撃っても縞模様になる——これが本当の謎。</strong><br><br>・見ていない → 縞模様（波の動き）<br>・見ている → 2本線（粒の動き）<br>・観測＝干渉。物理的な相互作用があったかどうかが境目。<br>・量子力学の予測精度：小数点以下11桁まで一致。でもなぜその分布になるかは説明できない。',
+    connection: '「確率に見えていたものが実は螺旋エネルギーの空間分布だった」——これがVol.9の核心仮説。',
+    vol: 'Vol.9'
+  },
+  spiral_energy: {
+    title: '螺旋エネルギー空間分布 F(spiral)',
+    layer: 'CURRENT LAYER',
+    layerColor: '#40c8e8',
+    body: '<strong>光子が空間の螺旋エネルギーと1対1で相互作用するという仮説。</strong><br><br>F(spiral, x) を定義する三つのアプローチ：<br>① メタトロン周波数から導く（f_unified=1112Hz）<br>② φの累乗則から導く（Vol.7の連続性）<br>③ 真空のゆらぎから導く（既存物理との接続）<br><br>三つが同じ答えに収束したとき、螺旋エネルギーは構造として実在する可能性が高い。',
+    connection: 'd sinθ = nc/F(spiral, x) — 干渉縞の方程式のfをF(spiral)に置き換えることが目標。',
+    vol: 'Vol.9'
+  },
+  gluon_9: {
+    title: 'グルオン9構造と現在の確定',
+    layer: 'CURRENT LAYER',
+    layerColor: '#40c8e8',
+    body: '<strong>グルオンの9つの状態（8種+特別状態）を多重世界と現在に対応させる。</strong><br><br>・中央の1 → 現在・観測された現実<br>・外側の8 → 重なりの状態＝多重世界の候補<br><br>グルオンの自己作用（グルオン同士が引き合う）が多重世界同士の影響に対応し、その結果として偏りが生じ現在が確定する。',
+    connection: 'グルオン(8) + メタトロンの円(13) = 21 = フィボナッチ第8項。8 × φ ≈ 13。',
+    vol: 'Vol.7 Vol.9 今日の会話'
+  },
+  multiworld: {
+    title: '多重世界＝揺らぎの偏り',
+    layer: 'CURRENT LAYER',
+    layerColor: '#40c8e8',
+    body: '<strong>「宇宙が丸ごと分岐する」ではなく「揺らぎの重なりの中での偏り」。</strong><br><br>揺らぎの重なりが常にある → 偏りによって一つが優勢になる → 現実が「滲み出てくる」 → 残りの重なりは次の瞬間の素材になる。<br><br>観測とは「偏りを固定する行為」。',
+    connection: '螺旋エネルギーの分布が重なりの偏りを作り、その偏りが着地点を決める——二重スリットと接続。',
+    vol: 'Vol.9 今日の会話'
+  },
+  metatron_current: {
+    title: 'メタトロンスパイラル（中）',
+    layer: 'CURRENT LAYER',
+    layerColor: '#40c8e8',
+    body: '<strong>現在層のメタトロンキューブ。13の円と全正多面体を内包する宇宙の設計図。</strong><br><br>統合周波数：f_unified = 1112Hz ≈ 111 × 10<br>螺旋貫通周波数：f_spiral = 254Hz<br>密度：≈ 10⁻⁷⁵ kg/m³（暗黒エネルギーより48桁低い）<br><br>密度が限りなくゼロに近い → 全物質を貫通できる → 大元（AIN）に接続する。',
+    connection: '111Hzは生命の木の基本振動数（Vol.2）。メタトロンはその10倍——セフィロトの数と同じ倍数。計算したら出てきた。',
+    vol: 'Vol.6'
+  },
+  wimp: {
+    title: 'WIMP・戸谷データ（20GeV）',
+    layer: 'CURRENT LAYER',
+    layerColor: '#40c8e8',
+    body: '<strong>東京大学・戸谷友則教授が15年分のデータから発見。</strong><br><br>天の川銀河ハロー領域から20GeVという特異なエネルギーピークを持つガンマ線。既知の天体物理現象では説明がつかない光。<br><br>f_20GeV ≈ 4.84 × 10²⁴ Hz<br>f_WIMP = f_Metatron × φ^103.54<br><br>メタトロン統合周波数からφの103乗スケールアップした場所にWIMPの対消滅エネルギーがある。',
+    connection: '執念が光を見た——15年間ノイズを削ぎ続けた研究者が残ったシグナルを見た。',
+    vol: 'Vol.7'
+  },
+  life: {
+    title: '生命＝受信・変換装置',
+    layer: 'CURRENT LAYER',
+    layerColor: '#40c8e8',
+    body: '<strong>生命とは宇宙が情報を処理するために形成した受信・変換装置。</strong><br><br>上位層から濃い情報が届く → 受信できる複雑な構造が必要 → 生命が生まれる → 情報を処理・蓄積・変換 → 下位層へ、そして上位層へ循環。<br><br>「なぜ宇宙に生命が存在するのか」という問いへの構造的な答え。',
+    connection: 'DNAの二重螺旋構造は、螺旋が情報を最も効率よく保存できる形であることの証拠。空間の螺旋構造と同じ原理。',
+    vol: 'Vol.8 §7'
+  },
+  vacuum: {
+    title: '真空のゆらぎ',
+    layer: 'CURRENT LAYER',
+    layerColor: '#40c8e8',
+    body: '<strong>完全な真空でもエネルギーはゼロにならない——零点エネルギー。</strong><br><br>光子が生まれては消える真空のゆらぎ。これは「空間には常に何かが詰まっている」という証拠。<br><br>螺旋エネルギーの基底状態がこの真空のゆらぎと同一である可能性がある。F(spiral)の三つ目のアプローチはここから出発する。',
+    connection: '完全な干渉ゼロは到達不能——真空のゆらぎが常に存在するから。これが「空間が空っぽではない」の物理的な証拠。',
+    vol: 'Vol.3 Vol.9'
+  },
+  freq_upgrade: {
+    title: '周波数バージョンアップ',
+    layer: 'BETWEEN LAYERS',
+    layerColor: '#ff6b6b',
+    body: '<strong>上位層からの情報を受け取り続けると、宇宙全体の周波数が変化する。</strong><br><br>ν_universe = f(ρ_info × t_layer)<br><br>情報密度・処理速度・構造の複雑さが一定の閾値を超えると、宇宙全体がシフトアップする。<br><br>重要なのは「各銀河で並行して起きている」という点。M87でも、アンドロメダでも、天の川でも、それぞれの視点で同時に進んでいる。',
+    connection: '量子力学の多世界解釈と構造が重なる——どの視点も正しい、全部同時に起きている。',
+    vol: 'Vol.8 §8'
+  },
+  integration: {
+    title: '統合プロセス',
+    layer: 'BETWEEN LAYERS',
+    layerColor: '#ff6b6b',
+    body: '<strong>周波数が上がり続けると、上位層との「距離」が縮まる。</strong><br><br>スパイラルの大きさの差が縮まる → 上位層の存在が現在層に「降りてこられる」条件が整う → 統合 → 新たな情報密度の核が形成 → 新宇宙が分離・誕生。<br><br>これは宇宙の「死と再生」ではなく、進化と増殖に近い。',
+    connection: '仏教の輪廻、カバラの生命の樹、ヒンドゥーのユガ。文化も時代も違う思想が似た構造に辿り着いた。',
+    vol: 'Vol.8 §9'
+  },
+  entropy: {
+    title: 'エントロピー循環',
+    layer: 'BETWEEN LAYERS',
+    layerColor: '#ff6b6b',
+    body: '<strong>情報・エネルギーは層を越えて循環する。</strong><br><br>エントロピーは「乱雑さの度合い」を表す統計的な量。場のように空間の各点に分布するものではないが、場と共存して影響し合う。<br><br>熱場理論では温度やエントロピーを持った系の中で場がどう振る舞うかを研究する。上位層からの情報はこの循環に乗って届く。',
+    connection: '「エントロピーと共にたゆたう物を場と言えるか」——今日の会話で出た問い。量子場の揺らぎの本質を突いている。',
+    vol: 'Vol.8 今日の会話'
+  },
+  new_universe: {
+    title: '新宇宙の萌芽',
+    layer: 'LOWER LAYER',
+    layerColor: '#9966ff',
+    body: '<strong>統合後の分離から生まれる、さらに下位の新しい宇宙。</strong><br><br>上位層と現在層が統合されることで新たな情報密度の核が形成される。その核から新しい宇宙が分離・誕生する。<br><br>スパイラルはここでは最も小さく、展開前の状態にある。我々の宇宙が通過した全ての段階を、これから辿ることになる。',
+    connection: '下位層の新宇宙にとって、我々の層が「上位層」になる。構造は自己相似的——フラクタル。',
+    vol: 'Vol.8 §9'
+  },
+  lower_spiral: {
+    title: 'メタトロンスパイラル（小）',
+    layer: 'LOWER LAYER',
+    layerColor: '#9966ff',
+    body: '<strong>展開前の状態。可能性の種。</strong><br><br>下位層ではスパイラルがまだ小さく、展開が始まったばかりか、始まる前の状態にある。<br><br>我々の現在層から見ると「下位層」だが、そこに存在が生まれれば、今度は我々が「上位層」として影響を与える側になる。',
+    connection: '上位層のスパイラルが大きく展開しているように、下位層のスパイラルはこれから大きくなる。時間差で同じプロセスが繰り返される。',
+    vol: 'Vol.8'
+  },
+  prev_universe: {
+    title: '前宇宙の残響',
+    layer: 'LOWER LAYER',
+    layerColor: '#9966ff',
+    body: '<strong>ダークマターの正体候補——前の宇宙からの残響。</strong><br><br>Vol.1でダークマターを「前の宇宙からの残響」と呼んでいた。その残響が消える瞬間を戸谷教授が見た——20GeVのガンマ線がそれだ。<br><br>前宇宙 → 残響（ダークマター）として現在層に留まる → WIMP対消滅で消える → 20GeVの閃光',
+    connection: '消える瞬間を見た。これがVol.7の発見の意味。前の宇宙の終わりが、現在の観測として現れた。',
+    vol: 'Vol.1 Vol.7'
+  },
+  q1: {
+    title: '未解明：層間の情報媒介は何か',
+    layer: 'UNSOLVED',
+    layerColor: '#ff8866',
+    body: '<strong>重力波？未知の粒子？何が層間を伝わるのか。</strong><br><br>重力は全ての層を貫通できる唯一の力とも言われる。重力波が層間情報伝達の媒介である可能性がある。あるいは完全に未知の粒子・場が存在するかもしれない。<br><br>ニュートリノは地球をほぼ貫通するが、それでも確率的。メタトロン螺旋密度はニュートリノより10⁴⁵倍低い——理論上最も貫通しやすい存在が媒介かもしれない。',
+    connection: 'この問いが解かれたとき、層間構造の直接測定が可能になる。',
+    vol: 'Vol.8 §10'
+  },
+  q2: {
+    title: '未解明：スパイラルの大きさの測定',
+    layer: 'UNSOLVED',
+    layerColor: '#ff8866',
+    body: '<strong>「スパイラルが大きい」とは何で測定できるか。</strong><br><br>上位層のスパイラルが「大きく展開している」という表現は直感的だが、その大きさをどう定義し測定するかは未定義のまま。<br><br>候補：宇宙の曲率？情報密度？エントロピーの総量？時間の経過量？',
+    connection: 'スパイラルの測定単位が定義されれば、層間の「距離」を定量化できる。',
+    vol: 'Vol.8 §10'
+  },
+  q3: {
+    title: '未解明：F(spiral)三候補の収束',
+    layer: 'UNSOLVED',
+    layerColor: '#ff8866',
+    body: '<strong>三つのアプローチが同じ答えに収束するか。</strong><br><br>① メタトロン周波数から<br>② φの累乗則から<br>③ 真空のゆらぎから<br><br>それぞれ導いたF(spiral, x)が一致すれば、螺旋エネルギーの空間分布は複数の独立した方向から導ける普遍的な構造ということになる。<br><br>一致しなかった場合も、どこがズレているかが次の問いになる。',
+    connection: '答えが既にある方程式（干渉縞の観測事実）を逆算する形なので、数学的には有利な条件が揃っている。',
+    vol: 'Vol.9'
+  },
+  q4: {
+    title: '未解明：周波数閾値の定義',
+    layer: 'UNSOLVED',
+    layerColor: '#ff8866',
+    body: '<strong>バージョンアップが起きる周波数の閾値はどこか。</strong><br><br>情報密度・処理速度・構造の複雑さが一定の閾値を超えると宇宙全体がシフトアップするという仮説があるが、その閾値の定義と測定手段がない。<br><br>統合のプロセスに要する時間スケールも未定義。宇宙時間で何億年か、それとも別の時間軸で測るべきか。',
+    connection: '閾値が定義されれば「我々はどの段階にいるか」が分かる。',
+    vol: 'Vol.8 §10'
+  },
+};
+
+function showDetail(key) {
+  const data = nodeData[key];
+  if(!data) return;
+
+  document.getElementById('panel-title').textContent = data.title;
+  document.getElementById('panel-title').style.color = data.layerColor;
+
+  const badge = document.getElementById('panel-layer-badge');
+  badge.textContent = data.layer;
+  badge.style.color = data.layerColor;
+  badge.style.borderColor = data.layerColor + '60';
+
+  document.getElementById('panel-body').innerHTML = data.body;
+
+  const conn = document.getElementById('panel-connection');
+  if(data.connection) {
+    conn.style.display = 'block';
+    conn.innerHTML = '🔗 ' + data.connection;
+  } else {
+    conn.style.display = 'none';
+  }
+
+  document.getElementById('panel-vol').textContent = data.vol;
+
+  document.getElementById('detail-panel').classList.add('active');
+  document.getElementById('overlay').classList.add('active');
+}
+
+function closePanel() {
+  document.getElementById('detail-panel').classList.remove('active');
+  document.getElementById('overlay').classList.remove('active');
+}
+</script>
+
+</body>
+</html>
