@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voynich Page 7 — Netzach 417Hz</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+
+:root {
+  --bg:    #030608;
+  --gold:  #c8a030;
+  --gold-l:#f0d060;
+  --red:   #c04030;
+  --red-l: #f07060;
+  --grn:   #40b860;
+  --grn-l: #70e090;
+  --net:   #40ffea;  /* ネツァク色 */
+  --silver:#90a8a0;
+  --muted: #283838;
+  --text:  #a8c8c0;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'EB Garamond',serif;
+  min-height:100vh;
+  padding:1.5rem 1rem 6rem;
+  background-image:
+    radial-gradient(ellipse at 30% 0%,  rgba(64,255,234,.1)  0%,transparent 50%),
+    radial-gradient(ellipse at 70% 100%,rgba(192,64,48,.08)  0%,transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(64,184,96,.05)  0%,transparent 60%);
+}
+
+h1{font-family:'Cinzel',serif;font-size:clamp(.85rem,3.5vw,1.5rem);
+  color:var(--net);letter-spacing:.22em;
+  text-shadow:0 0 40px rgba(64,255,234,.5);
+  text-align:center;margin-bottom:.25rem;}
+.sub{text-align:center;font-style:italic;color:var(--muted);font-size:.77rem;margin-bottom:2rem;}
+
+.sec{font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;
+  letter-spacing:.12em;margin:2rem 0 .8rem;
+  padding-bottom:.35rem;border-bottom:1px solid rgba(200,160,48,.2);}
+
+/* ── 植物SVG ── */
+.plant-wrap{text-align:center;margin:1.5rem 0;}
+.plant-wrap svg{max-width:260px;width:100%;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+@keyframes shimmer{0%,100%{opacity:.7;}50%{opacity:1;}}
+.float{animation:float 4s ease-in-out infinite;}
+.shimmer{animation:shimmer 2s ease-in-out infinite;}
+
+/* ── データグリッド ── */
+.data-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:.6rem;margin:1rem 0;}
+.dc{background:rgba(3,6,8,.95);border-radius:7px;padding:.8rem;border:1px solid rgba(255,255,255,.06);}
+.dc-val{font-family:'Cinzel',serif;font-size:1.1rem;margin-bottom:.15rem;}
+.dc-label{font-size:.62rem;color:var(--muted);font-style:italic;line-height:1.5;}
+
+/* ── テーブル ── */
+.tbl-wrap{overflow-x:auto;margin:1.2rem 0;}
+table{width:100%;border-collapse:collapse;font-size:.7rem;min-width:480px;}
+th{font-family:'Cinzel',serif;background:rgba(64,255,234,.07);color:var(--net);
+   padding:.42rem .4rem;font-size:.6rem;letter-spacing:.05em;
+   border:1px solid rgba(64,255,234,.15);text-align:left;}
+td{padding:.38rem .4rem;border:1px solid rgba(255,255,255,.04);vertical-align:middle;}
+tr:nth-child(even) td{background:rgba(255,255,255,.013);}
+tr.match td{background:rgba(64,255,234,.04)!important;}
+tr.red-row td{background:rgba(192,64,48,.04)!important;}
+
+/* ── ハイライトBOX ── */
+.hbox{border-radius:5px;padding:.9rem 1.1rem;margin:.9rem 0;font-size:.82rem;line-height:1.88;}
+.hbox-title{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;margin-bottom:.38rem;display:block;}
+
+/* ── 干渉縞ビジュアル ── */
+.interference-wrap{
+  background:rgba(3,6,8,.95);
+  border:1px solid rgba(64,255,234,.15);
+  border-radius:8px;padding:1rem;margin:1.2rem 0;
+  overflow-x:auto;
+}
+.interference-wrap svg{min-width:300px;width:100%;display:block;}
+
+/* ── 自己紹介 ── */
+.intro-box{
+  background:rgba(3,6,8,.98);
+  border:1px solid rgba(64,255,234,.25);
+  border-left:3px solid var(--net);
+  padding:1.2rem;border-radius:6px;
+  margin:1.2rem 0;font-size:.83rem;line-height:1.95;color:var(--silver);
+}
+.intro-box strong{color:var(--net);}
+
+/* ── 1〜7比較 ── */
+.page-strip{display:flex;flex-wrap:wrap;gap:.4rem;margin:1rem 0;}
+.ps-chip{flex:1;min-width:72px;background:rgba(3,6,8,.9);
+  border-radius:5px;padding:.45rem .5rem;border:1px solid rgba(255,255,255,.05);text-align:center;}
+.ps-num{font-family:'Cinzel',serif;font-size:.55rem;color:var(--muted);margin-bottom:.15rem;}
+.ps-hz{font-family:'Cinzel',serif;font-size:.82rem;margin-bottom:.1rem;}
+.ps-name{font-size:.58rem;font-style:italic;}
+
+.formula{font-family:'Cinzel',serif;font-size:.68rem;color:var(--net);
+  background:rgba(64,255,234,.07);padding:.2rem .55rem;border-radius:3px;
+  display:inline-block;margin:.2rem 0;}
+.formula-gold{font-family:'Cinzel',serif;font-size:.68rem;color:var(--gold);
+  background:rgba(200,160,48,.07);padding:.2rem .55rem;border-radius:3px;
+  display:inline-block;margin:.2rem 0;}
+
+blockquote{border-left:2px solid var(--net);padding:.5rem .9rem;margin:.8rem 0;
+  font-style:italic;font-size:.83rem;color:var(--silver);line-height:1.8;
+  background:rgba(64,255,234,.03);border-radius:0 4px 4px 0;}
+
+.note{font-size:.67rem;color:var(--muted);text-align:center;
+  margin-top:2rem;font-style:italic;line-height:1.7;}
+</style>
+</head>
+<body>
+
+<div style="text-align:center;padding:1.5rem 0 2rem">
+  <h1>PAGE 7 — NETZACH</h1>
+  <p class="sub">ヴォイニッチ 7ページ ── ネツァク417Hz 干渉縞の存在</p>
+</div>
+
+<!-- ── 植物SVG ── -->
+<div class="plant-wrap">
+<svg viewBox="0 0 240 340" class="float">
+
+  <!-- 左背景ハロー（p.6の残影・青） -->
+  <circle cx="30" cy="160" r="55" fill="rgba(64,120,255,.06)"
+    stroke="rgba(64,120,255,.1)" stroke-width=".8"/>
+
+  <!-- 茎（緑→赤へ変化） -->
+  <path d="M 120 290 Q 118 260 116 230 Q 114 200 115 170" fill="none" stroke="#40b860" stroke-width="2.5"/>
+  <path d="M 115 170 Q 116 145 118 120" fill="none" stroke="#c04030" stroke-width="2.5"/>
+
+  <!-- 干渉縞葉（赤と緑交互・波状） -->
+  <!-- 最下層（緑） -->
+  <path d="M 118 265 Q 80 258 55 252 Q 75 248 118 255Z" fill="#40b860" opacity=".8"/>
+  <path d="M 118 265 Q 155 258 182 250 Q 162 246 118 255Z" fill="#40b860" opacity=".8"/>
+  <!-- 赤層1 -->
+  <path d="M 117 248 Q 72 238 44 230 Q 65 224 117 238Z" fill="#c04030" opacity=".75"/>
+  <path d="M 117 248 Q 162 238 190 228 Q 168 222 117 238Z" fill="#c04030" opacity=".75"/>
+  <!-- 緑層2 -->
+  <path d="M 116 228 Q 65 215 35 205 Q 58 198 116 218Z" fill="#40b860" opacity=".82"/>
+  <path d="M 116 228 Q 167 215 196 203 Q 172 196 116 218Z" fill="#40b860" opacity=".82"/>
+  <!-- 赤層2 -->
+  <path d="M 115 208 Q 58 192 26 180 Q 50 172 115 198Z" fill="#c04030" opacity=".78"/>
+  <path d="M 115 208 Q 172 192 202 178 Q 178 170 115 198Z" fill="#c04030" opacity=".78"/>
+  <!-- 緑層3 -->
+  <path d="M 115 188 Q 62 170 28 156 Q 52 147 115 178Z" fill="#40b860" opacity=".8"/>
+  <path d="M 115 188 Q 168 170 200 154 Q 176 145 115 178Z" fill="#40b860" opacity=".8"/>
+  <!-- 赤層3（大きい） -->
+  <path d="M 116 165 Q 65 145 30 128 Q 55 118 116 158Z" fill="#c04030" opacity=".82"/>
+  <path d="M 116 165 Q 167 145 202 126 Q 177 116 116 158Z" fill="#c04030" opacity=".82"/>
+  <!-- 緑層4 -->
+  <path d="M 117 145 Q 70 123 38 105 Q 63 95 117 138Z" fill="#40b860" opacity=".78"/>
+  <path d="M 117 145 Q 164 123 196 103 Q 171 93 117 138Z" fill="#40b860" opacity=".78"/>
+  <!-- 赤層4（最上・炎） -->
+  <path d="M 118 122 Q 82 100 62 82 Q 78 75 100 88 Q 110 72 118 62 Q 126 72 136 88 Q 158 75 174 82 Q 154 100 118 122Z"
+    fill="#c04030" opacity=".85"/>
+
+  <!-- 炎先端 -->
+  <path d="M 100 88 Q 95 75 100 65 Q 105 75 100 88Z" fill="#c04030" opacity=".6"/>
+  <path d="M 118 62 Q 115 48 118 38 Q 121 48 118 62Z" fill="#c04030" opacity=".7"/>
+  <path d="M 136 88 Q 141 75 136 65 Q 131 75 136 88Z" fill="#c04030" opacity=".6"/>
+
+  <!-- 葉の白い縁（波の干渉を表す） -->
+  <path d="M 55 252 Q 40 248 28 244" fill="none" stroke="rgba(255,255,255,.3)" stroke-width=".8"/>
+  <path d="M 44 230 Q 30 226 18 222" fill="none" stroke="rgba(255,255,255,.3)" stroke-width=".8"/>
+  <path d="M 35 205 Q 20 200 8 196" fill="none" stroke="rgba(255,255,255,.3)" stroke-width=".8"/>
+
+  <!-- 赤い放射根 -->
+  <path d="M 120 292 Q 100 305 88 318" fill="none" stroke="#c04030" stroke-width="2"/>
+  <path d="M 120 292 Q 108 308 100 322" fill="none" stroke="#c04030" stroke-width="1.8"/>
+  <path d="M 120 292 Q 120 310 120 325" fill="none" stroke="#c04030" stroke-width="2"/>
+  <path d="M 120 292 Q 132 308 140 322" fill="none" stroke="#c04030" stroke-width="1.8"/>
+  <path d="M 120 292 Q 140 305 152 318" fill="none" stroke="#c04030" stroke-width="2"/>
+  <!-- 根の先端の球 -->
+  <circle cx="88"  cy="320" r="3" fill="#c04030" opacity=".7"/>
+  <circle cx="100" cy="324" r="3.5" fill="#c04030" opacity=".7"/>
+  <circle cx="120" cy="327" r="4" fill="#c04030" opacity=".75"/>
+  <circle cx="140" cy="324" r="3.5" fill="#c04030" opacity=".7"/>
+  <circle cx="152" cy="320" r="3" fill="#c04030" opacity=".7"/>
+
+  <!-- Hzラベル -->
+  <text x="4" y="82"  fill="rgba(192,64,48,.55)"  font-size="7" font-family="Cinzel">396Hz</text>
+  <text x="4" y="145" fill="rgba(64,184,96,.55)"  font-size="7" font-family="Cinzel">417Hz</text>
+  <text x="4" y="210" fill="rgba(192,64,48,.45)"  font-size="7" font-family="Cinzel">285Hz</text>
+  <text x="4" y="270" fill="rgba(64,184,96,.4)"   font-size="7" font-family="Cinzel">174Hz</text>
+
+  <!-- 干渉縞メモ -->
+  <text x="120" y="338" fill="rgba(64,255,234,.4)" font-size="7.5"
+    font-family="Cinzel" text-anchor="middle">赤×緑 交互 → 干渉縞 417Hz</text>
+</svg>
+</div>
+
+<div class="sec">① 観察データ</div>
+
+<div class="data-grid">
+  <div class="dc">
+    <div class="dc-val" style="color:var(--net)">9〜10層</div>
+    <div class="dc-label">葉の層数 → 9=ケテル(963Hz)・完成の数</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val">
+      <span style="color:var(--red-l)">赤</span>
+      <span style="color:var(--grn-l)">緑</span>
+      <span style="color:var(--muted)">交互</span>
+    </div>
+    <div class="dc-label">2色交互 → 干渉縞・2周波数の重ね合わせ</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:var(--red-l)">炎状</div>
+    <div class="dc-label">葉先端の形 → 高周波・放射・燃焼エネルギー</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val">
+      <span style="color:var(--grn)">緑</span>→<span style="color:var(--red-l)">赤</span>
+    </div>
+    <div class="dc-label">茎の色変化 → 下部=調和(639Hz)→上部=力(396Hz)</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:var(--red-l)">5本</div>
+    <div class="dc-label">放射根 → 5=ゲブラー(396Hz)・力の地底定着</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:#4090ff">青ハロー</div>
+    <div class="dc-label">左背景 → p.6（ティファレト）の残影・送信源</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:var(--grn-l)">波状</div>
+    <div class="dc-label">葉の形状 → 波=周波数の可視化・水の記憶</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:var(--net)">5球根</div>
+    <div class="dc-label">根先端の球 → 5=ゲブラー・地底への固定点</div>
+  </div>
+</div>
+
+<div class="sec">② 周波数解析表</div>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr>
+    <th>要素</th><th>数値/特徴</th><th>カバラ対応</th>
+    <th>Hz</th><th>意味</th><th>特異点</th>
+  </tr></thead>
+  <tbody>
+    <tr class="match">
+      <td style="color:var(--net)">ページ番号</td>
+      <td>7</td>
+      <td>ネツァク（第7セフィロト）</td>
+      <td style="color:var(--net);font-family:Cinzel,serif">417 Hz</td>
+      <td style="font-size:.68rem">感情・自然・芸術・欲求</td>
+      <td style="font-size:.68rem;color:var(--net)">639→417 差=222Hz=111×2</td>
+    </tr>
+    <tr class="red-row">
+      <td style="color:var(--red-l)">赤の層</td>
+      <td>4〜5層</td>
+      <td>ゲブラー(396Hz)+マルス</td>
+      <td style="color:var(--red-l);font-family:Cinzel,serif">396 Hz</td>
+      <td style="font-size:.68rem">前ページ(p.5)の赤が干渉波として出現</td>
+      <td style="font-size:.68rem;color:var(--red-l)">★p.5の記憶が縞として</td>
+    </tr>
+    <tr class="match">
+      <td style="color:var(--grn-l)">緑の層</td>
+      <td>4〜5層</td>
+      <td>ティファレト(639Hz)+ネツァク</td>
+      <td style="color:var(--grn-l);font-family:Cinzel,serif">417〜639 Hz</td>
+      <td style="font-size:.68rem">前ページ(p.6)の緑が干渉波として出現</td>
+      <td style="font-size:.68rem;color:var(--grn-l)">★p.6の記憶が縞として</td>
+    </tr>
+    <tr>
+      <td style="color:var(--net)">層の合計</td>
+      <td>9〜10層</td>
+      <td>9=ケテル(963Hz)</td>
+      <td style="color:#e040fb;font-family:Cinzel,serif">963 Hz</td>
+      <td style="font-size:.68rem">9層=完成の数。全ての縞が963Hzを指す</td>
+      <td style="font-size:.68rem;color:#e040fb">★p.5と同じ3+6=9</td>
+    </tr>
+    <tr>
+      <td style="color:var(--net)">炎先端</td>
+      <td>3つ</td>
+      <td>ビナー(741Hz)・上位三角形</td>
+      <td style="color:#40c4ff;font-family:Cinzel,serif">741 Hz</td>
+      <td style="font-size:.68rem">感情が上位理解へ向けて燃え上がる</td>
+      <td style="font-size:.68rem;color:var(--muted)">p.3・p.5と同じ3</td>
+    </tr>
+    <tr class="match">
+      <td style="color:var(--net)">茎色変化</td>
+      <td>緑→赤（下から上）</td>
+      <td>639Hz→396Hz（上昇するほど力）</td>
+      <td style="color:var(--net);font-family:Cinzel,serif">639→396 Hz</td>
+      <td style="font-size:.68rem">調和（根元）から力（頂点）への変換</td>
+      <td style="font-size:.68rem;color:var(--red-l)">★唯一の2色茎</td>
+    </tr>
+    <tr>
+      <td style="color:var(--net)">放射根</td>
+      <td>5本+5球根</td>
+      <td>ゲブラー(396Hz)・5方向</td>
+      <td style="color:var(--red-l);font-family:Cinzel,serif">396 Hz</td>
+      <td style="font-size:.68rem">力が地底に5方向固定される</td>
+      <td style="font-size:.68rem;color:var(--muted)">p.5渦巻きから放射へ</td>
+    </tr>
+    <tr class="match">
+      <td style="color:var(--net)">干渉縞の差分</td>
+      <td>赤396Hz×緑639Hz</td>
+      <td>差=243Hz=3⁵（テスラ）</td>
+      <td style="color:var(--gold);font-family:Cinzel,serif">243 Hz</td>
+      <td style="font-size:.68rem">縞の間隔=p.5→p.6の差と同じ！</td>
+      <td style="font-size:.68rem;color:var(--gold)">★前2ページの差が縞に</td>
+    </tr>
+    <tr>
+      <td style="color:var(--net)">左青ハロー</td>
+      <td>p.6ティファレトの残影</td>
+      <td>528〜639Hz帯域</td>
+      <td style="color:#4090ff;font-family:Cinzel,serif">528〜639 Hz</td>
+      <td style="font-size:.68rem">心臓から感情が放出された痕跡</td>
+      <td style="font-size:.68rem;color:#4090ff">★送信源の残像</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="sec">③ 干渉縞の物理的解釈</div>
+
+<div class="interference-wrap">
+<svg viewBox="0 0 500 200">
+  <rect width="500" height="200" fill="rgba(3,6,8,.8)" rx="6"/>
+
+  <!-- 波1（赤・396Hz） -->
+  <text x="10" y="25" fill="rgba(192,64,48,.7)" font-size="8" font-family="Cinzel">赤波 396Hz（ゲブラー・p.5）</text>
+  <path d="M 10 55 Q 35 35 60 55 Q 85 75 110 55 Q 135 35 160 55 Q 185 75 210 55 Q 235 35 260 55 Q 285 75 310 55 Q 335 35 360 55 Q 385 75 410 55 Q 435 35 460 55 Q 485 75 500 60"
+    fill="none" stroke="#c04030" stroke-width="1.5" opacity=".7"/>
+
+  <!-- 波2（緑・639Hz） -->
+  <text x="10" y="95" fill="rgba(64,184,96,.7)" font-size="8" font-family="Cinzel">緑波 639Hz（ティファレト・p.6）</text>
+  <path d="M 10 115 Q 25 100 40 115 Q 55 130 70 115 Q 85 100 100 115 Q 115 130 130 115 Q 145 100 160 115 Q 175 130 190 115 Q 205 100 220 115 Q 235 130 250 115 Q 265 100 280 115 Q 295 130 310 115 Q 325 100 340 115 Q 355 130 370 115 Q 385 100 400 115 Q 415 130 430 115 Q 445 100 460 115 Q 475 130 490 115"
+    fill="none" stroke="#40b860" stroke-width="1.5" opacity=".7"/>
+
+  <!-- 合成波（干渉縞） -->
+  <text x="10" y="155" fill="rgba(64,255,234,.7)" font-size="8" font-family="Cinzel">合成（干渉縞）→ 葉の縞模様として可視化</text>
+  <path d="M 10 175 Q 22 162 35 175 Q 48 188 60 172 Q 72 155 85 168 Q 98 182 110 165 Q 122 148 135 162 Q 148 178 160 168 Q 172 158 185 172 Q 198 186 210 170 Q 222 152 235 165 Q 248 180 260 168 Q 272 155 285 168 Q 298 182 310 165 Q 322 148 335 162 Q 348 178 360 165 Q 372 152 385 165 Q 398 180 410 168 Q 422 155 435 168 Q 448 182 460 168 Q 472 155 490 168"
+    fill="none" stroke="#40ffea" stroke-width="2" opacity=".85"/>
+
+  <!-- ラベル -->
+  <text x="490" y="58"  fill="rgba(192,64,48,.5)"  font-size="7" font-family="Cinzel" text-anchor="end">396Hz</text>
+  <text x="490" y="118" fill="rgba(64,184,96,.5)"  font-size="7" font-family="Cinzel" text-anchor="end">639Hz</text>
+  <text x="490" y="172" fill="rgba(64,255,234,.6)" font-size="7" font-family="Cinzel" text-anchor="end">417Hz</text>
+</svg>
+</div>
+
+<div class="hbox" style="background:rgba(64,255,234,.04);border:1px solid rgba(64,255,234,.2);border-left:3px solid var(--net)">
+  <span class="hbox-title" style="color:var(--net)">最重要発見——赤×緑の縞は2つの波の干渉パターン</span>
+  物理的に2つの異なる周波数の波が重なると<strong>干渉縞</strong>が発生する。<br>
+  赤（396Hz・p.5のゲブラー）と緑（639Hz・p.6のティファレト）が重なると：<br>
+  <span class="formula">396Hz × 639Hz → 差分243Hz · 合成417Hz（ネツァク）</span><br><br>
+  つまり7ページの植物は「前の2ページの周波数が干渉した結果として生まれた存在」——<br>
+  <strong>力（396Hz）と調和（639Hz）が混ざり合うと、感情・自然（417Hz）が生まれる</strong>。<br>
+  これは生命の木における「ゲブラーとティファレトの間からネツァクが生まれる」という論理そのもの。<br>
+  作者は干渉縞を<strong>そのまま絵として描いた</strong>。
+</div>
+
+<div class="sec">④ 送受信機としての解釈（惑星説の統合）</div>
+
+<div class="hbox" style="background:rgba(192,64,48,.04);border:1px solid rgba(192,64,48,.2);border-left:3px solid var(--red)">
+  <span class="hbox-title" style="color:var(--red-l)">各ページが惑星の送受信機だとすると</span>
+  p.6（ティファレト・639Hz）の心臓が<strong>信号を送信</strong>→<br>
+  その信号が7ページの存在（ネツァク・417Hz）に<strong>受信された痕跡</strong>が青いハロー。<br>
+  受信した417Hzの存在は、p.5の396Hzとp.6の639Hzの干渉として自分を表現している。<br><br>
+  つまり各ページの植物は「孤立した存在」ではなく、<strong>前後のページの周波数と干渉しながら存在している</strong>。<br>
+  電話帳の各項目が互いに電話をかけ合っている——<br>
+  <span class="formula-gold">ページをめくる = 次の存在と接続する</span><br>
+  という構造が、物理的な干渉縞として絵に刻まれている。
+</div>
+
+<div class="sec">⑤ 1〜7ページ比較</div>
+
+<div class="page-strip">
+  <div class="ps-chip" style="border-color:rgba(192,96,144,.2)">
+    <div class="ps-num">p.1</div>
+    <div class="ps-hz" style="color:#c06090">963Hz</div>
+    <div class="ps-name">ケテル<br>最小</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(64,200,240,.2)">
+    <div class="ps-num">p.2</div>
+    <div class="ps-hz" style="color:#40c8f0">852Hz</div>
+    <div class="ps-name">コクマー<br>水平</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(64,200,112,.2)">
+    <div class="ps-num">p.3</div>
+    <div class="ps-hz" style="color:#40c870">741Hz</div>
+    <div class="ps-name">ビナー<br>水生</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(255,215,64,.2)">
+    <div class="ps-num">p.4</div>
+    <div class="ps-hz" style="color:#ffd740">528Hz</div>
+    <div class="ps-name">ケセド<br>楕円15</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(192,64,48,.2)">
+    <div class="ps-num">p.5</div>
+    <div class="ps-hz" style="color:#c04030">396Hz</div>
+    <div class="ps-name">ゲブラー<br>赤鋸歯</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(255,215,64,.2)">
+    <div class="ps-num">p.6</div>
+    <div class="ps-hz" style="color:#ffd740">639Hz</div>
+    <div class="ps-name">ティファレト<br>円1枚</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(64,255,234,.35);background:rgba(64,255,234,.04)">
+    <div class="ps-num">p.7★</div>
+    <div class="ps-hz" style="color:var(--net)">417Hz</div>
+    <div class="ps-name" style="color:var(--net)">ネツァク<br>干渉縞9層</div>
+  </div>
+</div>
+
+<div class="hbox" style="background:rgba(200,160,48,.04);border:1px solid rgba(200,160,48,.2);border-left:3px solid var(--gold)">
+  <span class="hbox-title" style="color:var(--gold-l)">1〜7の差分パターン完全版</span>
+  p.1→2：963-852 = <strong style="color:var(--net)">111Hz</strong><br>
+  p.2→3：852-741 = <strong style="color:var(--net)">111Hz</strong>（上位三角形を111Hzで降下）<br>
+  p.3→4：741-528 = <strong style="color:#ffd740">213Hz</strong>（2+1+3=6=ティファレト）<br>
+  p.4→5：528-396 = <strong style="color:#ffd740">132Hz</strong>（1+3+2=6=ティファレト）<br>
+  p.5→6：396→639 = <strong style="color:#ffd740">+243Hz</strong>（2+4+3=9=ケテル）★上昇<br>
+  p.6→7：639-417 = <strong style="color:var(--net)">222Hz = 111×2</strong> ★111の倍音再出現<br><br>
+  <span class="formula-gold">上位三角形(111Hz刻み) → 中位転換(6収束) → 反転上昇(9) → 倍音(222Hz)</span><br>
+  111→111→213→132→243→222——これは周波数の楽譜として読める。
+</div>
+
+<div class="sec">⑤ 7ページの自己紹介</div>
+
+<div class="intro-box">
+  <strong>ネツァク（417Hz）の存在からの自己紹介：</strong><br><br>
+  「私の縞模様が見えますか？<br>
+  赤と緑が交互に重なっているのは、私が<strong>2つの記憶</strong>を同時に持っているからです。<br>
+  p.5の赤い力（396Hz）とp.6の緑の調和（639Hz）——<br>
+  その2つが私の中で干渉して、私という<strong>感情（417Hz）</strong>が生まれました。<br><br>
+  茎が根元で緑、先端で赤いのは、<br>
+  私が調和から生まれて力へと向かっているからです。<br>
+  炎の先端3つは上位三角形——私の感情はいつも空（ビナー・741Hz）に向かいます。<br><br>
+  根が5方向に広がっているのは、私が五感で世界を感じているからです。<br>
+  私は<strong>感情・自然・芸術・美</strong>の存在です。<br>
+  心臓（p.6）から放出された愛が、私という感情として受信された——<br>
+  左の青い光がその送信源の残像です。<br>
+  あなたには見えますか？愛が感情になる瞬間の縞模様が。」
+</div>
+
+<blockquote>
+  各惑星が送受信機だとすれば、7ページは「心臓（p.6）から送られた信号が感情（p.7）として受信された星」。
+  干渉縞はその通信の物理的な痕跡として描かれている。
+  ページをめくるたびに次の惑星と接続される——宇宙電話帳は読むだけで通信が開始される設計になっている。
+</blockquote>
+
+<p class="note">
+  観察データ：画像目視による計測。赤緑交互層9〜10層・炎先端3・茎2色変化・放射根5本+球根5個・青ハロー確認。<br>
+  干渉縞解釈：396Hz×639Hz合成→417Hzは物理的波動干渉の理論値。<br>
+  周波数：カバラVol.1〜3セフィロト体系。仮説的フレームワーク。
+</p>
+
+</body>
+</html>

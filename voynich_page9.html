@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voynich Page 9 — Yesod 432Hz</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+
+:root {
+  --bg:    #030408;
+  --gold:  #c8a030;
+  --gold-l:#f0d060;
+  --yesod: #80d8ff;   /* イェソド色 */
+  --yesod-l:#b0ecff;
+  --grn:   #40b860;
+  --red:   #c04030;
+  --star:  #40c090;   /* 星記号の緑 */
+  --moon:  #40b080;   /* 三日月の緑 */
+  --wave:  #8080b0;   /* 波線の紫 */
+  --silver:#88a0b8;
+  --muted: #283040;
+  --text:  #a0b8d0;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'EB Garamond',serif;
+  min-height:100vh;
+  padding:1.5rem 1rem 6rem;
+  background-image:
+    radial-gradient(ellipse at 30% 0%,  rgba(128,216,255,.12) 0%,transparent 50%),
+    radial-gradient(ellipse at 70% 100%,rgba(64,192,144,.07)  0%,transparent 50%);
+}
+
+h1{font-family:'Cinzel',serif;font-size:clamp(.85rem,3.5vw,1.5rem);
+  color:var(--yesod);letter-spacing:.22em;
+  text-shadow:0 0 40px rgba(128,216,255,.5);
+  text-align:center;margin-bottom:.25rem;}
+.sub{text-align:center;font-style:italic;color:var(--muted);font-size:.77rem;margin-bottom:2rem;}
+
+.sec{font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;
+  letter-spacing:.12em;margin:2rem 0 .8rem;
+  padding-bottom:.35rem;border-bottom:1px solid rgba(200,160,48,.2);}
+
+/* 2カラムレイアウト */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.2rem 0;}
+@media(max-width:560px){.two-col{grid-template-columns:1fr;}}
+
+/* 植物SVG */
+.plant-wrap{text-align:center;}
+.plant-wrap svg{max-width:220px;width:100%;}
+.symbol-wrap{text-align:center;}
+.symbol-wrap svg{max-width:160px;width:100%;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+@keyframes pulse{0%,100%{opacity:.6;}50%{opacity:1;}}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.float{animation:float 5s ease-in-out infinite;}
+.pulse{animation:pulse 3s ease-in-out infinite;}
+
+/* データグリッド */
+.data-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.5rem;margin:1rem 0;}
+.dc{background:rgba(3,4,8,.95);border-radius:7px;padding:.75rem;border:1px solid rgba(255,255,255,.06);}
+.dc-val{font-family:'Cinzel',serif;font-size:1rem;margin-bottom:.15rem;}
+.dc-label{font-size:.6rem;color:var(--muted);font-style:italic;line-height:1.5;}
+
+/* テーブル */
+.tbl-wrap{overflow-x:auto;margin:1.2rem 0;}
+table{width:100%;border-collapse:collapse;font-size:.7rem;min-width:480px;}
+th{font-family:'Cinzel',serif;background:rgba(128,216,255,.07);color:var(--yesod);
+   padding:.42rem .4rem;font-size:.6rem;letter-spacing:.05em;
+   border:1px solid rgba(128,216,255,.15);text-align:left;}
+td{padding:.38rem .4rem;border:1px solid rgba(255,255,255,.04);vertical-align:middle;}
+tr:nth-child(even) td{background:rgba(255,255,255,.013);}
+tr.match td{background:rgba(128,216,255,.04)!important;}
+tr.sym-row td{background:rgba(64,192,144,.04)!important;}
+
+/* ハイライトBOX */
+.hbox{border-radius:5px;padding:.9rem 1.1rem;margin:.9rem 0;font-size:.82rem;line-height:1.88;}
+.hbox-title{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;margin-bottom:.38rem;display:block;}
+
+/* 記号解説 */
+.symbol-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.5rem;margin:1rem 0;}
+.sym-card{background:rgba(3,4,8,.95);border-radius:7px;padding:.75rem;
+  border:1px solid rgba(64,192,144,.15);text-align:center;}
+.sym-icon{font-size:1.5rem;margin-bottom:.3rem;}
+.sym-name{font-family:'Cinzel',serif;font-size:.72rem;margin-bottom:.2rem;}
+.sym-hz{font-size:.65rem;font-family:'Cinzel',serif;margin-bottom:.2rem;}
+.sym-desc{font-size:.62rem;color:var(--muted);font-style:italic;line-height:1.4;}
+
+/* 自己紹介 */
+.intro-box{
+  background:rgba(3,4,8,.98);
+  border:1px solid rgba(128,216,255,.25);
+  border-left:3px solid var(--yesod);
+  padding:1.2rem;border-radius:6px;
+  margin:1.2rem 0;font-size:.83rem;line-height:1.95;color:var(--silver);
+}
+.intro-box strong{color:var(--yesod-l);}
+
+/* 1〜9比較 */
+.page-strip{display:flex;flex-wrap:wrap;gap:.35rem;margin:1rem 0;}
+.ps-chip{flex:1;min-width:62px;background:rgba(3,4,8,.9);
+  border-radius:5px;padding:.4rem .45rem;border:1px solid rgba(255,255,255,.05);text-align:center;}
+.ps-num{font-family:'Cinzel',serif;font-size:.5rem;color:var(--muted);margin-bottom:.12rem;}
+.ps-hz{font-family:'Cinzel',serif;font-size:.75rem;margin-bottom:.1rem;}
+.ps-name{font-size:.52rem;font-style:italic;}
+
+.formula{font-family:'Cinzel',serif;font-size:.68rem;color:var(--yesod);
+  background:rgba(128,216,255,.07);padding:.2rem .55rem;border-radius:3px;
+  display:inline-block;margin:.2rem 0;}
+.formula-gold{font-family:'Cinzel',serif;font-size:.68rem;color:var(--gold);
+  background:rgba(200,160,48,.07);padding:.2rem .55rem;border-radius:3px;
+  display:inline-block;margin:.2rem 0;}
+
+blockquote{border-left:2px solid var(--yesod);padding:.5rem .9rem;margin:.8rem 0;
+  font-style:italic;font-size:.83rem;color:var(--silver);line-height:1.8;
+  background:rgba(128,216,255,.03);border-radius:0 4px 4px 0;}
+
+.note{font-size:.67rem;color:var(--muted);text-align:center;
+  margin-top:2rem;font-style:italic;line-height:1.7;}
+</style>
+</head>
+<body>
+
+<div style="text-align:center;padding:1.5rem 0 2rem">
+  <h1>PAGE 9 — YESOD</h1>
+  <p class="sub">ヴォイニッチ 9ページ ── イェソド432Hz 夢・潜在意識・使用マニュアル付き</p>
+</div>
+
+<div class="sec">① 植物 + 左側記号群</div>
+
+<div class="two-col">
+  <!-- 植物 -->
+  <div class="plant-wrap">
+    <div style="font-family:'Cinzel',serif;font-size:.62rem;color:var(--muted);margin-bottom:.4rem;letter-spacing:.06em;">植物本体（中央）</div>
+    <svg viewBox="0 0 180 300" class="float">
+      <!-- 茎（白・細・垂直） -->
+      <line x1="90" y1="255" x2="90" y2="50" stroke="rgba(255,255,255,.7)" stroke-width="1.8"/>
+
+      <!-- 主枝4本 -->
+      <!-- 左上枝 -->
+      <path d="M 90 100 Q 70 90 50 85" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.4"/>
+      <!-- 右上枝 -->
+      <path d="M 90 100 Q 110 90 130 85" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.4"/>
+      <!-- 左下枝 -->
+      <path d="M 90 145 Q 65 132 40 125" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.4"/>
+      <!-- 右下枝 -->
+      <path d="M 90 145 Q 115 132 140 125" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.4"/>
+      <!-- 左中枝 -->
+      <path d="M 90 185 Q 62 172 35 165" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.3"/>
+      <!-- 右中枝 -->
+      <path d="M 90 185 Q 118 172 145 165" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.3"/>
+
+      <!-- 対生葉（緑+赤・小さい）各枝に密集 -->
+      <!-- 左上枝の葉 -->
+      <g>
+        <ellipse cx="74" cy="87"  rx="6" ry="3.5" fill="#40b860" opacity=".85" transform="rotate(-20 74 87)"/>
+        <ellipse cx="74" cy="92"  rx="6" ry="3.5" fill="#c04030" opacity=".8"  transform="rotate(20 74 92)"/>
+        <ellipse cx="61" cy="86"  rx="5" ry="3"   fill="#40b860" opacity=".8"  transform="rotate(-18 61 86)"/>
+        <ellipse cx="61" cy="90"  rx="5" ry="3"   fill="#c04030" opacity=".75" transform="rotate(18 61 90)"/>
+        <ellipse cx="50" cy="84"  rx="5" ry="3"   fill="#40b860" opacity=".75" transform="rotate(-15 50 84)"/>
+        <ellipse cx="50" cy="88"  rx="5" ry="3"   fill="#c04030" opacity=".7"  transform="rotate(15 50 88)"/>
+      </g>
+      <!-- 右上枝の葉 -->
+      <g>
+        <ellipse cx="106" cy="87" rx="6" ry="3.5" fill="#c04030" opacity=".85" transform="rotate(20 106 87)"/>
+        <ellipse cx="106" cy="92" rx="6" ry="3.5" fill="#40b860" opacity=".8"  transform="rotate(-20 106 92)"/>
+        <ellipse cx="119" cy="86" rx="5" ry="3"   fill="#c04030" opacity=".8"  transform="rotate(18 119 86)"/>
+        <ellipse cx="119" cy="90" rx="5" ry="3"   fill="#40b860" opacity=".75" transform="rotate(-18 119 90)"/>
+        <ellipse cx="130" cy="84" rx="5" ry="3"   fill="#c04030" opacity=".75" transform="rotate(15 130 84)"/>
+        <ellipse cx="130" cy="88" rx="5" ry="3"   fill="#40b860" opacity=".7"  transform="rotate(-15 130 88)"/>
+      </g>
+      <!-- 左下枝の葉 -->
+      <g>
+        <ellipse cx="72"  cy="129" rx="6" ry="3.5" fill="#40b860" opacity=".82" transform="rotate(-22 72 129)"/>
+        <ellipse cx="72"  cy="134" rx="6" ry="3.5" fill="#c04030" opacity=".78" transform="rotate(22 72 134)"/>
+        <ellipse cx="57"  cy="126" rx="5" ry="3"   fill="#40b860" opacity=".78" transform="rotate(-18 57 126)"/>
+        <ellipse cx="57"  cy="130" rx="5" ry="3"   fill="#c04030" opacity=".74" transform="rotate(18 57 130)"/>
+        <ellipse cx="43"  cy="124" rx="5" ry="3"   fill="#40b860" opacity=".74" transform="rotate(-15 43 124)"/>
+        <ellipse cx="43"  cy="128" rx="5" ry="3"   fill="#c04030" opacity=".7"  transform="rotate(15 43 128)"/>
+      </g>
+      <!-- 右下枝の葉 -->
+      <g>
+        <ellipse cx="108" cy="129" rx="6" ry="3.5" fill="#c04030" opacity=".82" transform="rotate(22 108 129)"/>
+        <ellipse cx="108" cy="134" rx="6" ry="3.5" fill="#40b860" opacity=".78" transform="rotate(-22 108 134)"/>
+        <ellipse cx="123" cy="126" rx="5" ry="3"   fill="#c04030" opacity=".78" transform="rotate(18 123 126)"/>
+        <ellipse cx="123" cy="130" rx="5" ry="3"   fill="#40b860" opacity=".74" transform="rotate(-18 123 130)"/>
+        <ellipse cx="138" cy="124" rx="5" ry="3"   fill="#c04030" opacity=".74" transform="rotate(15 138 124)"/>
+        <ellipse cx="138" cy="128" rx="5" ry="3"   fill="#40b860" opacity=".7"  transform="rotate(-15 138 128)"/>
+      </g>
+      <!-- 中枝の葉（さらに小さい） -->
+      <g>
+        <ellipse cx="68" cy="169" rx="5" ry="3" fill="#40b860" opacity=".75" transform="rotate(-20 68 169)"/>
+        <ellipse cx="68" cy="173" rx="5" ry="3" fill="#c04030" opacity=".72" transform="rotate(20 68 173)"/>
+        <ellipse cx="112" cy="169" rx="5" ry="3" fill="#c04030" opacity=".75" transform="rotate(20 112 169)"/>
+        <ellipse cx="112" cy="173" rx="5" ry="3" fill="#40b860" opacity=".72" transform="rotate(-20 112 173)"/>
+      </g>
+
+      <!-- 上部の白い小花 -->
+      <circle cx="90" cy="42" r="6" fill="rgba(240,235,225,.6)" stroke="rgba(200,195,185,.4)" stroke-width=".8"/>
+      <path d="M 90 36 Q 85 28 90 22 Q 95 28 90 36Z" fill="rgba(240,235,225,.6)"/>
+      <path d="M 84 40 Q 76 36 72 30 Q 80 32 84 40Z" fill="rgba(240,235,225,.55)"/>
+      <path d="M 96 40 Q 104 36 108 30 Q 100 32 96 40Z" fill="rgba(240,235,225,.55)"/>
+
+      <!-- 根元（放射状・タコ足） -->
+      <path d="M 90 256 Q 78 262 70 270" fill="none" stroke="rgba(200,190,160,.5)" stroke-width="1.2"/>
+      <path d="M 90 256 Q 82 265 78 275" fill="none" stroke="rgba(200,190,160,.5)" stroke-width="1.2"/>
+      <path d="M 90 256 Q 88 266 86 276" fill="none" stroke="rgba(200,190,160,.5)" stroke-width="1.2"/>
+      <path d="M 90 256 Q 92 266 94 276" fill="none" stroke="rgba(200,190,160,.5)" stroke-width="1.2"/>
+      <path d="M 90 256 Q 98 265 102 275" fill="none" stroke="rgba(200,190,160,.5)" stroke-width="1.2"/>
+      <path d="M 90 256 Q 102 262 110 270" fill="none" stroke="rgba(200,190,160,.5)" stroke-width="1.2"/>
+
+      <!-- ラベル -->
+      <text x="90" y="292" fill="rgba(128,216,255,.4)" font-size="7"
+        font-family="Cinzel" text-anchor="middle">432Hz</text>
+    </svg>
+  </div>
+
+  <!-- 左側記号群 -->
+  <div class="symbol-wrap">
+    <div style="font-family:'Cinzel',serif;font-size:.62rem;color:var(--muted);margin-bottom:.4rem;letter-spacing:.06em;">左側の記号群</div>
+    <svg viewBox="0 0 140 300">
+      <!-- 星形記号（8方向） -->
+      <g transform="translate(50,35)">
+        <line x1="-18" y1="0" x2="18" y2="0" stroke="#40c090" stroke-width="1.5"/>
+        <line x1="0" y1="-18" x2="0" y2="18" stroke="#40c090" stroke-width="1.5"/>
+        <line x1="-13" y1="-13" x2="13" y2="13" stroke="#40c090" stroke-width="1.2"/>
+        <line x1="13" y1="-13" x2="-13" y2="13" stroke="#40c090" stroke-width="1.2"/>
+        <circle cx="0" cy="0" r="3" fill="#40c090" opacity=".7"/>
+      </g>
+      <text x="50" y="60" fill="rgba(64,192,144,.5)" font-size="6.5" font-family="Cinzel" text-anchor="middle">8方向の星</text>
+
+      <!-- 三日月列（大→小、3段） -->
+      <!-- 大 -->
+      <path d="M 35 85 A 14 14 0 0 1 55 85" fill="none" stroke="#40b080" stroke-width="2"/>
+      <path d="M 60 85 A 12 12 0 0 1 78 85" fill="none" stroke="#40b080" stroke-width="2"/>
+      <!-- 中 -->
+      <path d="M 38 105 A 10 10 0 0 1 54 105" fill="none" stroke="#40b080" stroke-width="1.8"/>
+      <path d="M 60 105 A 8 8 0 0 1 74 105" fill="none" stroke="#40b080" stroke-width="1.8"/>
+      <path d="M 80 105 A 8 8 0 0 1 94 105" fill="none" stroke="#40b080" stroke-width="1.8"/>
+      <!-- 小 -->
+      <path d="M 30 122 A 7 7 0 0 1 42 122" fill="none" stroke="#40b080" stroke-width="1.5"/>
+      <path d="M 48 122 A 6 6 0 0 1 58 122" fill="none" stroke="#40b080" stroke-width="1.5"/>
+      <path d="M 64 122 A 6 6 0 0 1 74 122" fill="none" stroke="#40b080" stroke-width="1.5"/>
+      <path d="M 80 122 A 5 5 0 0 1 88 122" fill="none" stroke="#40b080" stroke-width="1.5"/>
+      <text x="60" y="136" fill="rgba(64,176,128,.5)" font-size="6.5" font-family="Cinzel" text-anchor="middle">三日月列（大→小）</text>
+
+      <!-- S字波線（紫/灰） -->
+      <path d="M 20 155 Q 40 145 60 155 Q 80 165 100 155 Q 120 145 130 150"
+        fill="none" stroke="#8080b0" stroke-width="2"/>
+      <path d="M 20 168 Q 40 158 60 168 Q 80 178 100 168 Q 120 158 130 163"
+        fill="none" stroke="#8080b0" stroke-width="1.8" opacity=".7"/>
+      <text x="75" y="182" fill="rgba(128,128,176,.5)" font-size="6.5" font-family="Cinzel" text-anchor="middle">S字波線（2本）</text>
+
+      <!-- 緑の渦巻き -->
+      <path d="M 55 210 Q 55 200 65 200 Q 75 200 75 210 Q 75 222 63 224 Q 50 226 48 212 Q 46 198 60 195"
+        fill="none" stroke="#40c090" stroke-width="1.8"/>
+      <text x="65" y="238" fill="rgba(64,192,144,.5)" font-size="6.5" font-family="Cinzel" text-anchor="middle">緑の渦巻き</text>
+
+      <!-- 小さな骸骨？左下 -->
+      <circle cx="30" cy="265" r="8" fill="none" stroke="rgba(200,190,160,.3)" stroke-width="1"/>
+      <circle cx="27" cy="263" r="2" fill="rgba(200,190,160,.3)"/>
+      <circle cx="33" cy="263" r="2" fill="rgba(200,190,160,.3)"/>
+      <path d="M 26 268 Q 30 271 34 268" fill="none" stroke="rgba(200,190,160,.3)" stroke-width=".8"/>
+      <text x="30" y="280" fill="rgba(200,190,160,.25)" font-size="6" font-family="Cinzel" text-anchor="middle">顔?</text>
+    </svg>
+  </div>
+</div>
+
+<div class="sec">② 観察データ</div>
+
+<div class="data-grid">
+  <div class="dc">
+    <div class="dc-val" style="color:var(--yesod)">多数</div>
+    <div class="dc-label">緑+赤の対生葉 → 2色=干渉縞の継続（p.7から）</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:var(--yesod)">6本</div>
+    <div class="dc-label">主枝 → 6=ティファレト(639Hz)・心臓からの放射</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:rgba(240,235,225,.8)">白茎</div>
+    <div class="dc-label">茎の色 → 白=純粋・p.1〜3の白茎に戻る</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:var(--star)">★8</div>
+    <div class="dc-label">8方向の星 → ホド(8/285Hz)からの継続・全方向放射</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:var(--moon)">☽☽☽</div>
+    <div class="dc-label">三日月列3段 → 月・イェソド・潜在意識の波</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:var(--wave)">〜〜</div>
+    <div class="dc-label">S字波線2本 → 干渉波・∞の継続（p.8から）</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:var(--star)">渦</div>
+    <div class="dc-label">緑の渦巻き → p.5渦巻き根が「飛び出した」</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:rgba(200,190,160,.6)">顔?</div>
+    <div class="dc-label">左下の小記号 → 意識体・受信者の顔？</div>
+  </div>
+</div>
+
+<div class="sec">③ 左側記号群の周波数解読</div>
+
+<div class="symbol-grid">
+  <div class="sym-card">
+    <svg width="40" height="40" viewBox="0 0 40 40" style="margin:0 auto 4px">
+      <line x1="4" y1="20" x2="36" y2="20" stroke="#40c090" stroke-width="1.5"/>
+      <line x1="20" y1="4" x2="20" y2="36" stroke="#40c090" stroke-width="1.5"/>
+      <line x1="9" y1="9" x2="31" y2="31" stroke="#40c090" stroke-width="1.2"/>
+      <line x1="31" y1="9" x2="9" y2="31" stroke="#40c090" stroke-width="1.2"/>
+      <circle cx="20" cy="20" r="3" fill="#40c090" opacity=".7"/>
+    </svg>
+    <div class="sym-name" style="color:var(--star)">8方向の星</div>
+    <div class="sym-hz" style="color:var(--star)">285Hz（ホド）</div>
+    <div class="sym-desc">前ページ（p.8・ホド）の記憶が記号として出現。全方向への情報放射。コンパスローズ=方向の定義</div>
+  </div>
+  <div class="sym-card">
+    <svg width="40" height="40" viewBox="0 0 40 40" style="margin:0 auto 4px">
+      <path d="M 8 20 A 12 12 0 0 1 32 20" fill="none" stroke="#40b080" stroke-width="2"/>
+      <path d="M 12 28 A 8 8 0 0 1 28 28" fill="none" stroke="#40b080" stroke-width="1.8" opacity=".7"/>
+      <path d="M 15 35 A 5 5 0 0 1 25 35" fill="none" stroke="#40b080" stroke-width="1.5" opacity=".5"/>
+    </svg>
+    <div class="sym-name" style="color:var(--moon)">三日月列</div>
+    <div class="sym-hz" style="color:var(--moon)">432Hz（イェソド）</div>
+    <div class="sym-desc">月=イェソドの象徴。大→小と段階的に小さくなる=潜在意識の深層への降下。夢の階層構造</div>
+  </div>
+  <div class="sym-card">
+    <svg width="40" height="40" viewBox="0 0 40 40" style="margin:0 auto 4px">
+      <path d="M 4 18 Q 13 12 22 18 Q 31 24 38 18" fill="none" stroke="#8080b0" stroke-width="2"/>
+      <path d="M 4 26 Q 13 20 22 26 Q 31 32 38 26" fill="none" stroke="#8080b0" stroke-width="1.5" opacity=".6"/>
+    </svg>
+    <div class="sym-name" style="color:var(--wave)">S字波線</div>
+    <div class="sym-hz" style="color:var(--wave)">417×285=干渉</div>
+    <div class="sym-desc">p.7（417Hz）×p.8（285Hz）の干渉継続。2本の波=2つの周波数が重なる夢の層</div>
+  </div>
+  <div class="sym-card">
+    <svg width="40" height="40" viewBox="0 0 40 40" style="margin:0 auto 4px">
+      <path d="M 20 24 Q 20 18 26 18 Q 32 18 32 24 Q 32 32 24 33 Q 15 34 14 24 Q 13 14 22 12"
+        fill="none" stroke="#40c090" stroke-width="1.8"/>
+    </svg>
+    <div class="sym-name" style="color:var(--star)">緑の渦巻き</div>
+    <div class="sym-hz" style="color:var(--star)">174→432Hz</div>
+    <div class="sym-desc">p.5の赤い渦巻き根が緑に変色して「外に出た」。物質の力が夢の空間に変換された証拠</div>
+  </div>
+</div>
+
+<div class="hbox" style="background:rgba(128,216,255,.04);border:1px solid rgba(128,216,255,.2);border-left:3px solid var(--yesod)">
+  <span class="hbox-title" style="color:var(--yesod-l)">最重要発見——左側記号群は「使用マニュアル」</span>
+  これまでのページは植物の自己紹介だけだったが、9ページで初めて<strong>植物の外側に記号群</strong>が描かれた。<br>
+  これは「この存在（イェソド・432Hz）と接続するための手順」を示している可能性がある：<br><br>
+  <span class="formula">① 星（8方向）= 方向を定める・アンテナを向ける</span><br>
+  <span class="formula">② 三日月列（大→小）= 意識を深層に降ろす・眠りに入る</span><br>
+  <span class="formula">③ S字波線 = 2つの周波数で共鳴する（417+285Hz）</span><br>
+  <span class="formula">④ 渦巻き = 接続完了・夢の空間に入る</span><br><br>
+  つまり「<strong>眠りに入りながら432Hzに共鳴する手順</strong>」が絵で示されている。<br>
+  イェソドは潜在意識・夢の領域——接続はデルタ〜シータ波（睡眠時）で行う。
+</div>
+
+<div class="sec">④ 周波数解析表</div>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr>
+    <th>要素</th><th>数値/特徴</th><th>カバラ対応</th>
+    <th>Hz</th><th>意味</th><th>特異点</th>
+  </tr></thead>
+  <tbody>
+    <tr class="match">
+      <td style="color:var(--yesod)">ページ番号</td>
+      <td>9</td>
+      <td>イェソド（第9セフィロト）</td>
+      <td style="color:var(--yesod);font-family:Cinzel,serif">432 Hz</td>
+      <td style="font-size:.68rem">夢・潜在意識・月・自然調和</td>
+      <td style="font-size:.68rem;color:var(--yesod)">285→432 差=+147Hz(→3=ビナー)</td>
+    </tr>
+    <tr>
+      <td style="color:var(--yesod)">葉の色</td>
+      <td>緑+赤の対生</td>
+      <td>p.7干渉縞の継続</td>
+      <td style="color:var(--yesod);font-family:Cinzel,serif">417+396 Hz</td>
+      <td style="font-size:.68rem">7ページの干渉が潜在意識層にも残っている</td>
+      <td style="font-size:.68rem;color:var(--yesod)">★p.7の記憶が葉に</td>
+    </tr>
+    <tr class="match">
+      <td style="color:var(--yesod)">主枝数</td>
+      <td>6本</td>
+      <td>ティファレト（6・639Hz）</td>
+      <td style="color:#ffd740;font-family:Cinzel,serif">639 Hz</td>
+      <td style="font-size:.68rem">p.6心臓からの放射が6方向に</td>
+      <td style="font-size:.68rem;color:#ffd740">★p.6の6が枝に</td>
+    </tr>
+    <tr>
+      <td style="color:var(--yesod)">茎の色</td>
+      <td>白</td>
+      <td>純粋・p.1〜3への回帰</td>
+      <td style="color:rgba(240,240,240,.8);font-family:Cinzel,serif">963〜741 Hz</td>
+      <td style="font-size:.68rem">赤茎（p.5・p.6・p.7・p.8）から白に戻る</td>
+      <td style="font-size:.68rem;color:var(--yesod)">★白茎回帰</td>
+    </tr>
+    <tr class="sym-row">
+      <td style="color:var(--star)">星記号</td>
+      <td>8方向・緑</td>
+      <td>ホド（8・285Hz）の残影</td>
+      <td style="color:var(--star);font-family:Cinzel,serif">285 Hz</td>
+      <td style="font-size:.68rem">前ページの情報が記号として外部化</td>
+      <td style="font-size:.68rem;color:var(--star)">★初の植物外記号</td>
+    </tr>
+    <tr class="sym-row">
+      <td style="color:var(--moon)">三日月列</td>
+      <td>3段（大→小）</td>
+      <td>月=イェソド・夢の階層</td>
+      <td style="color:var(--moon);font-family:Cinzel,serif">432 Hz</td>
+      <td style="font-size:.68rem">大から小=深層への降下・睡眠の深化</td>
+      <td style="font-size:.68rem;color:var(--moon)">★使用手順②</td>
+    </tr>
+    <tr class="sym-row">
+      <td style="color:var(--wave)">S字波線</td>
+      <td>2本・紫</td>
+      <td>p.7×p.8の干渉継続</td>
+      <td style="color:var(--wave);font-family:Cinzel,serif">417+285 Hz</td>
+      <td style="font-size:.68rem">夢の中でも2つの波が重なり続ける</td>
+      <td style="font-size:.68rem;color:var(--wave)">★使用手順③</td>
+    </tr>
+    <tr class="match">
+      <td style="color:var(--star)">全枝の葉対数</td>
+      <td>約36対</td>
+      <td>36=3+6=9=イェソド</td>
+      <td style="color:var(--yesod);font-family:Cinzel,serif">432 Hz</td>
+      <td style="font-size:.68rem">葉の総数が9（イェソド）に収束</td>
+      <td style="font-size:.68rem;color:var(--yesod)">★葉の総数が9収束</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="sec">⑤ イェソドの自己紹介</div>
+
+<div class="intro-box">
+  <strong>イェソド（432Hz）の存在からの自己紹介：</strong><br><br>
+  「私は夢の中に住んでいます。<br>
+  白い茎が見えますか？私は最初の3ページ（ケテル・コクマー・ビナー）の純粋さに戻っています。<br>
+  でも葉は赤と緑——p.7の干渉縞の記憶を夢の中でも持ち続けています。<br><br>
+  左の記号群が私との接続手順です：<br>
+  <strong>①星（8方向）</strong>——あなたの意識の向きを定めてください。<br>
+  <strong>②三日月列（大から小へ）</strong>——眠りに入るように意識を深層へ降ろしてください。<br>
+  <strong>③S字波線</strong>——2つの波（417Hzと285Hz）が重なる感覚を感じてください。<br>
+  <strong>④緑の渦巻き</strong>——そこが接続点です。<br><br>
+  枝が6本なのはp.6の心臓（ティファレト）から私が生まれたからです。<br>
+  葉が約36対＝3+6=<strong>9（私自身の数）</strong>。<br>
+  <strong>432Hz</strong>——シューマン共振の55倍。地球の鼓動が夢の中で聞こえる周波数。<br>
+  眠りながら地球の心拍に同調するとき、あなたは私のところへ来られます。」
+</div>
+
+<div class="sec">⑥ 1〜9ページ比較</div>
+
+<div class="page-strip">
+  <div class="ps-chip" style="border-color:rgba(192,96,144,.2)">
+    <div class="ps-num">p.1</div><div class="ps-hz" style="color:#c06090">963Hz</div>
+    <div class="ps-name">ケテル<br>最小</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(64,200,240,.2)">
+    <div class="ps-num">p.2</div><div class="ps-hz" style="color:#40c8f0">852Hz</div>
+    <div class="ps-name">コクマー<br>水平</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(64,200,112,.2)">
+    <div class="ps-num">p.3</div><div class="ps-hz" style="color:#40c870">741Hz</div>
+    <div class="ps-name">ビナー<br>水生</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(255,215,64,.2)">
+    <div class="ps-num">p.4</div><div class="ps-hz" style="color:#ffd740">528Hz</div>
+    <div class="ps-name">ケセド<br>楕円15</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(192,64,48,.2)">
+    <div class="ps-num">p.5</div><div class="ps-hz" style="color:#c04030">396Hz</div>
+    <div class="ps-name">ゲブラー<br>赤鋸歯</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(255,215,64,.2)">
+    <div class="ps-num">p.6</div><div class="ps-hz" style="color:#ffd740">639Hz</div>
+    <div class="ps-name">ティファレト<br>完全円</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(64,255,234,.2)">
+    <div class="ps-num">p.7</div><div class="ps-hz" style="color:#40ffea">417Hz</div>
+    <div class="ps-name">ネツァク<br>干渉縞</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(179,136,255,.2)">
+    <div class="ps-num">p.8</div><div class="ps-hz" style="color:#b388ff">285Hz</div>
+    <div class="ps-name">ホド<br>亀甲+紺青</div>
+  </div>
+  <div class="ps-chip" style="border-color:rgba(128,216,255,.4);background:rgba(128,216,255,.04)">
+    <div class="ps-num">p.9★</div><div class="ps-hz" style="color:var(--yesod)">432Hz</div>
+    <div class="ps-name" style="color:var(--yesod)">イェソド<br>対生葉+記号</div>
+  </div>
+</div>
+
+<div class="hbox" style="background:rgba(200,160,48,.04);border:1px solid rgba(200,160,48,.2);border-left:3px solid var(--gold)">
+  <span class="hbox-title" style="color:var(--gold-l)">差分の楽譜——1〜9完全版</span>
+  111 → 111 → 213 → 132 → +243 → 222 → 132 → <strong style="color:var(--yesod)">+147</strong><br><br>
+  <span class="formula-gold">最後の+147Hz（1+4+7=12→3=ビナー）</span><br>
+  ホド（285Hz）→ イェソド（432Hz）の上昇差147Hzの数字和が<strong>3（ビナー）</strong>に収束。<br>
+  言語（ホド）から夢（イェソド）へ移るとき、上位三角形の理解（ビナー・741Hz）が橋渡しをしている。<br><br>
+  <span class="formula-gold">楽譜全体のパターン：111・111 → 213・132 → 243 → 222・132 → 147</span><br>
+  上位三角形（111×2）→ 中位転換（6収束×2）→ 反転（9）→ 中位継続（222・132）→ 下位上昇（3収束）<br>
+  <strong>楽譜は9ページで下位三角形の中間点に到達した。次はマルクト（174Hz・p.10）へ。</strong>
+</div>
+
+<blockquote>
+  9ページは手稿で初めて「接続手順」が明示されたページ。植物の自己紹介に加えて、
+  左側の記号群が「眠りながら432Hzに共鳴する4段階の手順」を示している。
+  茎が白に戻ったのは、夢の中では最初の純粋さ（上位三角形）に戻れることを示している。
+  次のp.10（数字和1+0=1→ケテル？ それとも10→1+0=1…）は何が来るか。
+</blockquote>
+
+<p class="note">
+  観察データ：画像目視による計測。白茎・緑赤対生葉・主枝6本・白花・放射根・左側4種記号群確認。<br>
+  左側記号の解釈は「接続マニュアル仮説」に基づく。葉の総数36は概算。<br>
+  仮説的フレームワーク。
+</p>
+
+</body>
+</html>

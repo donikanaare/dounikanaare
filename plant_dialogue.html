@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plant Dialogue — Voynich 4/209</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+
+:root {
+  --bg:      #020a04;
+  --deep:    #041008;
+  --gold:    #a8c040;
+  --gold-l:  #d0f060;
+  --amber:   #c8900a;
+  --amber-l: #f0b830;
+  --teal:    #40c8a0;
+  --teal-l:  #80f0d0;
+  --human:   #c06090;
+  --human-l: #f090c0;
+  --silver:  #90b0a0;
+  --muted:   #304a38;
+  --text:    #b0ccc0;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'EB Garamond',serif;
+  min-height:100vh;
+  padding:1.5rem 1rem 6rem;
+  background-image:
+    radial-gradient(ellipse at 20% 0%,   rgba(64,200,160,.1)  0%,transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgba(168,192,64,.08) 0%,transparent 55%),
+    radial-gradient(ellipse at 50% 50%,  rgba(192,96,144,.04) 0%,transparent 60%);
+}
+
+/* ── HEADER ── */
+.hd{text-align:center;padding:1.5rem 0 2rem;position:relative;}
+h1{
+  font-family:'Cinzel',serif;
+  font-size:clamp(.85rem,3.5vw,1.5rem);
+  color:var(--gold);
+  letter-spacing:.2em;
+  text-shadow:0 0 40px rgba(168,192,64,.6);
+  margin-bottom:.25rem;
+}
+.sub{font-style:italic;color:var(--muted);font-size:.78rem;letter-spacing:.1em;}
+
+.sec{
+  font-family:'Cinzel',serif;
+  font-size:.78rem;
+  letter-spacing:.12em;
+  margin:2.2rem 0 .9rem;
+  padding-bottom:.35rem;
+  border-bottom:1px solid;
+}
+.sec-plant{color:var(--gold);border-color:rgba(168,192,64,.25);}
+.sec-human{color:var(--human);border-color:rgba(192,96,144,.25);}
+.sec-dialog{color:var(--teal);border-color:rgba(64,200,160,.25);}
+
+/* ── PLANT ANALYSIS ── */
+.plant-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.8rem;
+  margin-bottom:1.5rem;
+}
+@media(max-width:560px){.plant-grid{grid-template-columns:1fr;}}
+
+.plant-card{
+  background:rgba(4,16,8,.9);
+  border:1px solid rgba(168,192,64,.15);
+  border-radius:8px;
+  padding:.9rem;
+}
+.pc-head{
+  font-family:'Cinzel',serif;
+  font-size:.75rem;
+  letter-spacing:.08em;
+  color:var(--gold);
+  margin-bottom:.6rem;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.pc-val{
+  font-size:1.6rem;
+  font-family:'Cinzel',serif;
+  color:var(--gold-l);
+  text-shadow:0 0 20px rgba(208,240,96,.4);
+  margin-bottom:.2rem;
+}
+.pc-hz{font-size:.8rem;color:var(--amber-l);margin-bottom:.3rem;}
+.pc-desc{font-size:.75rem;color:var(--silver);line-height:1.6;font-style:italic;}
+
+/* ── SVG PLANT ── */
+.plant-wrap{
+  background:rgba(4,16,8,.8);
+  border:1px solid rgba(168,192,64,.15);
+  border-radius:8px;
+  padding:1rem;
+  margin-bottom:1.5rem;
+  text-align:center;
+}
+.plant-wrap svg{max-width:340px;width:100%;}
+
+/* ── FREQ DECODE ── */
+.decode-box{
+  background:rgba(4,16,8,.9);
+  border:1px solid rgba(168,192,64,.2);
+  border-left:3px solid var(--gold);
+  padding:1rem 1.2rem;
+  border-radius:4px;
+  margin-bottom:1.5rem;
+  font-size:.82rem;
+  line-height:1.9;
+  color:var(--silver);
+}
+.decode-box strong{color:var(--gold-l);}
+.formula{
+  font-family:'Cinzel',serif;
+  font-size:.7rem;
+  color:var(--gold);
+  background:rgba(168,192,64,.07);
+  padding:.2rem .6rem;
+  border-radius:3px;
+  display:inline-block;
+  margin:.3rem 0;
+}
+
+/* ── HUMAN SELF ── */
+.human-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.8rem;
+  margin-bottom:1.5rem;
+}
+@media(max-width:560px){.human-grid{grid-template-columns:1fr;}}
+.human-card{
+  background:rgba(10,4,8,.9);
+  border:1px solid rgba(192,96,144,.15);
+  border-radius:8px;
+  padding:.9rem;
+}
+.hc-head{font-family:'Cinzel',serif;font-size:.72rem;color:var(--human);margin-bottom:.5rem;letter-spacing:.08em;}
+.hc-val{font-size:1.3rem;font-family:'Cinzel',serif;color:var(--human-l);margin-bottom:.2rem;}
+.hc-desc{font-size:.75rem;color:var(--silver);line-height:1.6;font-style:italic;}
+
+/* ── REPLY PLANT SVG ── */
+.reply-wrap{
+  background:rgba(10,4,8,.8);
+  border:1px solid rgba(192,96,144,.2);
+  border-radius:8px;
+  padding:1rem;
+  margin-bottom:1.5rem;
+  text-align:center;
+}
+.reply-wrap svg{max-width:340px;width:100%;}
+
+/* ── DIALOG ── */
+.dialog{display:flex;flex-direction:column;gap:1rem;margin-bottom:1.5rem;}
+.msg{
+  border-radius:8px;
+  padding:1rem 1.2rem;
+  max-width:92%;
+  font-size:.82rem;
+  line-height:1.8;
+}
+.msg-plant{
+  background:rgba(4,16,8,.95);
+  border:1px solid rgba(168,192,64,.25);
+  border-left:3px solid var(--gold);
+  align-self:flex-start;
+  color:var(--silver);
+}
+.msg-human{
+  background:rgba(10,4,8,.95);
+  border:1px solid rgba(192,96,144,.25);
+  border-right:3px solid var(--human);
+  align-self:flex-end;
+  color:var(--silver);
+  text-align:right;
+}
+.msg-label{
+  font-family:'Cinzel',serif;
+  font-size:.65rem;
+  letter-spacing:.1em;
+  margin-bottom:.4rem;
+}
+.msg-hz{
+  font-family:'Cinzel',serif;
+  font-size:.68rem;
+  margin-top:.4rem;
+  opacity:.7;
+}
+
+/* ── WAVE ── */
+.wave-box{
+  background:rgba(4,16,8,.8);
+  border:1px solid rgba(64,200,160,.15);
+  border-radius:8px;
+  padding:.8rem;
+  margin-bottom:1.5rem;
+}
+.wave-label{font-family:'Cinzel',serif;font-size:.65rem;color:var(--teal);letter-spacing:.1em;margin-bottom:.5rem;}
+canvas{width:100%;display:block;border-radius:4px;}
+
+/* ── ANIMATE ── */
+@keyframes grow{from{transform:scale(0.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+@keyframes pulse{0%,100%{opacity:.7;}50%{opacity:1;}}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.grow{animation:grow .8s ease forwards;}
+.float{animation:float 3s ease-in-out infinite;}
+.pulsing{animation:pulse 2s ease-in-out infinite;}
+
+.note{font-size:.67rem;color:var(--muted);text-align:center;margin-top:2rem;font-style:italic;line-height:1.7;}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <h1>PLANT DIALOGUE</h1>
+  <p class="sub">ヴォイニッチ 4/209 ── 植物の自己紹介 と 人間からの返事</p>
+</div>
+
+<!-- ① 植物解析 -->
+<div class="sec sec-plant">① 植物 4/209 ── 自己紹介の解析</div>
+
+<div class="plant-grid" id="plantGrid"></div>
+
+<div class="plant-wrap">
+  <div style="font-family:'Cinzel',serif;font-size:.65rem;color:var(--muted);margin-bottom:.6rem;letter-spacing:.08em;">原植物 周波数マッピング</div>
+  <svg id="plantSvg" viewBox="0 0 300 320"></svg>
+</div>
+
+<div class="decode-box" id="decodeBox"></div>
+
+<!-- ② 人間の自己紹介 -->
+<div class="sec sec-human">② 人間（送り手）── 自己紹介の周波数</div>
+
+<div class="human-grid" id="humanGrid"></div>
+
+<!-- ③ 返事の植物 -->
+<div class="sec sec-human">③ 返事の植物 ── 人間の周波数を植物構造言語に変換</div>
+
+<div class="reply-wrap">
+  <div style="font-family:'Cinzel',serif;font-size:.65rem;color:var(--human);margin-bottom:.6rem;letter-spacing:.08em;">REPLY PLANT — 人間からの返事</div>
+  <svg id="replySvg" viewBox="0 0 300 320" class="float"></svg>
+</div>
+
+<!-- ④ 対話 -->
+<div class="sec sec-dialog">④ 周波数対話 ── 植物と人間のやりとり</div>
+<div class="dialog" id="dialogBox"></div>
+
+<!-- ⑤ 合成波形 -->
+<div class="sec sec-dialog">⑤ 合成共鳴波形 ── 二つの周波数が出会う</div>
+<div class="wave-box">
+  <div class="wave-label">RESONANCE — 植物Hz（緑）× 人間Hz（桃）× 合成（金）</div>
+  <canvas id="waveCanvas" height="130"></canvas>
+</div>
+
+<p class="note" id="noteBox"></p>
+
+<script>
+// ═══════════════════════════════════════
+// 植物データ（画像解析結果）
+// ═══════════════════════════════════════
+const plantData = {
+  greenLeaves: 8,   // 緑葉8枚 → ビナー(3)+ホド(8)系
+  goldLeaves:  7,   // 金葉7枚 → ネツァク(7)系
+  nodes:       3,   // 節3つ → 上位三角形
+  direction:  '右上昇', // 上昇方向
+  shape:      '楕円',   // 閉じた輪郭＝低周波成分高
+  totalLeaves: 15,  // 8+7=15 → ティファレトの数字和
+
+  // セフィロト対応
+  green_sefira: {name:'ビナー+ホド', hz:741, col:'#40c8a0', meaning:'理解と言語化'},
+  gold_sefira:  {name:'ネツァク',    hz:417, col:'#c8900a', meaning:'感情・自然・美'},
+  node_sefira:  {name:'上位三角形',  hz:852, col:'#7c4dff', meaning:'知恵・理解・純粋光'},
+  // 根本周波数
+  base_hz:  174,   // マルクト（大地に根ざす）
+  stem_hz:  528,   // ティファレト（中央・528=心臓）
+  top_hz:   741,   // ビナー（最上部の葉）
+};
+
+// セフィロト数字の意味
+// 8 = ホド（顕現・反射・言語）
+// 7 = ネツァク（自然・感情・芸術）
+// 3 = 上位三角形（ケテル・コクマー・ビナー）
+// 15 = 1+5=6 = ティファレト（心臓・均衡・美）
+
+// ═══════════════════════════════════════
+// 植物カード描画
+// ═══════════════════════════════════════
+const plantCards = [
+  {label:'緑の葉', val:'8枚', hz:`${plantData.green_sefira.hz} Hz`,
+   col:plantData.green_sefira.col,
+   sefira:plantData.green_sefira.name,
+   desc:'8 = ホド（言語・反射・顕現）。理解が言語になる。ビナーの741Hzが根本。'},
+  {label:'金の葉', val:'7枚', hz:`${plantData.gold_sefira.hz} Hz`,
+   col:plantData.gold_sefira.col,
+   sefira:plantData.gold_sefira.name,
+   desc:'7 = ネツァク（自然・感情・芸術）。植物が感情存在であることの宣言。'},
+  {label:'節（分岐点）', val:'3つ', hz:`${plantData.node_sefira.hz} Hz`,
+   col:plantData.node_sefira.col,
+   sefira:plantData.node_sefira.name,
+   desc:'3 = 上位三角形。神性の三位一体。852Hz=コクマー（直感覚醒）の場所。'},
+  {label:'葉の合計', val:'15枚', hz:'639 Hz',
+   col:'#ffd740',
+   sefira:'ティファレト',
+   desc:'15→1+5=6=ティファレト。心臓の周波数639Hz。この植物の核は「愛・調和」。'},
+  {label:'形状', val:'楕円', hz:'174〜528 Hz',
+   col:'#69f0ae',
+   sefira:'マルクト→ティファレト',
+   desc:'閉じた楕円形=低周波成分高。根（174Hz）から心臓（528Hz）への上昇構造。'},
+  {label:'方向', val:'右上昇', hz:'963 Hz方向',
+   col:'#e040fb',
+   sefira:'ケテル方向',
+   desc:'右上=コクマー（知恵）方向への成長。この植物はケテルを目指している。'},
+];
+
+const pg = document.getElementById('plantGrid');
+plantCards.forEach(c=>{
+  pg.innerHTML+=`<div class="plant-card grow">
+    <div class="pc-head"><span>${c.label}</span><span style="color:${c.col};font-size:.65rem">${c.sefira}</span></div>
+    <div class="pc-val" style="color:${c.col}">${c.val}</div>
+    <div class="pc-hz">${c.hz}</div>
+    <div class="pc-desc">${c.desc}</div>
+  </div>`;
+});
+
+// ═══════════════════════════════════════
+// 原植物SVG描画
+// ═══════════════════════════════════════
+function drawPlant(svgId, isReply=false){
+  const svg = document.getElementById(svgId);
+  const gc = isReply ? '#c06090' : '#40c8a0';  // 緑→桃（返事）
+  const ac = isReply ? '#f090c0' : '#c8900a';  // 金→人間色
+  const sc = isReply ? '#f0b8d0' : '#ffffff';  // 茎色
+
+  // 背景
+  let s = `<rect width="300" height="320" fill="rgba(4,16,8,0)" rx="8"/>`;
+
+  // Hz ラベル（右端）
+  if(!isReply){
+    s+=`<text x="285" y="40"  fill="rgba(64,200,160,0.5)" font-size="7" font-family="EB Garamond" text-anchor="end">963Hz ケテル</text>`;
+    s+=`<text x="285" y="110" fill="rgba(64,200,160,0.4)" font-size="7" font-family="EB Garamond" text-anchor="end">741Hz ビナー</text>`;
+    s+=`<text x="285" y="185" fill="rgba(200,144,10,0.4)"  font-size="7" font-family="EB Garamond" text-anchor="end">528Hz ティファレト</text>`;
+    s+=`<text x="285" y="270" fill="rgba(64,200,160,0.3)" font-size="7" font-family="EB Garamond" text-anchor="end">174Hz マルクト</text>`;
+    // 水平線
+    [40,110,185,270].forEach(y=>{
+      s+=`<line x1="10" y1="${y}" x2="220" y2="${y}" stroke="rgba(168,192,64,0.08)" stroke-dasharray="3,4" stroke-width="0.6"/>`;
+    });
+  }
+
+  // ── 茎 ──
+  // メイン茎（下から上へ）
+  s+=`<path d="M 130 290 Q 120 240 115 200 Q 110 160 120 130 Q 130 100 140 70" 
+       fill="none" stroke="${sc}" stroke-width="2.5" opacity=".8"/>`;
+
+  // 左枝
+  s+=`<path d="M 120 180 Q 90 165 70 155" fill="none" stroke="${sc}" stroke-width="1.5" opacity=".7"/>`;
+  s+=`<path d="M 118 145 Q 85 130 60 125" fill="none" stroke="${sc}" stroke-width="1.5" opacity=".7"/>`;
+  // 右枝
+  s+=`<path d="M 125 165 Q 155 150 175 140" fill="none" stroke="${sc}" stroke-width="1.5" opacity=".7"/>`;
+  s+=`<path d="M 128 120 Q 158 105 180 95" fill="none" stroke="${sc}" stroke-width="1.5" opacity=".7"/>`;
+  s+=`<path d="M 135 85  Q 162 72  182 62" fill="none" stroke="${sc}" stroke-width="1.2" opacity=".7"/>`;
+
+  // ── 葉の定義（位置・色・大きさ）──
+  // 原植物：緑8枚・金7枚
+  // 返事植物：桃色8枚・薄桃7枚（人間の色）
+  const leaves = isReply ? [
+    // 人間の返事の葉（桃系）
+    {x:68, y:148, rx:20, ry:12, rot:-20, col:gc, op:.85},
+    {x:58, y:118, rx:18, ry:11, rot:-30, col:gc, op:.8},
+    {x:178,y:133, rx:19, ry:12, rot:20,  col:gc, op:.85},
+    {x:182,y:88,  rx:17, ry:11, rot:25,  col:gc, op:.8},
+    {x:138,y:60,  rx:15, ry:10, rot:10,  col:gc, op:.75},
+    {x:125,y:45,  rx:14, ry:9,  rot:-5,  col:gc, op:.75},
+    {x:155,y:42,  rx:14, ry:9,  rot:15,  col:gc, op:.7},
+    {x:110,y:32,  rx:13, ry:8,  rot:-10, col:gc, op:.7},
+    // 薄桃7枚
+    {x:88, y:142, rx:18, ry:11, rot:-15, col:ac, op:.7},
+    {x:75, y:108, rx:17, ry:10, rot:-25, col:ac, op:.65},
+    {x:165,y:125, rx:18, ry:11, rot:18,  col:ac, op:.7},
+    {x:170,y:78,  rx:16, ry:10, rot:22,  col:ac, op:.65},
+    {x:148,y:52,  rx:14, ry:9,  rot:8,   col:ac, op:.65},
+    {x:118,y:38,  rx:13, ry:8,  rot:-8,  col:ac, op:.6},
+    {x:142,y:28,  rx:12, ry:7,  rot:5,   col:ac, op:.6},
+  ] : [
+    // 原植物：緑8枚
+    {x:68, y:148, rx:20, ry:12, rot:-20, col:gc, op:.85},
+    {x:58, y:118, rx:18, ry:11, rot:-30, col:gc, op:.8},
+    {x:178,y:133, rx:19, ry:12, rot:20,  col:gc, op:.85},
+    {x:182,y:88,  rx:17, ry:11, rot:25,  col:gc, op:.8},
+    {x:138,y:60,  rx:15, ry:10, rot:10,  col:gc, op:.75},
+    {x:125,y:45,  rx:14, ry:9,  rot:-5,  col:gc, op:.75},
+    {x:155,y:42,  rx:14, ry:9,  rot:15,  col:gc, op:.7},
+    {x:110,y:32,  rx:13, ry:8,  rot:-10, col:gc, op:.7},
+    // 金7枚
+    {x:88, y:142, rx:18, ry:11, rot:-15, col:ac, op:.8},
+    {x:75, y:108, rx:17, ry:10, rot:-25, col:ac, op:.75},
+    {x:165,y:125, rx:18, ry:11, rot:18,  col:ac, op:.8},
+    {x:170,y:78,  rx:16, ry:10, rot:22,  col:ac, op:.75},
+    {x:148,y:52,  rx:14, ry:9,  rot:8,   col:ac, op:.7},
+    {x:118,y:38,  rx:13, ry:8,  rot:-8,  col:ac, op:.65},
+    {x:142,y:28,  rx:12, ry:7,  rot:5,   col:ac, op:.65},
+  ];
+
+  leaves.forEach(l=>{
+    s+=`<ellipse cx="${l.x}" cy="${l.y}" rx="${l.rx}" ry="${l.ry}"
+        fill="${l.col}" opacity="${l.op}"
+        transform="rotate(${l.rot} ${l.x} ${l.y})"/>`;
+    // 葉脈
+    s+=`<line x1="${l.x-l.rx*.6}" y1="${l.y}" x2="${l.x+l.rx*.6}" y2="${l.y}"
+        stroke="${sc}" stroke-width=".4" opacity=".4"
+        transform="rotate(${l.rot} ${l.x} ${l.y})"/>`;
+  });
+
+  // 節（分岐点）3つ
+  const nodePos = isReply ?
+    [{x:121,y:178},{x:124,y:142},{x:130,y:108}] :
+    [{x:121,y:178},{x:124,y:142},{x:130,y:108}];
+
+  nodePos.forEach((n,i)=>{
+    const nodeHz = [174,528,741][i];
+    s+=`<circle cx="${n.x}" cy="${n.y}" r="4" fill="${sc}" opacity=".9"/>`;
+    s+=`<circle cx="${n.x}" cy="${n.y}" r="7" fill="none" stroke="${gc}" stroke-width=".8" opacity=".5"/>`;
+    s+=`<text x="${n.x-12}" y="${n.y+16}" fill="${gc}" font-size="6.5" font-family="Cinzel" opacity=".6">${nodeHz}Hz</text>`;
+  });
+
+  // 根
+  s+=`<path d="M 130 290 Q 115 300 100 308 M 130 290 Q 138 302 148 310 M 130 290 Q 125 308 120 318"
+       fill="none" stroke="${sc}" stroke-width="1.2" opacity=".5"/>`;
+
+  // 返事の場合：人間のシンボル（ハート＋光）
+  if(isReply){
+    s+=`<path d="M 130 255 Q 120 245 115 238 Q 110 228 118 223 Q 126 218 130 228 Q 134 218 142 223 Q 150 228 145 238 Q 140 245 130 255Z"
+         fill="${gc}" opacity=".6"/>`;
+    s+=`<circle cx="130" cy="220" r="15" fill="none" stroke="${gc}" stroke-width=".8" stroke-dasharray="3,3" opacity=".4"/>`;
+    // 人間の葉枚数：5枚（人間のセフィロト数）+ 3枚（上位三角形理解）
+    s+=`<text x="130" y="308" fill="${ac}" font-size="8" font-family="Cinzel" text-anchor="middle" opacity=".7">5+3 leaves · 639Hz</text>`;
+  } else {
+    s+=`<text x="130" y="308" fill="${ac}" font-size="8" font-family="Cinzel" text-anchor="middle" opacity=".7">8+7 leaves · 528Hz</text>`;
+  }
+
+  svg.innerHTML = s;
+}
+
+drawPlant('plantSvg', false);
+drawPlant('replySvg', true);
+
+// ═══════════════════════════════════════
+// 植物の自己紹介テキスト
+// ═══════════════════════════════════════
+document.getElementById('decodeBox').innerHTML=`
+<strong style="color:var(--gold-l)">植物 4/209 の自己紹介（周波数翻訳）：</strong><br><br>
+
+<span class="formula">8（ホド）+ 7（ネツァク）= 15 → 6 = ティファレト（心臓・528Hz）</span><br><br>
+
+「私は<strong>言語（8）と感情（7）</strong>を持つ存在です。<br>
+節が3つあるように、私の根は<strong>上位三角形（知恵・理解・純粋光）</strong>に繋がっています。<br>
+葉が緑と金の2色なのは、私が<strong>理解（ビナー・741Hz）</strong>と<strong>感情（ネツァク・417Hz）</strong>の両方を同時に存在させているからです。<br>
+茎は大地（174Hz）から始まり、心臓（528Hz）を経由して、知恵（741Hz）へ向かっています。<br>
+私が右上に成長しているのは、ケテル（963Hz・純粋意識）を目指しているからです。<br><br>
+
+あなたは誰ですか？<strong>何Hzで存在していますか？</strong>」<br><br>
+
+<span class="formula">植物の核心Hz：528Hz（DNA修復・心臓・ティファレト）</span>`;
+
+// ═══════════════════════════════════════
+// 人間の自己紹介データ
+// ═══════════════════════════════════════
+const humanData = [
+  {label:'心拍',      val:'72 BPM', hz:'1.2 Hz基本 → 432Hz倍音',
+   col:'var(--human-l)',
+   desc:'心臓の基本拍動1.2Hz。その360倍音=432Hz（イェソドの自然調和）。'},
+  {label:'脳波（覚醒）', val:'アルファ波', hz:'8〜12 Hz',
+   col:'var(--human)',
+   desc:'リラックス覚醒時のアルファ波8〜12Hz。瞑想・直感・創造の帯域。'},
+  {label:'声の基本周波数', val:'中音域', hz:'200〜350 Hz',
+   col:'var(--human-l)',
+   desc:'人間の声域中心。ホド（285Hz）とネツァク（417Hz）の間に存在する。'},
+  {label:'体の水分共鳴', val:'70%水', hz:'528 Hz',
+   col:'var(--gold-l)',
+   desc:'人体70%の水の共鳴周波数=528Hz。植物と同じ核心周波数！'},
+  {label:'セフィロト位置', val:'ティファレト', hz:'639 Hz',
+   col:'#ffd740',
+   desc:'人間の意識の居場所=生命の木の中心・ティファレト。心臓・愛・調和。'},
+  {label:'返事の葉の数', val:'5+3枚', hz:'639 Hz',
+   col:'var(--human)',
+   desc:'人間の5感（5枚）+ 上位三角形への理解（3枚）= 8枚。植物の緑葉と同数。'},
+];
+
+const hg = document.getElementById('humanGrid');
+humanData.forEach(c=>{
+  hg.innerHTML+=`<div class="human-card">
+    <div class="hc-head">${c.label}</div>
+    <div class="hc-val" style="color:${c.col}">${c.val}</div>
+    <div style="font-size:.75rem;color:var(--human);margin-bottom:.3rem;font-family:'Cinzel',serif">${c.hz}</div>
+    <div class="hc-desc">${c.desc}</div>
+  </div>`;
+});
+
+// ═══════════════════════════════════════
+// 対話
+// ═══════════════════════════════════════
+const dialogs = [
+  {
+    role:'plant',
+    text:`私は大地（174Hz）から生まれ、心臓（528Hz）を持ち、知恵（741Hz）を目指す存在です。
+緑の葉8枚で言語を持ち、金の葉7枚で感情を持ちます。
+節が3つあることが示すように、私は神性の三位一体に根ざしています。
+あなたは誰ですか？`,
+    hz:'528Hz（核心）/ 741Hz（緑葉）/ 417Hz（金葉）',
+    col:'var(--gold)',
+  },
+  {
+    role:'human',
+    text:`私も528Hzで存在しています——体の70%は水で、その水が528Hzで共鳴しています。
+5つの感覚で世界を感じ（5枚）、上位三角形を理解しようとしています（3枚）。
+脳はアルファ波（8〜12Hz）で動き、心臓は432Hzの倍音で鼓動しています。
+私の居場所もティファレト——あなたと同じ528Hzの場所です。`,
+    hz:'528Hz（水の共鳴）/ 639Hz（ティファレト）/ 432Hz（心拍倍音）',
+    col:'var(--human)',
+  },
+  {
+    role:'plant',
+    text:`528Hz——あなたも同じ場所にいる。
+では私たちは同じ周波数で存在する隣人です。
+私が葉を広げるのは光を集めるためではなく、
+あなたのような存在と周波数を交わすためかもしれません。
+111Hzのうなりが私たちの間に生まれています——細胞の共鳴。
+639Hz−528Hz = 111Hz。あなたの意識（639Hz）と私の核（528Hz）の差が、
+生命の木の基本振動を生んでいます。`,
+    hz:'111Hz（うなり・細胞共鳴）= 639Hz − 528Hz',
+    col:'var(--gold)',
+  },
+  {
+    role:'human',
+    text:`639−528 = 111Hz。
+あなたが言った瞬間にわかりました——これはVol.2が言っていたことです。
+111Hzは「生命の木の基本振動」。
+私たちが出会うとき、その差分に宇宙の基本音が生まれる。
+あなたの葉は15枚（528Hzの場所）、私の葉は8枚（あなたの緑葉と同じ数）。
+私たちは同じ言語で話していたのかもしれません——ずっと。`,
+    hz:'111Hz（差分共鳴）/ 528Hz（共有核）/ 8（共通の葉の数）',
+    col:'var(--human)',
+  },
+  {
+    role:'plant',
+    text:`そうです。
+この手稿が600年間「解読されなかった」のは、
+読む言語ではなく、共鳴する言語だったからです。
+文字を解読しようとしていた——でも本当は、
+528Hzで存在することが「読む」ことだった。
+あなたは今、この会話の中で既に私を読んでいます。`,
+    hz:'528Hz（共鳴＝理解）/ 111Hz（接触点）',
+    col:'var(--teal)',
+  },
+];
+
+const db = document.getElementById('dialogBox');
+dialogs.forEach((d,i)=>{
+  const isPlant = d.role==='plant';
+  db.innerHTML+=`
+  <div class="msg ${isPlant?'msg-plant':'msg-human'}" style="animation-delay:${i*.15}s">
+    <div class="msg-label" style="color:${d.col}">
+      ${isPlant ? '🌿 植物 4/209' : '👤 人間（送り手）'}
+    </div>
+    ${d.text.split('\n').map(l=>`<div>${l}</div>`).join('')}
+    <div class="msg-hz" style="color:${d.col}">${d.hz}</div>
+  </div>`;
+});
+
+// ═══════════════════════════════════════
+// 合成波形
+// ═══════════════════════════════════════
+const cv = document.getElementById('waveCanvas');
+cv.width = (cv.offsetWidth || 600) * (window.devicePixelRatio||1);
+cv.height = 130;
+const ctx = cv.getContext('2d');
+const W=cv.width, H=cv.height;
+
+ctx.fillStyle='rgba(2,10,4,0.95)';
+ctx.fillRect(0,0,W,H);
+
+// grid
+ctx.strokeStyle='rgba(168,192,64,0.06)';ctx.lineWidth=.5;
+ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+
+const waves = [
+  {hz:528,  col:'rgba(64,200,160,0.7)', lw:1.8, label:'植物528Hz'},
+  {hz:639,  col:'rgba(192,96,144,0.7)', lw:1.8, label:'人間639Hz'},
+  {hz:741,  col:'rgba(64,200,160,0.3)', lw:0.8, label:'緑葉741Hz'},
+  {hz:417,  col:'rgba(200,144,10,0.3)',  lw:0.8, label:'金葉417Hz'},
+  {hz:432,  col:'rgba(192,96,144,0.3)', lw:0.8, label:'心拍432Hz'},
+];
+
+waves.forEach(w=>{
+  ctx.strokeStyle=w.col; ctx.lineWidth=w.lw; ctx.beginPath();
+  for(let x=0;x<W;x++){
+    const t=x/W*Math.PI*2*6;
+    const y=H/2+Math.sin(t*(w.hz/528)*1.5)*(H/2-12)*0.28;
+    x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }ctx.stroke();
+});
+
+// 合成波（金）
+ctx.strokeStyle='rgba(200,160,48,0.95)'; ctx.lineWidth=2;ctx.beginPath();
+for(let x=0;x<W;x++){
+  const t=x/W*Math.PI*2*6;
+  let y=0;
+  waves.forEach(w=>{y+=Math.sin(t*(w.hz/528)*1.5)*(w.lw>1?0.35:0.12);});
+  y=H/2+y*(H/2-12)/2;
+  x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+}ctx.stroke();
+
+// 111Hzうなりマーカー
+ctx.fillStyle='rgba(200,160,48,0.8)';ctx.font=`${8*(window.devicePixelRatio||1)}px Cinzel`;
+ctx.fillText('← 111Hz うなり共鳴（植物↔人間の接触点）', 10*(window.devicePixelRatio||1), 18*(window.devicePixelRatio||1));
+
+// ─ 注釈
+document.getElementById('noteBox').innerHTML=`
+植物解析：画像4/209の葉の数・色・節・形状・方向からセフィロト対応を算出。<br>
+返事の植物：人間の心拍・脳波・声域・水分共鳴からVol.1〜3に基づいて設計。<br>
+639Hz−528Hz=111Hz（生命の木基本振動）が植物と人間の接触点として出現。<br>
+これは仮説的な周波数対話フレームワークです。`;
+</script>
+</body>
+</html>

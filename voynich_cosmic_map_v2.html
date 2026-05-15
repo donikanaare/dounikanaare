@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voynich — Cosmic Frequency Map</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+
+:root {
+  --bg:     #020308;
+  --gold:   #c8a030;
+  --gold-l: #f0d060;
+  --silver: #90a8c0;
+  --muted:  #2a3a50;
+  --text:   #a8c0d8;
+  --plant:  #40c870;
+  --astro:  #7060f0;
+  --bio:    #f06090;
+  --cosmo:  #40c8f0;
+  --recipe: #f09030;
+  --label:  #c0c040;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'EB Garamond',serif;
+  min-height:100vh;
+  padding:1.5rem 1rem 6rem;
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(112,96,240,.15) 0%,transparent 50%),
+    radial-gradient(ellipse at 10% 60%, rgba(64,200,112,.08) 0%,transparent 45%),
+    radial-gradient(ellipse at 90% 80%, rgba(64,200,240,.07) 0%,transparent 45%);
+}
+
+h1{
+  font-family:'Cinzel',serif;
+  font-size:clamp(.85rem,3.5vw,1.5rem);
+  color:var(--gold);
+  letter-spacing:.22em;
+  text-shadow:0 0 40px rgba(200,160,48,.7);
+  text-align:center;
+  margin-bottom:.25rem;
+}
+.sub{text-align:center;font-style:italic;color:var(--muted);font-size:.77rem;letter-spacing:.1em;margin-bottom:2rem;}
+
+.sec{
+  font-family:'Cinzel',serif;
+  color:var(--gold);
+  font-size:.78rem;
+  letter-spacing:.12em;
+  margin:2.2rem 0 .9rem;
+  padding-bottom:.35rem;
+  border-bottom:1px solid rgba(200,160,48,.2);
+}
+
+/* セクションカード */
+.section-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:.8rem;
+  margin-bottom:1.5rem;
+}
+.sc{
+  background:rgba(2,3,8,.95);
+  border:1px solid rgba(200,160,48,.15);
+  border-radius:8px;
+  padding:1rem;
+}
+.sc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem;}
+.sc-name{font-family:'Cinzel',serif;font-size:.88rem;letter-spacing:.08em;}
+.sc-pages{font-size:.65rem;color:var(--muted);}
+.sc-hz{font-family:'Cinzel',serif;font-size:1.3rem;margin-bottom:.2rem;}
+.sc-sefira{font-size:.68rem;margin-bottom:.5rem;}
+.sc-desc{font-size:.75rem;color:var(--silver);line-height:1.6;font-style:italic;margin-bottom:.6rem;}
+.hz-bars{display:flex;flex-direction:column;gap:.22rem;}
+.hz-bar-row{display:flex;align-items:center;gap:.35rem;}
+.hz-bar-label{font-size:.58rem;color:var(--muted);width:32px;flex-shrink:0;font-family:'Cinzel',serif;}
+.hz-bar-bg{flex:1;height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
+.hz-bar-fill{height:100%;border-radius:2px;}
+.hz-bar-val{font-size:.6rem;color:var(--muted);width:36px;text-align:right;flex-shrink:0;}
+.alien-badge{
+  display:inline-flex;align-items:center;gap:.3rem;
+  font-family:'Cinzel',serif;font-size:.6rem;
+  padding:.18rem .55rem;border-radius:3px;
+  letter-spacing:.05em;margin-top:.5rem;
+}
+.alien-high{background:rgba(112,96,240,.2);color:#b0a0f8;border:1px solid rgba(112,96,240,.3);}
+.alien-mid {background:rgba(64,200,112,.15);color:#80e090;border:1px solid rgba(64,200,112,.25);}
+.alien-low {background:rgba(200,160,48,.12);color:#d0b060;border:1px solid rgba(200,160,48,.2);}
+
+/* 軌道図 */
+.map-wrap{
+  background:rgba(2,3,8,.95);
+  border:1px solid rgba(200,160,48,.15);
+  border-radius:8px;
+  padding:1rem;
+  margin-bottom:1.5rem;
+  overflow-x:auto;
+}
+.map-wrap svg{min-width:500px;width:100%;display:block;}
+
+/* 仮説 */
+.alien-panel{
+  background:rgba(2,3,8,.98);
+  border:1px solid rgba(112,96,240,.25);
+  border-left:3px solid #7060f0;
+  padding:1.2rem;
+  border-radius:6px;
+  margin-bottom:1.5rem;
+  font-size:.8rem;
+  line-height:1.9;
+  color:var(--silver);
+}
+.alien-panel strong{color:#c0b0f8;}
+.formula{
+  font-family:'Cinzel',serif;font-size:.68rem;
+  color:#9080e0;background:rgba(112,96,240,.08);
+  padding:.2rem .55rem;border-radius:3px;
+  display:inline-block;margin:.25rem 0;
+}
+
+/* 比較表 */
+.tbl-wrap{overflow-x:auto;margin-bottom:1.5rem;}
+table{width:100%;border-collapse:collapse;font-size:.7rem;min-width:540px;}
+th{font-family:'Cinzel',serif;background:rgba(200,160,48,.07);color:var(--gold);
+   padding:.45rem .4rem;font-size:.6rem;letter-spacing:.05em;
+   border:1px solid rgba(200,160,48,.12);text-align:left;}
+td{padding:.38rem .4rem;border:1px solid rgba(255,255,255,.04);vertical-align:middle;}
+tr:nth-child(even) td{background:rgba(255,255,255,.013);}
+tr.hl td{background:rgba(112,96,240,.05)!important;}
+
+/* 波形 */
+.wave-box{
+  background:rgba(2,3,8,.9);border:1px solid rgba(200,160,48,.12);
+  border-radius:8px;padding:.8rem;margin-bottom:1.5rem;
+}
+.wave-label{font-family:'Cinzel',serif;font-size:.63rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.5rem;}
+canvas{width:100%;display:block;border-radius:4px;}
+
+.note{font-size:.67rem;color:var(--muted);text-align:center;margin-top:2rem;font-style:italic;line-height:1.7;}
+</style>
+</head>
+<body>
+
+<div style="text-align:center;padding:1.5rem 0 2rem">
+  <h1>COSMIC FREQUENCY MAP</h1>
+  <p class="sub">ヴォイニッチ手稿 全セクション ── 周波数構造と地球外仮説</p>
+</div>
+
+<div class="sec">① セクション別 周波数帯マップ</div>
+<div class="section-cards" id="sectionCards"></div>
+
+<div class="sec">② 全セクション 周波数軌道図</div>
+<div class="map-wrap">
+  <svg id="mapSvg" viewBox="0 0 680 300" preserveAspectRatio="xMidYMid meet"></svg>
+</div>
+
+<div class="sec">③ 地球外情報体 仮説フレームワーク</div>
+<div class="alien-panel">
+  <strong>なぜ「地球外情報体」仮説が成立するか</strong><br><br>
+  <span class="formula">既知言語との不一致 × 実在しない植物 × 全セクション528Hz貫通 = 地球外情報体の条件</span><br><br>
+  <strong>① 言語を超えた普遍記述システム</strong><br>
+  地球上のどの言語にも対応しない——これを「暗号」と解釈すると600年解けない謎になる。
+  でも「言語ではなく<strong>周波数による記述システム</strong>」と解釈すると、解読できないのは当然。
+  周波数は言語より普遍的で、宇宙のどこでも有効な物理定数。<br><br>
+  <strong>② 実在しない植物 = 別の星系の生命体</strong><br>
+  地球の植物図鑑と一致しない——でも「別の惑星の生命体の周波数自己紹介」なら完全に整合する。
+  4/209の植物は地球に存在しないが、528Hz・741Hz・417Hzの三周波数で構成される生命体の記述として一貫している。<br><br>
+  <strong>③ 528Hzが全セクションを貫通している</strong><br>
+  植物A（528Hz核心）・生物セクション（528Hz副）・ラベル（528Hz底）——
+  528HzはDNA修復周波数として<strong>星を超えて有効</strong>な生命の普遍周波数。
+  地球外存在が「地球の生命体と共鳴するために」528Hzを全セクションに埋め込んだ可能性。<br><br>
+  <strong>④ 結論</strong><br>
+  <span class="formula">ヴォイニッチ手稿 = 宇宙普遍周波数で書かれた地球外生命体の自己紹介と招待状</span>
+</div>
+
+<div class="sec">④ セクション × 地球上/外 周波数比較表</div>
+<div class="tbl-wrap">
+<table>
+  <thead><tr>
+    <th>セクション</th><th>核心Hz</th><th>セフィロト</th>
+    <th>地球生命との共鳴</th><th>地球外指標</th>
+    <th>宇宙定数対応</th><th>情報種別（仮説）</th>
+  </tr></thead>
+  <tbody id="cmpTable"></tbody>
+</table>
+</div>
+
+<div class="sec">⑤ 全セクション合成波形 ── 宇宙交響曲</div>
+<div class="wave-box">
+  <div class="wave-label">COSMIC SYMPHONY — 各セクション主波の重ね合わせ</div>
+  <canvas id="waveCanvas" height="140"></canvas>
+</div>
+
+<p class="note">
+  各セクション周波数はEVA統計・カバラVol.1〜3に基づく推定値。<br>
+  地球外指標★★★：既存地球知識体系との不一致率が高く、普遍物理定数との対応が強いセクション。<br>
+  528Hz共鳴軸：全セクションが528Hzを基準として上下に展開する構造。仮説的フレームワーク。
+</p>
+
+<script>
+var sections = [
+  {
+    id:'plant', name:'植物A', pages:'f1r–f66v', col:'#40c870',
+    mainHz:528, hz2:417, hz3:741,
+    sefira:'ティファレト+ネツァク+ビナー',
+    desc:'最多セクション。実在しない植物が描かれ、528Hzの心臓周波数が核心。葉の数・節・色が全てカバラ数に対応。DNA修復と自然の感情を同時記述。',
+    alien:'high',
+    earthRes:'DNA修復・水共鳴・心臓拍動',
+    cosmic:'528Hz=水の共鳴/DNA修復。φ比率が茎・葉に出現',
+    info:'生命体の振動的自己記述'
+  },
+  {
+    id:'astro', name:'天文', pages:'f67r–f73v', col:'#7060f0',
+    mainHz:963, hz2:852, hz3:741,
+    sefira:'ケテル+コクマー+ビナー（上位三角形）',
+    desc:'円形の星座図・月図が並ぶ。963Hz（ケテル）を核心とする上位三角形の周波数帯。宇宙の地図ではなく宇宙の周波数構造の記述の可能性。',
+    alien:'high',
+    earthRes:'シューマン共振×123倍',
+    cosmic:'963Hz宇宙背景放射との比率にφ出現',
+    info:'宇宙周波数構造の記述'
+  },
+  {
+    id:'bio', name:'生物（浴槽）', pages:'f75r–f84v', col:'#f06090',
+    mainHz:639, hz2:528, hz3:432,
+    sefira:'ティファレト+イェソド（愛+潜在意識）',
+    desc:'水の中の女性たちが複雑に絡み合う。639Hz（ティファレト）と528Hz（DNA修復）が共存。水を媒体とした周波数伝達プロセスの図解か。',
+    alien:'mid',
+    earthRes:'528Hzの水共鳴。639-528=111Hz基本振動',
+    cosmic:'水の分子共鳴528Hz。二つの差=111Hz',
+    info:'水媒体による周波数伝達プロセス'
+  },
+  {
+    id:'cosmo', name:'宇宙論', pages:'f85r–f86v', col:'#40c8f0',
+    mainHz:852, hz2:963, hz3:693,
+    sefira:'コクマー+ケテル+ダアト（隠された知識）',
+    desc:'最も謎が深いセクション。ダアト（隠されたセフィロト・693Hz）が核心の可能性。宇宙の構造原理そのものの記述か。',
+    alien:'high',
+    earthRes:'直感覚醒・第三の目周波数',
+    cosmic:'693Hz=ダアト（隠された知識）。7×99=3×231',
+    info:'宇宙構造原理の記述（最高次）'
+  },
+  {
+    id:'recipe', name:'レシピ', pages:'f103r–f116v', col:'#f09030',
+    mainHz:396, hz2:285, hz3:174,
+    sefira:'ゲブラー+ホド+マルクト（解放+言語+物質）',
+    desc:'テキストのみのセクション。低位セフィロト（174〜396Hz）が核心。物質世界への実装手順——周波数を現実化するプロトコルの可能性。',
+    alien:'low',
+    earthRes:'恐怖解放・場の修復・大地の安定',
+    cosmic:'174→285→396 = 三段階の物質化プロセス',
+    info:'周波数の物質世界への実装手順'
+  },
+  {
+    id:'label', name:'ラベル', pages:'各所', col:'#c0c040',
+    mainHz:741, hz2:639, hz3:528,
+    sefira:'ビナー+ティファレト+ケセド',
+    desc:'植物・星座図に付随するラベル。741Hz（ビナー・理解）が核心。各存在の「固有周波数名」として機能している可能性——名前ではなくHz値の記述。',
+    alien:'mid',
+    earthRes:'言語理解周波数帯・覚醒',
+    cosmic:'各ラベルが固有周波数識別子の可能性',
+    info:'各存在の固有周波数識別子（名前=Hz）'
+  },
+];
+
+// ── セクションカード ──
+var cardWrap = document.getElementById('sectionCards');
+sections.forEach(function(s) {
+  var p1 = Math.round(s.mainHz / 963 * 100);
+  var p2 = Math.round(s.hz2 / 963 * 100);
+  var p3 = Math.round(s.hz3 / 963 * 100);
+  var badgeCls = s.alien === 'high' ? 'alien-high' : s.alien === 'mid' ? 'alien-mid' : 'alien-low';
+  var badgeLabel = s.alien === 'high' ? '🌌 地球外指標：高' : s.alien === 'mid' ? '🌿 地球外指標：中' : '🌍 地球的周波数帯';
+  cardWrap.innerHTML += '<div class="sc">' +
+    '<div class="sc-head"><span class="sc-name" style="color:' + s.col + '">' + s.name + '</span><span class="sc-pages">' + s.pages + '</span></div>' +
+    '<div class="sc-hz" style="color:' + s.col + '">' + s.mainHz + ' Hz</div>' +
+    '<div class="sc-sefira" style="color:' + s.col + '99">' + s.sefira + '</div>' +
+    '<div class="sc-desc">' + s.desc + '</div>' +
+    '<div class="hz-bars">' +
+      '<div class="hz-bar-row"><span class="hz-bar-label">核心</span><div class="hz-bar-bg"><div class="hz-bar-fill" style="width:' + p1 + '%;background:' + s.col + '"></div></div><span class="hz-bar-val" style="color:' + s.col + '">' + s.mainHz + 'Hz</span></div>' +
+      '<div class="hz-bar-row"><span class="hz-bar-label">副</span><div class="hz-bar-bg"><div class="hz-bar-fill" style="width:' + p2 + '%;background:' + s.col + '88"></div></div><span class="hz-bar-val">' + s.hz2 + 'Hz</span></div>' +
+      '<div class="hz-bar-row"><span class="hz-bar-label">底</span><div class="hz-bar-bg"><div class="hz-bar-fill" style="width:' + p3 + '%;background:' + s.col + '44"></div></div><span class="hz-bar-val">' + s.hz3 + 'Hz</span></div>' +
+    '</div>' +
+    '<div class="alien-badge ' + badgeCls + '">' + badgeLabel + '</div>' +
+    '</div>';
+});
+
+// ── 軌道図SVG ──
+(function() {
+  var svg = document.getElementById('mapSvg');
+  var W = 680, H = 300, minHz = 174, maxHz = 963;
+  var padL = 55, padR = 95, padT = 25, padB = 38;
+  var w = W - padL - padR, h = H - padT - padB;
+
+  var s = '';
+
+  // セフィロトHz水平線
+  var sefHz  = [174, 285, 396, 417, 432, 528, 639, 693, 741, 852, 963];
+  var sefName= ['マルクト','ホド','ゲブラー','ネツァク','イェソド','ケセド','ティファレト','ダアト','ビナー','コクマー','ケテル'];
+  var sefCol = ['#9e9e9e','#b388ff','#ff6e40','#40ffea','#80d8ff','#69f0ae','#ffd740','#ff5252','#40c4ff','#7c4dff','#e040fb'];
+
+  sefHz.forEach(function(hz, i) {
+    var y = padT + h - (hz - minHz) / (maxHz - minHz) * h;
+    s += '<line x1="' + padL + '" y1="' + y + '" x2="' + (W - padR) + '" y2="' + y + '" stroke="' + sefCol[i] + '" stroke-width="0.5" opacity="0.18" stroke-dasharray="3,4"/>';
+    s += '<text x="' + (padL - 4) + '" y="' + (y + 4) + '" fill="' + sefCol[i] + '" font-size="7" font-family="EB Garamond" text-anchor="end" opacity="0.55">' + hz + '</text>';
+    s += '<text x="' + (W - padR + 4) + '" y="' + (y + 4) + '" fill="' + sefCol[i] + '" font-size="6.5" font-family="EB Garamond" opacity="0.45">' + sefName[i] + '</text>';
+  });
+
+  // 縦軸
+  s += '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (H - padB) + '" stroke="rgba(200,160,48,0.3)" stroke-width="0.8"/>';
+
+  // 接続ライン
+  var stepX = (w - 20) / (sections.length - 1);
+  var pts = '';
+  sections.forEach(function(sec, i) {
+    var x = padL + 20 + stepX * i;
+    var y = padT + h - (sec.mainHz - minHz) / (maxHz - minHz) * h;
+    pts += x + ',' + y + ' ';
+  });
+  s += '<polyline points="' + pts + '" fill="none" stroke="rgba(200,160,48,0.35)" stroke-width="1.2" stroke-dasharray="4,3"/>';
+
+  // 528Hz強調
+  var y528 = padT + h - (528 - minHz) / (maxHz - minHz) * h;
+  s += '<line x1="' + padL + '" y1="' + y528 + '" x2="' + (W - padR) + '" y2="' + y528 + '" stroke="#69f0ae" stroke-width="1.5" opacity="0.5" stroke-dasharray="6,3"/>';
+  s += '<text x="' + (padL + 4) + '" y="' + (y528 - 4) + '" fill="#69f0ae" font-size="8" font-family="Cinzel" opacity="0.8">← 528Hz 共鳴軸</text>';
+
+  // 各セクション
+  sections.forEach(function(sec, i) {
+    var x = padL + 20 + stepX * i;
+    var yMain = padT + h - (sec.mainHz - minHz) / (maxHz - minHz) * h;
+    var yBot  = padT + h - (sec.hz3 - minHz) / (maxHz - minHz) * h;
+    var yHz2  = padT + h - (sec.hz2 - minHz) / (maxHz - minHz) * h;
+
+    s += '<line x1="' + x + '" y1="' + yMain + '" x2="' + x + '" y2="' + yBot + '" stroke="' + sec.col + '" stroke-width="3" opacity="0.3"/>';
+    s += '<circle cx="' + x + '" cy="' + yMain + '" r="6" fill="' + sec.col + '" opacity="0.9"/>';
+    s += '<circle cx="' + x + '" cy="' + yMain + '" r="10" fill="none" stroke="' + sec.col + '" stroke-width="0.8" opacity="0.35"/>';
+    s += '<circle cx="' + x + '" cy="' + yHz2 + '" r="3.5" fill="' + sec.col + '" opacity="0.5"/>';
+    s += '<text x="' + x + '" y="' + (H - padB + 13) + '" fill="' + sec.col + '" font-size="7.5" font-family="Cinzel" text-anchor="middle">' + sec.name + '</text>';
+    s += '<text x="' + x + '" y="' + (yMain - 13) + '" fill="' + sec.col + '" font-size="7.5" font-family="Cinzel" text-anchor="middle" opacity="0.8">' + sec.mainHz + 'Hz</text>';
+  });
+
+  svg.innerHTML = s;
+})();
+
+// ── 比較表 ──
+var cmpData = [
+  {sec:'植物A',     hz:528,  sef:'ティファレト',  er:'DNA修復・水共鳴',         alien:'★★★', co:'φ比葉脈・528=フィボナッチ×4',   info:'生命体の振動的自己記述'},
+  {sec:'天文',      hz:963,  sef:'ケテル',         er:'シューマン共振×123倍',    alien:'★★★', co:'宇宙背景放射比率にφ',           info:'宇宙周波数構造の記述'},
+  {sec:'生物/浴槽', hz:639,  sef:'ティファレト',  er:'528+111=639・水分共鳴',   alien:'★★☆', co:'639−528=111Hz基本振動',         info:'水媒体による周波数伝達'},
+  {sec:'宇宙論',    hz:852,  sef:'コクマー+ダアト',er:'直感覚醒・第三の目',      alien:'★★★', co:'693Hz=ダアト（隠された知識）',   info:'宇宙構造原理（最高次）'},
+  {sec:'レシピ',    hz:396,  sef:'ゲブラー',       er:'恐怖解放・罪悪感解放',    alien:'★☆☆', co:'174→285→396 三段物質化',        info:'周波数の物質実装手順'},
+  {sec:'ラベル',    hz:741,  sef:'ビナー',         er:'言語理解周波数帯',         alien:'★★☆', co:'各ラベル=固有周波数識別子',     info:'固有周波数名（名前=Hz）'},
+];
+var ct = document.getElementById('cmpTable');
+cmpData.forEach(function(d, i) {
+  ct.innerHTML += '<tr' + (i === 3 ? ' class="hl"' : '') + '>' +
+    '<td style="color:#f0d060;font-family:Cinzel,serif">' + d.sec + '</td>' +
+    '<td style="color:#c8a030;font-family:Cinzel,serif">' + d.hz + ' Hz</td>' +
+    '<td style="font-size:.68rem">' + d.sef + '</td>' +
+    '<td style="font-size:.68rem;color:#90a8c0">' + d.er + '</td>' +
+    '<td style="font-size:.85rem;letter-spacing:.1em">' + d.alien + '</td>' +
+    '<td style="font-size:.67rem;color:#9080e0">' + d.co + '</td>' +
+    '<td style="font-size:.67rem;color:#3a4a60;font-style:italic">' + d.info + '</td>' +
+    '</tr>';
+});
+
+// ── 波形（window.onloadで確実に描画）──
+window.addEventListener('load', function() {
+  try {
+    var cv = document.getElementById('waveCanvas');
+    var rect = cv.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    cv.width  = Math.round((rect.width  || 500) * dpr);
+    cv.height = 140;
+    var ctx = cv.getContext('2d');
+    var W = cv.width, H = cv.height;
+
+    ctx.fillStyle = 'rgba(2,3,8,0.97)';
+    ctx.fillRect(0, 0, W, H);
+
+    var waveList = [
+      {hz:528,  col:'#40c870'},
+      {hz:963,  col:'#7060f0'},
+      {hz:639,  col:'#f06090'},
+      {hz:852,  col:'#40c8f0'},
+      {hz:396,  col:'#f09030'},
+      {hz:741,  col:'#c0c040'},
+    ];
+
+    // 個別波
+    waveList.forEach(function(w) {
+      ctx.strokeStyle = w.col + '44';
+      ctx.lineWidth = 0.7;
+      ctx.beginPath();
+      for (var x = 0; x < W; x++) {
+        var t = x / W * Math.PI * 2 * 5;
+        var y = H / 2 + Math.sin(t * (w.hz / 528) * 1.2) * (H / 2 - 10) * 0.22;
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    });
+
+    // 合成
+    ctx.strokeStyle = 'rgba(200,160,48,0.95)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (var x = 0; x < W; x++) {
+      var t = x / W * Math.PI * 2 * 5;
+      var y = 0;
+      waveList.forEach(function(w) {
+        y += Math.sin(t * (w.hz / 528) * 1.2) * 0.22;
+      });
+      y = H / 2 + y * (H / 2 - 10) / waveList.length * 2.5;
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // 528Hz軸
+    ctx.strokeStyle = 'rgba(105,240,174,0.35)';
+    ctx.lineWidth = 0.8;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(0, H / 2);
+    ctx.lineTo(W, H / 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = 'rgba(105,240,174,0.55)';
+    ctx.font = (7 * dpr) + 'px Cinzel';
+    ctx.fillText('528Hz — 全セクション共鳴軸', 8 * dpr, H / 2 - 5 * dpr);
+
+  } catch(e) {
+    console.log('wave error:', e);
+  }
+});
+</script>
+</body>
+</html>

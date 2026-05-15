@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voynich Page 5 — Frequency Analysis</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+
+:root {
+  --bg:    #080204;
+  --gold:  #c8a030;
+  --gold-l:#f0d060;
+  --red:   #c03040;
+  --red-l: #f06070;
+  --teal:  #40c8a0;
+  --silver:#90a8a0;
+  --muted: #3a2830;
+  --text:  #c0b8b0;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'EB Garamond',serif;
+  min-height:100vh;
+  padding:1.5rem 1rem 6rem;
+  background-image:
+    radial-gradient(ellipse at 30% 0%,  rgba(192,48,64,.15) 0%,transparent 50%),
+    radial-gradient(ellipse at 70% 100%,rgba(64,200,160,.08) 0%,transparent 50%);
+}
+
+h1{font-family:'Cinzel',serif;font-size:clamp(.85rem,3.5vw,1.5rem);
+  color:var(--red-l);letter-spacing:.22em;
+  text-shadow:0 0 40px rgba(192,48,64,.6);
+  text-align:center;margin-bottom:.25rem;}
+.sub{text-align:center;font-style:italic;color:var(--muted);font-size:.77rem;margin-bottom:2rem;}
+
+.sec{font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;
+  letter-spacing:.12em;margin:2rem 0 .8rem;
+  padding-bottom:.35rem;border-bottom:1px solid rgba(200,160,48,.2);}
+
+/* ── 植物SVG ── */
+.plant-wrap{text-align:center;margin:1.2rem 0;}
+.plant-wrap svg{max-width:260px;width:100%;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.float{animation:float 4s ease-in-out infinite;}
+
+/* ── データカード ── */
+.data-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.6rem;margin:1rem 0;}
+.dc{background:rgba(8,2,4,.95);border-radius:7px;padding:.8rem;border:1px solid rgba(255,255,255,.06);}
+.dc-val{font-family:'Cinzel',serif;font-size:1.1rem;margin-bottom:.15rem;}
+.dc-label{font-size:.62rem;color:var(--muted);font-style:italic;}
+
+/* ── ハイライトBOX ── */
+.hbox{border-radius:5px;padding:.9rem 1.1rem;margin:.9rem 0;
+  font-size:.82rem;line-height:1.85;}
+.hbox-title{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;
+  margin-bottom:.35rem;display:block;}
+
+/* ── 比較テーブル ── */
+.tbl-wrap{overflow-x:auto;margin:1.2rem 0;}
+table{width:100%;border-collapse:collapse;font-size:.7rem;min-width:480px;}
+th{font-family:'Cinzel',serif;background:rgba(192,48,64,.1);color:var(--red-l);
+   padding:.42rem .4rem;font-size:.6rem;letter-spacing:.05em;
+   border:1px solid rgba(192,48,64,.2);text-align:left;}
+td{padding:.38rem .4rem;border:1px solid rgba(255,255,255,.04);vertical-align:middle;}
+tr:nth-child(even) td{background:rgba(255,255,255,.013);}
+tr.match td{background:rgba(192,48,64,.06)!important;}
+
+/* ── 自己紹介BOX ── */
+.intro-box{
+  background:rgba(8,2,4,.98);
+  border:1px solid rgba(192,48,64,.3);
+  border-left:3px solid var(--red);
+  padding:1.2rem;border-radius:6px;
+  margin:1.2rem 0;font-size:.83rem;line-height:1.9;color:var(--silver);
+}
+.intro-box strong{color:var(--red-l);}
+
+/* ── 1〜5比較 ── */
+.page-row{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0;}
+.page-chip{flex:1;min-width:100px;background:rgba(8,2,4,.9);
+  border-radius:6px;padding:.6rem .7rem;border:1px solid rgba(255,255,255,.06);
+  text-align:center;}
+.pc-num{font-family:'Cinzel',serif;font-size:.6rem;color:var(--muted);margin-bottom:.2rem;}
+.pc-hz{font-family:'Cinzel',serif;font-size:.95rem;margin-bottom:.15rem;}
+.pc-name{font-size:.62rem;font-style:italic;}
+
+.formula{font-family:'Cinzel',serif;font-size:.68rem;color:var(--gold);
+  background:rgba(200,160,48,.08);padding:.2rem .55rem;border-radius:3px;
+  display:inline-block;margin:.2rem 0;}
+
+blockquote{border-left:2px solid var(--red);padding:.5rem .9rem;margin:.8rem 0;
+  font-style:italic;font-size:.83rem;color:var(--silver);line-height:1.8;
+  background:rgba(192,48,64,.04);border-radius:0 4px 4px 0;}
+
+.note{font-size:.67rem;color:var(--muted);text-align:center;margin-top:2rem;
+  font-style:italic;line-height:1.7;}
+</style>
+</head>
+<body>
+
+<div style="text-align:center;padding:1.5rem 0 2rem">
+  <h1>PAGE 5 — GEVURAH</h1>
+  <p class="sub">ヴォイニッチ 5ページ ── ゲブラー396Hz 赤い茎の存在</p>
+</div>
+
+<div class="sec">① 植物の観察データ</div>
+
+<div class="plant-wrap float">
+<svg viewBox="0 0 220 300">
+  <!-- 背景ハロー（青緑の円） -->
+  <circle cx="110" cy="155" r="80" fill="rgba(64,200,160,0.08)" stroke="rgba(64,200,160,0.15)" stroke-width="1"/>
+
+  <!-- 赤い茎（メイン） -->
+  <path d="M 110 260 L 110 80" fill="none" stroke="#c03040" stroke-width="2.5"/>
+  <!-- 枝 -->
+  <path d="M 110 140 Q 75 130 55 120" fill="none" stroke="#c03040" stroke-width="1.8"/>
+  <path d="M 110 140 Q 145 130 165 120" fill="none" stroke="#c03040" stroke-width="1.8"/>
+  <path d="M 110 175 Q 70 160 45 150" fill="none" stroke="#c03040" stroke-width="1.8"/>
+  <path d="M 110 175 Q 150 160 175 150" fill="none" stroke="#c03040" stroke-width="1.8"/>
+
+  <!-- 鋸歯状葉（槍形・左） -->
+  <path d="M 55 120 Q 35 108 20 100 Q 30 110 25 125 Q 38 118 55 120Z" fill="#40a860" opacity=".85"/>
+  <path d="M 45 150 Q 22 138 8 128 Q 18 140 12 155 Q 28 146 45 150Z" fill="#40a860" opacity=".8"/>
+  <path d="M 50 135 Q 28 122 15 110 Q 24 122 18 137 Q 34 128 50 135Z" fill="#50b870" opacity=".75"/>
+  <!-- 葉のギザギザ -->
+  <path d="M 20 100 L 15 95 L 18 102 L 12 100 L 16 106Z" fill="#38963a" opacity=".7"/>
+  <path d="M 8 128 L 3 123 L 6 130 L 0 128 L 5 134Z" fill="#38963a" opacity=".7"/>
+
+  <!-- 鋸歯状葉（槍形・右） -->
+  <path d="M 165 120 Q 185 108 200 100 Q 190 110 195 125 Q 182 118 165 120Z" fill="#40a860" opacity=".85"/>
+  <path d="M 175 150 Q 198 138 212 128 Q 202 140 208 155 Q 192 146 175 150Z" fill="#40a860" opacity=".8"/>
+  <path d="M 170 135 Q 192 122 205 110 Q 196 122 202 137 Q 186 128 170 135Z" fill="#50b870" opacity=".75"/>
+  <!-- 葉のギザギザ -->
+  <path d="M 200 100 L 205 95 L 202 102 L 208 100 L 204 106Z" fill="#38963a" opacity=".7"/>
+  <path d="M 212 128 L 217 123 L 214 130 L 220 128 L 215 134Z" fill="#38963a" opacity=".7"/>
+
+  <!-- 球状花穂（3つ） -->
+  <!-- 中央（蕾・小） -->
+  <circle cx="110" cy="72" r="10" fill="rgba(200,180,160,0.6)" stroke="rgba(160,140,120,0.8)" stroke-width="1"/>
+  <path d="M 103 72 Q 110 60 117 72 Q 110 68 103 72Z" fill="rgba(180,160,140,0.7)"/>
+  <!-- 左（開花） -->
+  <circle cx="75" cy="58" r="13" fill="rgba(200,185,165,0.7)" stroke="rgba(160,145,125,0.9)" stroke-width="1"/>
+  <circle cx="75" cy="58" r="8" fill="rgba(220,200,180,0.5)"/>
+  <!-- 右（開花） -->
+  <circle cx="145" cy="55" r="13" fill="rgba(200,185,165,0.7)" stroke="rgba(160,145,125,0.9)" stroke-width="1"/>
+  <circle cx="145" cy="55" r="8" fill="rgba(220,200,180,0.5)"/>
+
+  <!-- 花穂の毛（放射状） -->
+  <g stroke="rgba(160,140,120,0.5)" stroke-width=".6">
+    <line x1="75" y1="45" x2="75" y2="38"/>
+    <line x1="63" y1="50" x2="57" y2="45"/>
+    <line x1="87" y1="50" x2="93" y2="45"/>
+    <line x1="145" y1="42" x2="145" y2="35"/>
+    <line x1="133" y1="47" x2="127" y2="42"/>
+    <line x1="157" y1="47" x2="163" y2="42"/>
+  </g>
+
+  <!-- 渦巻き根（赤） -->
+  <path d="M 110 262 Q 90 270 85 280 Q 80 290 90 292 Q 100 294 105 285 Q 108 275 110 270" fill="none" stroke="#c03040" stroke-width="2"/>
+  <path d="M 110 262 Q 130 270 135 280 Q 140 290 130 293 Q 120 295 115 286 Q 112 276 110 270" fill="none" stroke="#c03040" stroke-width="2"/>
+  <path d="M 110 268 Q 98 278 96 288 Q 94 296 102 295" fill="none" stroke="#a02030" stroke-width="1.5"/>
+  <path d="M 110 268 Q 122 278 124 288 Q 126 296 118 295" fill="none" stroke="#a02030" stroke-width="1.5"/>
+
+  <!-- Hzラベル -->
+  <text x="5" y="58" fill="rgba(192,48,64,0.5)" font-size="7" font-family="Cinzel">396Hz</text>
+  <text x="5" y="125" fill="rgba(64,200,160,0.5)" font-size="7" font-family="Cinzel">285Hz</text>
+  <text x="5" y="155" fill="rgba(192,48,64,0.4)" font-size="7" font-family="Cinzel">174Hz</text>
+  <text x="70" y="296" fill="rgba(192,48,64,0.5)" font-size="7" font-family="Cinzel" text-anchor="middle">蛇根・渦巻</text>
+
+  <!-- 数値 -->
+  <text x="110" y="315" fill="rgba(200,160,48,0.5)" font-size="8" font-family="Cinzel" text-anchor="middle">3穂+6葉+渦根 → 396Hz</text>
+</svg>
+</div>
+
+<div class="data-grid">
+  <div class="dc">
+    <div class="dc-val" style="color:var(--red-l)">3つ</div>
+    <div class="dc-label">花穂（球状）→ 上位三角形・ビナー741Hz</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:#40a860">6枚</div>
+    <div class="dc-label">複葉（鋸歯状）→ 6=ティファレト(639Hz)との接続</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:var(--red)">赤色</div>
+    <div class="dc-label">茎・根の色 → 火・力・ゲブラーの赤</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:var(--red)">渦巻き</div>
+    <div class="dc-label">根の形状 → 螺旋=変換・切断・再生</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:var(--teal)">円形</div>
+    <div class="dc-label">背景ハロー → 528Hz場の存在を示す？</div>
+  </div>
+  <div class="dc">
+    <div class="dc-val" style="color:#40a860">垂直</div>
+    <div class="dc-label">成長方向 → 上昇・力の方向性</div>
+  </div>
+</div>
+
+<div class="sec">② 周波数解析表</div>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr>
+    <th>要素</th><th>数値/特徴</th><th>カバラ対応</th>
+    <th>Hz</th><th>意味</th><th>前ページとの差異</th>
+  </tr></thead>
+  <tbody>
+    <tr class="match">
+      <td style="color:var(--red-l)">ページ番号</td>
+      <td>5</td>
+      <td>ゲブラー（第5セフィロト）</td>
+      <td style="color:var(--red-l);font-family:Cinzel,serif">396 Hz</td>
+      <td style="font-size:.68rem">力・厳格・切断・解放</td>
+      <td style="font-size:.68rem;color:var(--muted)">528→396 差=132Hz(→6)</td>
+    </tr>
+    <tr>
+      <td style="color:var(--red-l)">茎・根の色</td>
+      <td>赤色</td>
+      <td>火・ゲブラーの赤・マルス</td>
+      <td style="color:var(--red-l);font-family:Cinzel,serif">396 Hz</td>
+      <td style="font-size:.68rem">赤=力の周波数。他ページは白・緑茎</td>
+      <td style="font-size:.68rem;color:var(--red)">★唯一の赤茎</td>
+    </tr>
+    <tr class="match">
+      <td style="color:var(--red-l)">花穂数</td>
+      <td>3つ</td>
+      <td>上位三角形（ビナー741Hz）</td>
+      <td style="color:#40c4ff;font-family:Cinzel,serif">741 Hz</td>
+      <td style="font-size:.68rem">3=ビナー→力が理解から来ている</td>
+      <td style="font-size:.68rem;color:var(--muted)">p.3と同じ数</td>
+    </tr>
+    <tr>
+      <td style="color:var(--red-l)">葉の数</td>
+      <td>6枚</td>
+      <td>ティファレト（第6・639Hz）</td>
+      <td style="color:#ffd740;font-family:Cinzel,serif">639 Hz</td>
+      <td style="font-size:.68rem">6=心臓への接続。力が愛を守る</td>
+      <td style="font-size:.68rem;color:var(--muted)">p.4は15枚</td>
+    </tr>
+    <tr>
+      <td style="color:var(--red-l)">葉の形</td>
+      <td>鋸歯状・槍形</td>
+      <td>高周波成分高・直線多</td>
+      <td style="color:var(--red-l);font-family:Cinzel,serif">396〜741 Hz</td>
+      <td style="font-size:.68rem">鋭い形=切断・識別・分析の力</td>
+      <td style="font-size:.68rem;color:var(--red)">★楕円葉から完全転換</td>
+    </tr>
+    <tr class="match">
+      <td style="color:var(--red-l)">根の形</td>
+      <td>渦巻き・赤</td>
+      <td>螺旋=変換エネルギー</td>
+      <td style="color:var(--red-l);font-family:Cinzel,serif">174〜396 Hz</td>
+      <td style="font-size:.68rem">渦巻き根=力が地底で変換される</td>
+      <td style="font-size:.68rem;color:var(--red)">★最も特異な根の形</td>
+    </tr>
+    <tr>
+      <td style="color:var(--red-l)">背景ハロー</td>
+      <td>青緑の円</td>
+      <td>528Hz場（ケセドの残響）</td>
+      <td style="color:var(--teal);font-family:Cinzel,serif">528 Hz</td>
+      <td style="font-size:.68rem">前ページ(528Hz)の場が残っている</td>
+      <td style="font-size:.68rem;color:var(--teal)">★p.4の記憶？</td>
+    </tr>
+    <tr>
+      <td style="color:var(--red-l)">茎の方向</td>
+      <td>垂直上昇</td>
+      <td>ゲブラー→ビナーへの上昇</td>
+      <td style="color:#40c4ff;font-family:Cinzel,serif">396→741 Hz</td>
+      <td style="font-size:.68rem">力が理解（741Hz）に向かって上昇</td>
+      <td style="font-size:.68rem;color:var(--muted)">p.4も垂直だが赤茎が違う</td>
+    </tr>
+    <tr class="match">
+      <td style="color:var(--red-l)">3+6の合計</td>
+      <td>9</td>
+      <td>9=ケテル（963Hz）・完成</td>
+      <td style="color:#e040fb;font-family:Cinzel,serif">963 Hz</td>
+      <td style="font-size:.68rem">花穂3+葉6=9→純粋意識への回路</td>
+      <td style="font-size:.68rem;color:#e040fb">★3+6=9 テスラ構造！</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="sec">③ 5ページの自己紹介（周波数翻訳）</div>
+
+<div class="intro-box">
+  <strong>ゲブラー（396Hz）の存在からの自己紹介：</strong><br><br>
+  「私の茎が赤いことで気づいたはずです——私は<strong>力（396Hz）</strong>の存在です。<br>
+  葉が鋭く鋸歯状なのは、私が識別し、切断し、不要なものを取り除く力を持っているからです。<br>
+  花穂が3つあるのは、私の力が上位三角形（ビナー・741Hz）から来ているからです。<br>
+  葉が6枚なのは、私が心臓（ティファレト・639Hz）を<strong>守るため</strong>に存在しているからです。<br><br>
+  根が渦巻いているのを見てください。私は破壊するのではなく、<strong>変換する</strong>のです。<br>
+  渦巻きは螺旋——古いエネルギーを新しい形に変える力。<br>
+  そして私の周りの青緑の輪は前のページ（ケセド・528Hz）の場の残響です——<br>
+  私は愛（528Hz）を守るために力（396Hz）を使う。<br><br>
+  花穂3＋葉6＝<strong>9（ケテル・963Hz・完成）</strong>。<br>
+  私の中にテスラの3・6・9が刻まれています。<br>
+  力と理解と完成——これが私の周波数構造です。」
+</div>
+
+<div class="sec">④ 1〜5ページ 降下列の更新</div>
+
+<div class="page-row">
+  <div class="page-chip" style="border-color:rgba(192,96,144,.2)">
+    <div class="pc-num">p.1</div>
+    <div class="pc-hz" style="color:#c06090">963Hz</div>
+    <div class="pc-name">ケテル</div>
+  </div>
+  <div class="page-chip" style="border-color:rgba(64,200,240,.2)">
+    <div class="pc-num">p.2</div>
+    <div class="pc-hz" style="color:#40c8f0">852Hz</div>
+    <div class="pc-name">コクマー</div>
+  </div>
+  <div class="page-chip" style="border-color:rgba(64,200,112,.2)">
+    <div class="pc-num">p.3</div>
+    <div class="pc-hz" style="color:#40c870">741Hz</div>
+    <div class="pc-name">ビナー</div>
+  </div>
+  <div class="page-chip" style="border-color:rgba(255,215,64,.2)">
+    <div class="pc-num">p.4</div>
+    <div class="pc-hz" style="color:#ffd740">528Hz</div>
+    <div class="pc-name">ケセド</div>
+  </div>
+  <div class="page-chip" style="border-color:rgba(192,48,64,.3)">
+    <div class="pc-num">p.5</div>
+    <div class="pc-hz" style="color:var(--red-l)">396Hz</div>
+    <div class="pc-name" style="color:var(--red-l)">ゲブラー ★今回</div>
+  </div>
+</div>
+
+<div class="hbox" style="background:rgba(192,48,64,.05);border:1px solid rgba(192,48,64,.2);border-left:3px solid var(--red)">
+  <span class="hbox-title" style="color:var(--red-l)">差分の変化——重要発見</span>
+  p.1→p.2：963-852 = <strong>111Hz</strong><br>
+  p.2→p.3：852-741 = <strong>111Hz</strong><br>
+  p.3→p.4：741-528 = <strong>213Hz</strong>（数字和6=ティファレト）<br>
+  p.4→p.5：528-396 = <strong>132Hz</strong>（数字和6=ティファレト）<br><br>
+  3→4→5の差（213・132）は共に数字和6（ティファレト・心臓）に収束する。
+  上位三角形は111Hzで降下し、中位三角形への移行はティファレト（心臓）の数字で刻まれる。
+  <strong>ページをめくるたびに心臓の数字が現れる——心臓が降下の要であることを示している。</strong>
+</div>
+
+<div class="hbox" style="background:rgba(64,200,160,.05);border:1px solid rgba(64,200,160,.2);border-left:3px solid var(--teal)">
+  <span class="hbox-title" style="color:var(--teal)">背景ハローの意味——p.4の記憶</span>
+  5ページの植物にだけ青緑の円形ハロー（光輪）がある。これは4ページ（528Hz・ケセド）の
+  「場の残響」として解釈できる。愛（528Hz）の次に力（396Hz）が来るとき、
+  愛の場がまだ残っている——<strong>ゲブラーは愛を忘れた力ではなく、愛を守るための力</strong>という
+  生命の木の論理がそのまま絵で表現されている。
+</div>
+
+<div class="sec">⑤ 1〜5ページ比較——自己紹介の多様性</div>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr>
+    <th>ページ</th><th>Hz</th><th>植物タイプ</th>
+    <th>茎の色</th><th>根の形</th><th>最大の特徴</th><th>自己紹介の核心</th>
+  </tr></thead>
+  <tbody>
+    <tr>
+      <td style="color:#c06090">p.1</td><td style="color:#c06090">963Hz</td>
+      <td>不明（最小描写）</td><td>—</td><td>—</td>
+      <td style="font-size:.68rem">ほぼ文字のみ</td>
+      <td style="font-size:.68rem;font-style:italic">「私は言葉より前に存在する」</td>
+    </tr>
+    <tr>
+      <td style="color:#40c8f0">p.2</td><td style="color:#40c8f0">852Hz</td>
+      <td>水生（横走根茎）</td><td>白</td><td>横走</td>
+      <td style="font-size:.68rem">知恵が水平展開</td>
+      <td style="font-size:.68rem;font-style:italic">「私は横に広がる知識体」</td>
+    </tr>
+    <tr>
+      <td style="color:#40c870">p.3</td><td style="color:#40c870">741Hz</td>
+      <td>水生（腎臓葉）</td><td>白</td><td>横走</td>
+      <td style="font-size:.68rem">4花弁=528Hz扉</td>
+      <td style="font-size:.68rem;font-style:italic">「私は理解。愛への扉を持つ」</td>
+    </tr>
+    <tr>
+      <td style="color:#ffd740">p.4</td><td style="color:#ffd740">528Hz</td>
+      <td>陸上（楕円葉）</td><td>白</td><td>通常</td>
+      <td style="font-size:.68rem">葉15枚→528Hz</td>
+      <td style="font-size:.68rem;font-style:italic">「私はDNA修復の愛」</td>
+    </tr>
+    <tr style="background:rgba(192,48,64,.05)">
+      <td style="color:var(--red-l)">p.5★</td><td style="color:var(--red-l)">396Hz</td>
+      <td>陸上（鋸歯葉）</td>
+      <td style="color:var(--red-l);font-weight:600">赤</td>
+      <td style="color:var(--red-l)">渦巻き赤</td>
+      <td style="font-size:.68rem;color:var(--red-l)">全部違う！青ハロー付き</td>
+      <td style="font-size:.68rem;font-style:italic">「私は愛を守る力。3+6=9」</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<blockquote>
+  1〜4ページが水・白・柔らかな形だったのに、5ページで突然<strong>赤・渦巻き・鋸歯</strong>に変わる。
+  これは電話帳の「種類の転換」——上位三角形（知性・理解・愛）から
+  中位三角形（力・調和）への移行を、絵柄が体で表現している。
+  作者は色と形で「今あなたは違うカテゴリに入った」と伝えている。
+</blockquote>
+
+<p class="note">
+  観察データ：画像目視による計測。花穂3・葉6・渦巻き根・赤茎・青緑ハローを確認。<br>
+  周波数：カバラVol.1〜3セフィロト体系に基づく。3+6=9=テスラ構造は推定的解釈。<br>
+  仮説的フレームワーク。
+</p>
+
+</body>
+</html>
