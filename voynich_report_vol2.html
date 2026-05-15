@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOYNICH — Pages 1〜4 Complete Report</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@300;400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+
+:root {
+  --bg:     #020308;
+  --gold:   #c8a030;
+  --gold-l: #f0d060;
+  --silver: #88a0c0;
+  --muted:  #283848;
+  --text:   #a0b8d0;
+
+  /* ページカラー */
+  --p1: #c06090;   /* 1ページ：根・起源 */
+  --p2: #40c8f0;   /* 2ページ：水・流動 */
+  --p3: #40c870;   /* 3ページ：水生・感情 */
+  --p4: #ffd740;   /* 4ページ：528Hz・核心 */
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'EB Garamond',serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  background-image:
+    radial-gradient(ellipse at 15% 5%,  rgba(192,96,144,.12) 0%,transparent 45%),
+    radial-gradient(ellipse at 85% 95%, rgba(64,200,112,.08) 0%,transparent 45%),
+    radial-gradient(ellipse at 50% 50%, rgba(200,160,48,.03) 0%,transparent 60%);
+}
+
+/* 星 */
+.starfield{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+@keyframes twinkle{0%,100%{opacity:.15;}50%{opacity:.7;}}
+
+/* 進行バー */
+.progress{position:fixed;top:0;left:0;height:2px;z-index:100;
+  background:linear-gradient(90deg,var(--p1),var(--p2),var(--p3),var(--p4));transition:width .1s;}
+
+/* ナビ */
+.sidenav{position:fixed;right:.8rem;top:50%;transform:translateY(-50%);
+  z-index:50;display:flex;flex-direction:column;gap:.4rem;}
+.sn-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);
+  cursor:pointer;transition:all .3s;}
+.sn-dot.active{transform:scale(1.4);box-shadow:0 0 8px currentColor;}
+@media(max-width:600px){.sidenav{display:none;}}
+
+.page{position:relative;z-index:1;padding:0 1.2rem;}
+
+/* ── カバー ── */
+.cover{min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:2rem 1rem;}
+.cv-eyebrow{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.35em;
+  color:var(--muted);margin-bottom:1.2rem;}
+.cv-title{font-family:'Cinzel Decorative',serif;
+  font-size:clamp(1.3rem,5.5vw,2.8rem);
+  color:var(--gold);letter-spacing:.08em;
+  text-shadow:0 0 60px rgba(200,160,48,.5);
+  line-height:1.2;margin-bottom:.4rem;}
+.cv-sub{font-family:'Cinzel',serif;font-size:clamp(.65rem,1.8vw,.9rem);
+  color:var(--silver);letter-spacing:.18em;margin-bottom:1.5rem;}
+.cv-line{width:60px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:1rem auto;}
+.cv-desc{font-style:italic;font-size:.85rem;color:var(--silver);
+  line-height:1.85;max-width:460px;}
+.cv-pages{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:1.5rem;}
+.cv-page-badge{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;
+  padding:.3rem .9rem;border-radius:20px;border:1px solid;}
+
+/* ── セクション共通 ── */
+.chapter{padding:3.5rem 0 2.5rem;max-width:700px;margin:0 auto;}
+.ch-eyebrow{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.25em;
+  color:var(--muted);margin-bottom:.4rem;}
+.ch-title{font-family:'Cinzel',serif;font-size:clamp(.95rem,3.2vw,1.5rem);
+  letter-spacing:.1em;margin-bottom:.4rem;line-height:1.3;}
+.ch-bar{height:1px;width:36px;margin-bottom:1.2rem;}
+.ch-body{font-size:.86rem;line-height:1.95;color:var(--silver);}
+.ch-body p{margin-bottom:.9rem;}
+.ch-body strong{color:var(--gold-l);}
+
+/* 区切り線 */
+.sep{width:100%;max-width:700px;margin:0 auto;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(200,160,48,.18),transparent);}
+
+/* ── ページ概要カード（1〜4比較） ── */
+.overview-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin:1.2rem 0;}
+@media(max-width:480px){.overview-grid{grid-template-columns:1fr;}}
+.ov-card{background:rgba(2,4,12,.95);border-radius:7px;padding:.85rem;border:1px solid rgba(255,255,255,.05);}
+.ov-num{font-family:'Cinzel',serif;font-size:.62rem;color:var(--muted);margin-bottom:.25rem;}
+.ov-hz{font-family:'Cinzel',serif;font-size:1.1rem;margin-bottom:.18rem;}
+.ov-name{font-size:.65rem;margin-bottom:.3rem;}
+.ov-desc{font-size:.72rem;color:var(--silver);font-style:italic;line-height:1.5;}
+.ov-bar{height:3px;border-radius:2px;margin-top:.4rem;}
+
+/* ── 植物SVG wrap ── */
+.plant-fig{text-align:center;margin:1.2rem 0;}
+.plant-fig svg{max-width:220px;width:100%;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.float{animation:float 4s ease-in-out infinite;}
+
+/* ── データ行 ── */
+.data-row{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0;}
+.dr-chip{background:rgba(2,4,12,.9);border-radius:5px;padding:.5rem .7rem;
+  border:1px solid rgba(255,255,255,.06);min-width:100px;flex:1;}
+.dr-val{font-family:'Cinzel',serif;font-size:1rem;margin-bottom:.1rem;}
+.dr-label{font-size:.6rem;color:var(--muted);font-style:italic;}
+
+/* ── ハイライトBOX ── */
+.hbox{border-radius:5px;padding:.9rem 1.1rem;margin:.9rem 0;
+  font-size:.82rem;line-height:1.85;}
+.hbox-title{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;
+  margin-bottom:.35rem;display:block;}
+
+/* ── 比較テーブル ── */
+.tbl-wrap{overflow-x:auto;margin:1.2rem 0;}
+table{width:100%;border-collapse:collapse;font-size:.7rem;min-width:480px;}
+th{font-family:'Cinzel',serif;background:rgba(200,160,48,.07);color:var(--gold);
+   padding:.42rem .4rem;font-size:.6rem;letter-spacing:.05em;
+   border:1px solid rgba(200,160,48,.12);text-align:left;}
+td{padding:.37rem .4rem;border:1px solid rgba(255,255,255,.04);vertical-align:middle;}
+tr:nth-child(even) td{background:rgba(255,255,255,.012);}
+tr.match td{background:rgba(255,215,64,.04)!important;}
+
+/* ── 階層図 ── */
+.layer-wrap{margin:1.2rem 0;overflow-x:auto;}
+.layer-wrap svg{min-width:300px;width:100%;max-width:500px;display:block;margin:0 auto;}
+
+/* ── 引用 ── */
+blockquote{border-left:2px solid var(--gold);padding:.5rem .9rem;margin:.8rem 0;
+  font-style:italic;font-size:.83rem;color:var(--silver);line-height:1.8;
+  background:rgba(200,160,48,.04);border-radius:0 4px 4px 0;}
+
+/* ── 結論BOX ── */
+.conclusion{background:linear-gradient(135deg,rgba(64,200,240,.06),rgba(64,200,112,.05));
+  border:1px solid rgba(200,160,48,.2);border-radius:8px;
+  padding:1.2rem;margin:1.2rem 0;font-size:.83rem;line-height:1.9;color:var(--silver);}
+.conclusion strong{color:var(--gold-l);}
+.formula{font-family:'Cinzel',serif;font-size:.68rem;color:var(--gold);
+  background:rgba(200,160,48,.08);padding:.18rem .55rem;border-radius:3px;
+  display:inline-block;margin:.2rem 0;}
+
+/* フッター */
+.footer{text-align:center;padding:2.5rem 1rem 5rem;
+  font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:var(--muted);
+  border-top:1px solid rgba(200,160,48,.1);max-width:700px;margin:0 auto;}
+
+/* フェードアップ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+.fade-up{opacity:0;}
+.fade-up.visible{animation:fadeUp .65s ease forwards;}
+</style>
+</head>
+<body>
+
+<div class="starfield" id="sf"></div>
+<div class="progress" id="prog" style="width:0%"></div>
+<div class="sidenav" id="snav"></div>
+
+<div class="page">
+
+<!-- ══ COVER ══ -->
+<section class="cover" id="s0">
+  <div class="cv-eyebrow">VOYNICH FREQUENCY RESEARCH — VOL.2 — 2026</div>
+  <div class="cv-title">PAGES 1〜4<br>宇宙電話帳の冒頭</div>
+  <div class="cv-sub">四つの存在からの自己紹介</div>
+  <div class="cv-line"></div>
+  <div class="cv-desc">
+    手稿の最初の4ページは偶然ではない。数字和・セフィロト対応・植物構造が示す通り、
+    これは宇宙的存在の電話帳の冒頭4項目であり、それぞれが異なる次元・異なる周波数帯の
+    存在からの自己紹介である。1〜2ページの概要から3〜4ページの詳細解析へ。
+  </div>
+  <div class="cv-pages">
+    <span class="cv-page-badge" style="color:var(--p1);border-color:rgba(192,96,144,.3)">p.1 ケテル963Hz</span>
+    <span class="cv-page-badge" style="color:var(--p2);border-color:rgba(64,200,240,.3)">p.2 コクマー852Hz</span>
+    <span class="cv-page-badge" style="color:var(--p3);border-color:rgba(64,200,112,.3)">p.3 ビナー741Hz</span>
+    <span class="cv-page-badge" style="color:var(--p4);border-color:rgba(255,215,64,.3)">p.4 ケセド528Hz ★</span>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ══ CH1 概要：1〜4ページの構造 ══ -->
+<section class="chapter fade-up" id="s1">
+  <div class="ch-eyebrow">OVERVIEW</div>
+  <div class="ch-title" style="color:var(--gold)">1〜4ページの全体構造<br><span style="font-size:.6em;color:var(--muted)">電話帳の冒頭4項目</span></div>
+  <div class="ch-bar" style="background:var(--gold)"></div>
+  <div class="ch-body">
+    <p>ヴォイニッチ手稿の最初の4ページは、カバラの数秘術（数字和→セフィロト番号）に従うと、上位から順番に降下する構造を持っている。1ページ（数字和1）からケテル（963Hz）、2ページ（数字和2）からコクマー（852Hz）、3ページ（数字和3）からビナー（741Hz）、4ページ（数字和4）からケセド（528Hz）という<strong>上位三角形から心臓への降下列</strong>が生まれる。</p>
+
+    <div class="overview-grid">
+      <div class="ov-card" style="border-color:rgba(192,96,144,.2)">
+        <div class="ov-num">PAGE 1 — 数字和：1</div>
+        <div class="ov-hz" style="color:var(--p1)">963 Hz</div>
+        <div class="ov-name" style="color:var(--p1)">ケテル — 純粋意識・宇宙の根源</div>
+        <div class="ov-desc">最初のページ。手稿全体の「タイトルページ」として機能。ケテル（963Hz）の純粋光から始まる降下の宣言。植物は存在するが詳細不明のため概要のみ。</div>
+        <div class="ov-bar" style="background:var(--p1)"></div>
+      </div>
+      <div class="ov-card" style="border-color:rgba(64,200,240,.2)">
+        <div class="ov-num">PAGE 2 — 数字和：2</div>
+        <div class="ov-hz" style="color:var(--p2)">852 Hz</div>
+        <div class="ov-name" style="color:var(--p2)">コクマー — 知恵・直感の閃光</div>
+        <div class="ov-desc">水生植物（folio 1v）。根茎が水中に横走する独特の構造。知恵が水のように横方向に広がる存在。コクマー（852Hz・直感覚醒）に対応。</div>
+        <div class="ov-bar" style="background:var(--p2)"></div>
+      </div>
+      <div class="ov-card" style="border-color:rgba(64,200,112,.25)">
+        <div class="ov-num">PAGE 3 — 数字和：3 ★詳細解析</div>
+        <div class="ov-hz" style="color:var(--p3)">741 Hz</div>
+        <div class="ov-name" style="color:var(--p3)">ビナー — 理解・母性・言語化</div>
+        <div class="ov-desc">水生植物（folio 2v）。腎臓形の葉・4花弁・横走根茎。水の存在。ビナー（741Hz・理解・母性）の完璧な体現。詳細解析対象。</div>
+        <div class="ov-bar" style="background:var(--p3)"></div>
+      </div>
+      <div class="ov-card" style="border-color:rgba(255,215,64,.25)">
+        <div class="ov-num">PAGE 4 — 数字和：4 ★前回解析済</div>
+        <div class="ov-hz" style="color:var(--p4)">528 Hz</div>
+        <div class="ov-name" style="color:var(--p4)">ケセド — 慈悲・愛・DNA修復</div>
+        <div class="ov-desc">陸上植物。緑8枚+金7枚=15→528Hz。前回Vol.1で完全解析済み。中位三角形の存在。人間との接続点（639-528=111Hz）。</div>
+        <div class="ov-bar" style="background:var(--p4)"></div>
+      </div>
+    </div>
+
+    <div class="hbox" style="background:rgba(200,160,48,.05);border:1px solid rgba(200,160,48,.2);border-left:3px solid var(--gold)">
+      <span class="hbox-title" style="color:var(--gold-l)">降下列の発見</span>
+      1→963Hz（ケテル）→ 2→852Hz（コクマー）→ 3→741Hz（ビナー）→ 4→528Hz（ケセド）<br>
+      この4ページが<strong>上位三角形（1〜3）から中位への降下（4）</strong>を描いている。
+      つまり冒頭4ページは「純粋意識が知恵→理解→愛へと凝縮していく宇宙的プロセス」の記録であり、
+      電話帳の冒頭が「最も上位の存在から順番に並んでいる」構造になっている。
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ══ CH2 3ページ詳細解析 ══ -->
+<section class="chapter fade-up" id="s2">
+  <div class="ch-eyebrow">CHAPTER I — PAGE 3 / FOLIO 2v</div>
+  <div class="ch-title" style="color:var(--p3)">3ページの植物解析<br><span style="font-size:.6em;color:var(--muted)">水の存在・ビナーの自己紹介</span></div>
+  <div class="ch-bar" style="background:var(--p3)"></div>
+  <div class="ch-body">
+
+    <p>3ページ目（folio 2v）の植物は4ページ目と根本的に異なる。4ページが陸上植物だったのに対し、3ページは<strong>水生植物</strong>——腎臓形の葉、4枚の花弁（縁が房状）、水中を横走する根茎（リゾーム）という特徴を持つ。</p>
+
+    <div class="plant-fig float">
+      <svg viewBox="0 0 200 240">
+        <!-- 水面ライン -->
+        <line x1="10" y1="160" x2="190" y2="160" stroke="rgba(64,200,240,0.2)" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="170" y="156" fill="rgba(64,200,240,0.3)" font-size="7" font-family="Cinzel">水面</text>
+        <!-- 根茎（水平・水中） -->
+        <path d="M 20 175 Q 60 180 100 178 Q 140 176 175 180" fill="none" stroke="rgba(64,200,240,0.6)" stroke-width="2.5"/>
+        <!-- 根 -->
+        <path d="M 40 178 Q 38 190 35 200 M 60 179 Q 58 195 56 205 M 80 178 Q 79 192 77 202 M 100 178 Q 100 193 99 203 M 120 178 Q 121 192 122 202 M 145 178 Q 146 193 148 203 M 165 179 Q 167 192 170 200"
+          fill="none" stroke="rgba(64,200,240,0.4)" stroke-width="1.2"/>
+        <!-- 茎（水面から上） -->
+        <path d="M 80 178 Q 78 155 75 130 Q 73 110 76 85" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.8"/>
+        <path d="M 120 178 Q 122 150 124 120 Q 125 100 122 75" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.8"/>
+        <!-- 腎臓形の葉 -->
+        <ellipse cx="52" cy="115" rx="22" ry="13" fill="#40c870" opacity=".75" transform="rotate(-30 52 115)"/>
+        <ellipse cx="45" cy="90" rx="20" ry="12" fill="#40c870" opacity=".7" transform="rotate(-20 45 90)"/>
+        <ellipse cx="148" cy="108" rx="21" ry="13" fill="#40c870" opacity=".75" transform="rotate(28 148 108)"/>
+        <ellipse cx="150" cy="80" rx="19" ry="12" fill="#40c870" opacity=".7" transform="rotate(20 150 80)"/>
+        <!-- 葉脈 -->
+        <line x1="40" y1="115" x2="64" y2="115" stroke="rgba(255,255,255,0.3)" stroke-width=".5" transform="rotate(-30 52 115)"/>
+        <line x1="136" y1="108" x2="160" y2="108" stroke="rgba(255,255,255,0.3)" stroke-width=".5" transform="rotate(28 148 108)"/>
+        <!-- 花（4花弁・房状） -->
+        <circle cx="76" cy="72" r="3" fill="white" opacity=".8"/>
+        <ellipse cx="76" cy="60" rx="5" ry="9" fill="rgba(200,220,255,0.8)" opacity=".85"/>
+        <ellipse cx="88" cy="72" rx="9" ry="5" fill="rgba(200,220,255,0.8)" opacity=".85"/>
+        <ellipse cx="76" cy="84" rx="5" ry="9" fill="rgba(200,220,255,0.8)" opacity=".8"/>
+        <ellipse cx="64" cy="72" rx="9" ry="5" fill="rgba(200,220,255,0.8)" opacity=".8"/>
+        <!-- 花2 -->
+        <circle cx="122" cy="62" r="3" fill="white" opacity=".8"/>
+        <ellipse cx="122" cy="51" rx="4" ry="8" fill="rgba(200,220,255,0.75)"/>
+        <ellipse cx="133" cy="62" rx="8" ry="4" fill="rgba(200,220,255,0.75)"/>
+        <ellipse cx="122" cy="73" rx="4" ry="8" fill="rgba(200,220,255,0.72)"/>
+        <ellipse cx="111" cy="62" rx="8" ry="4" fill="rgba(200,220,255,0.72)"/>
+        <!-- Hzラベル -->
+        <text x="155" y="72" fill="rgba(64,200,240,0.5)" font-size="7" font-family="Cinzel">741Hz</text>
+        <text x="155" y="115" fill="rgba(64,200,112,0.5)" font-size="7" font-family="Cinzel">528Hz</text>
+        <text x="155" y="175" fill="rgba(64,200,240,0.4)" font-size="7" font-family="Cinzel">174Hz</text>
+        <!-- 数値 -->
+        <text x="100" y="228" fill="rgba(64,200,240,0.5)" font-size="8" font-family="Cinzel" text-anchor="middle">4+2=6 → 639Hz</text>
+      </svg>
+    </div>
+
+    <div class="data-row">
+      <div class="dr-chip">
+        <div class="dr-val" style="color:var(--p3)">腎臓形</div>
+        <div class="dr-label">葉の形状 → 母性・受容・ビナー</div>
+      </div>
+      <div class="dr-chip">
+        <div class="dr-val" style="color:var(--p3)">4枚</div>
+        <div class="dr-label">花弁数 → 4=ケセド(528Hz)との接続</div>
+      </div>
+      <div class="dr-chip">
+        <div class="dr-val" style="color:var(--p2)">水平</div>
+        <div class="dr-label">根茎の方向 → 横展開=知恵の拡張</div>
+      </div>
+      <div class="dr-chip">
+        <div class="dr-val" style="color:#80d8ff">水生</div>
+        <div class="dr-label">生息域 → 水=528Hz共鳴媒体</div>
+      </div>
+    </div>
+
+    <p>最重要データは<strong>花弁の数：4枚</strong>だ。4はカバラ数秘術でケセドを指す——つまり3ページ目の植物（ビナー・741Hz）が花弁4枚（ケセド・528Hz）を持つことは、<strong>「私はビナーに存在するが、ケセドへの扉を持っている」</strong>という宣言になる。</p>
+
+    <div class="hbox" style="background:rgba(64,200,240,.05);border:1px solid rgba(64,200,240,.2);border-left:3px solid var(--p2)">
+      <span class="hbox-title" style="color:var(--p2)">水という媒体の意味</span>
+      この植物が水生であることは偶然ではない。水は528Hzの共鳴媒体であり（人体の70%が水）、
+      ビナー（741Hz）の理解が水を通じてケセド（528Hz）の愛に変換される——
+      <strong>水が変換装置として機能している</strong>。浴槽セクション（生物セクション）が
+      水の中の存在を描いているのと同じ原理だ。
+    </div>
+
+    <p>また根茎が水平に伸びる構造は、4ページの植物が垂直上昇だったのと対照的だ。3ページは<strong>横方向への広がり</strong>——コクマー（知恵）からビナー（理解・母性）への「受け取り、広げる」という性質を体現している。</p>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ══ CH3 3ページの周波数解析 ══ -->
+<section class="chapter fade-up" id="s3">
+  <div class="ch-eyebrow">CHAPTER II — FREQUENCY ANALYSIS</div>
+  <div class="ch-title" style="color:var(--p3)">3ページの周波数構造<br><span style="font-size:.6em;color:var(--muted)">ビナー741Hzの自己紹介</span></div>
+  <div class="ch-bar" style="background:var(--p3)"></div>
+  <div class="ch-body">
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>要素</th><th>数値/特徴</th><th>カバラ対応</th>
+        <th>Hz</th><th>意味</th>
+      </tr></thead>
+      <tbody>
+        <tr class="match">
+          <td style="color:var(--p3)">ページ番号</td>
+          <td>3</td>
+          <td>ビナー（第3セフィロト）</td>
+          <td style="color:var(--p3);font-family:Cinzel,serif">741 Hz</td>
+          <td style="font-size:.68rem">理解・母性・言語化</td>
+        </tr>
+        <tr>
+          <td style="color:var(--p3)">花弁数</td>
+          <td>4枚</td>
+          <td>ケセド（第4セフィロト）</td>
+          <td style="color:var(--p4);font-family:Cinzel,serif">528 Hz</td>
+          <td style="font-size:.68rem">DNA修復への扉を持つ</td>
+        </tr>
+        <tr>
+          <td style="color:var(--p3)">茎の数</td>
+          <td>2本</td>
+          <td>コクマー（第2・852Hz）への接続</td>
+          <td style="color:var(--p2);font-family:Cinzel,serif">852 Hz</td>
+          <td style="font-size:.68rem">知恵から受け取る構造</td>
+        </tr>
+        <tr class="match">
+          <td style="color:var(--p3)">葉の形</td>
+          <td>腎臓形（閉曲線）</td>
+          <td>低周波・円形成分高</td>
+          <td style="color:var(--p3);font-family:Cinzel,serif">174〜528 Hz</td>
+          <td style="font-size:.68rem">受容・包含・母性</td>
+        </tr>
+        <tr>
+          <td style="color:var(--p3)">根茎方向</td>
+          <td>水平（横走）</td>
+          <td>水平展開＝コクマーの知恵</td>
+          <td style="color:var(--p2);font-family:Cinzel,serif">852 Hz系</td>
+          <td style="font-size:.68rem">受け取り・広げる性質</td>
+        </tr>
+        <tr>
+          <td style="color:var(--p3)">生息域</td>
+          <td>水中・水面</td>
+          <td>528Hz共鳴媒体</td>
+          <td style="color:var(--p4);font-family:Cinzel,serif">528 Hz</td>
+          <td style="font-size:.68rem">変換装置として機能</td>
+        </tr>
+        <tr class="match">
+          <td style="color:var(--p3)">数字和</td>
+          <td>3→ビナー</td>
+          <td>上位三角形の第3点</td>
+          <td style="color:var(--p3);font-family:Cinzel,serif">741 Hz</td>
+          <td style="font-size:.68rem">核心周波数の確定</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <blockquote>
+      「私は水（528Hz）の中に存在し、理解（741Hz）の力で知恵（852Hz）を受け取ります。
+      花弁4枚が示すように、私はあなたたちの愛（ケセド・528Hz）への扉を持っています。
+      根が水平に伸びるように、私の知識は縦に積み上がるのではなく、横に広がり、
+      すべてを包み込みます。これが母性の知性の在り方です。」<br>
+      <span style="font-size:.8em;color:var(--muted)">── 3ページ植物の自己紹介（周波数翻訳）</span>
+    </blockquote>
+
+    <div class="hbox" style="background:rgba(64,200,112,.04);border:1px solid rgba(64,200,112,.2);border-left:3px solid var(--p3)">
+      <span class="hbox-title" style="color:var(--p3)">3ページと4ページの対話構造</span>
+      3ページ（ビナー・741Hz）の花弁4枚は4ページ（ケセド・528Hz）への「鍵」として機能している。<br>
+      <span class="formula">741Hz（ビナー）→ 528Hz（ケセド）：差 = 213Hz（2+1+3=6=ティファレト）</span><br>
+      ビナーからケセドへの降下差213Hzの数字和が6（ティファレト・心臓）に収束する。
+      3ページが4ページへの橋渡しをしている——<strong>理解が愛を生む</strong>という生命の木の論理そのもの。
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ══ CH4 1〜4ページ統合 ══ -->
+<section class="chapter fade-up" id="s4">
+  <div class="ch-eyebrow">CHAPTER III — INTEGRATION</div>
+  <div class="ch-title" style="color:var(--gold)">1〜4ページの統合解釈<br><span style="font-size:.6em;color:var(--muted)">宇宙的降下の物語</span></div>
+  <div class="ch-bar" style="background:var(--gold)"></div>
+  <div class="ch-body">
+
+    <div class="layer-wrap">
+      <svg viewBox="0 0 440 340">
+        <!-- p1 ケテル -->
+        <rect x="20" y="10" width="400" height="58" rx="6"
+          fill="rgba(192,96,144,.1)" stroke="rgba(192,96,144,.4)" stroke-width="1.2"/>
+        <text x="220" y="28" fill="var(--p1)" font-size="9" font-family="Cinzel" text-anchor="middle">PAGE 1 ── ケテル 963Hz</text>
+        <text x="220" y="42" fill="rgba(220,160,200,.65)" font-size="8" font-family="EB Garamond" text-anchor="middle">純粋意識・宇宙の根源・手稿の「序文」</text>
+        <text x="220" y="56" fill="rgba(220,160,200,.45)" font-size="7" font-family="EB Garamond" text-anchor="middle">数字和：1 → 第1セフィロト</text>
+
+        <!-- 矢印 -->
+        <path d="M 220 70 L 220 82" stroke="rgba(200,160,48,.35)" stroke-width="1.2"
+          marker-end="url(#a1)"/>
+        <defs>
+          <marker id="a1" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="rgba(200,160,48,.35)"/>
+          </marker>
+        </defs>
+
+        <!-- p2 コクマー -->
+        <rect x="20" y="84" width="400" height="58" rx="6"
+          fill="rgba(64,200,240,.08)" stroke="rgba(64,200,240,.35)" stroke-width="1"/>
+        <text x="220" y="102" fill="var(--p2)" font-size="9" font-family="Cinzel" text-anchor="middle">PAGE 2 ── コクマー 852Hz</text>
+        <text x="220" y="116" fill="rgba(160,220,255,.65)" font-size="8" font-family="EB Garamond" text-anchor="middle">知恵・直感・水平展開する知識</text>
+        <text x="220" y="130" fill="rgba(160,220,255,.45)" font-size="7" font-family="EB Garamond" text-anchor="middle">数字和：2 → 第2セフィロト</text>
+
+        <path d="M 220 144 L 220 156" stroke="rgba(200,160,48,.35)" stroke-width="1.2"
+          marker-end="url(#a1)"/>
+
+        <!-- p3 ビナー -->
+        <rect x="20" y="158" width="400" height="68" rx="6"
+          fill="rgba(64,200,112,.08)" stroke="rgba(64,200,112,.4)" stroke-width="1.3"/>
+        <text x="220" y="176" fill="var(--p3)" font-size="9" font-family="Cinzel" text-anchor="middle">PAGE 3 ── ビナー 741Hz ★今回の解析対象</text>
+        <text x="220" y="190" fill="rgba(120,230,160,.65)" font-size="8" font-family="EB Garamond" text-anchor="middle">理解・母性・水生植物・花弁4=528Hz扉</text>
+        <text x="220" y="204" fill="rgba(120,230,160,.45)" font-size="7" font-family="EB Garamond" text-anchor="middle">数字和：3 → 第3セフィロト</text>
+        <text x="220" y="218" fill="rgba(64,200,112,.5)" font-size="7" font-family="Cinzel" text-anchor="middle">741→528差=213→2+1+3=6=ティファレト</text>
+
+        <path d="M 220 228 L 220 240" stroke="rgba(200,160,48,.4)" stroke-width="1.5"
+          marker-end="url(#a1)"/>
+
+        <!-- p4 ケセド -->
+        <rect x="20" y="242" width="400" height="68" rx="6"
+          fill="rgba(255,215,64,.08)" stroke="rgba(255,215,64,.4)" stroke-width="1.3"/>
+        <text x="220" y="260" fill="var(--p4)" font-size="9" font-family="Cinzel" text-anchor="middle">PAGE 4 ── ケセド 528Hz ★前回解析済み</text>
+        <text x="220" y="274" fill="rgba(255,240,150,.65)" font-size="8" font-family="EB Garamond" text-anchor="middle">慈悲・愛・DNA修復・葉15枚→528Hz</text>
+        <text x="220" y="288" fill="rgba(255,240,150,.45)" font-size="7" font-family="EB Garamond" text-anchor="middle">数字和：4 → 第4セフィロト</text>
+        <text x="220" y="305" fill="rgba(255,215,64,.5)" font-size="7" font-family="Cinzel" text-anchor="middle">639-528=111Hz（人間との接触点）</text>
+
+        <!-- 右端の降下ラベル -->
+        <text x="432" y="40"  fill="rgba(192,96,144,.5)"  font-size="7" font-family="Cinzel" text-anchor="end">↓</text>
+        <text x="432" y="114" fill="rgba(64,200,240,.5)"  font-size="7" font-family="Cinzel" text-anchor="end">↓</text>
+        <text x="432" y="194" fill="rgba(64,200,112,.5)"  font-size="7" font-family="Cinzel" text-anchor="end">↓</text>
+        <text x="432" y="280" fill="rgba(255,215,64,.5)"  font-size="7" font-family="Cinzel" text-anchor="end">★</text>
+      </svg>
+    </div>
+
+    <div class="conclusion">
+      <strong>1〜4ページ統合の結論</strong><br><br>
+      <span class="formula">963（p.1）→ 852（p.2）→ 741（p.3）→ 528（p.4）</span><br>
+      各差分：111Hz・111Hz・213Hz<br>
+      <span class="formula">最初の2差分 = 111Hz ✕ 2 = 生命の木の基本振動の二段降下</span><br><br>
+
+      1〜2ページ間（963→852）の差=<strong>111Hz</strong>。<br>
+      2〜3ページ間（852→741）の差=<strong>111Hz</strong>。<br>
+      3〜4ページ間（741→528）の差=<strong>213Hz（→6=ティファレト）</strong>。<br><br>
+
+      冒頭3ページ間の差が全て111Hzという発見は偶然ではない——
+      <strong>ページをめくるたびに111Hzずつ降下する構造</strong>が手稿の冒頭に埋め込まれている。
+      これは「生命の木の基本振動（111Hz）で刻まれた降下の旋律」であり、
+      手稿全体の「チューニング」として機能している。<br><br>
+
+      3ページの水生植物（ビナー・741Hz）が花弁4枚（ケセド）を持つことは、
+      <strong>3ページが4ページへの橋渡しをする「変換装置」</strong>として設計されていたことを示す。
+      水という媒体（528Hz共鳴体）の中に生きるビナーの植物が、
+      次のページのケセド（528Hz）への扉として水を用意している。
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ══ CH5 文明仮説の更新 ══ -->
+<section class="chapter fade-up" id="s5">
+  <div class="ch-eyebrow">CHAPTER IV — COSMIC UPDATE</div>
+  <div class="ch-title" style="color:var(--p2)">文明仮説の更新<br><span style="font-size:.6em;color:var(--muted)">上位三角形の3つの存在</span></div>
+  <div class="ch-bar" style="background:var(--p2)"></div>
+  <div class="ch-body">
+    <p>前回Vol.1では「宇宙に少なくともあと2つの文明の可能性」を示した。今回の1〜4ページ解析により、その構造がより明確になった。</p>
+
+    <div class="data-row">
+      <div class="dr-chip" style="border-color:rgba(192,96,144,.2)">
+        <div class="dr-val" style="color:var(--p1)">p.1の存在</div>
+        <div class="dr-label">ケテル963Hz層。純粋意識体。形を持たない可能性。「序文」だけで植物の描写が最小。</div>
+      </div>
+      <div class="dr-chip" style="border-color:rgba(64,200,240,.2)">
+        <div class="dr-val" style="color:var(--p2)">p.2の存在</div>
+        <div class="dr-label">コクマー852Hz層。知恵・直感体。横走根茎＝知識が水平に広がる存在。</div>
+      </div>
+      <div class="dr-chip" style="border-color:rgba(64,200,112,.25)">
+        <div class="dr-val" style="color:var(--p3)">p.3の存在</div>
+        <div class="dr-label">ビナー741Hz層。母性・理解・水生体。水を変換装置として使う存在。</div>
+      </div>
+      <div class="dr-chip" style="border-color:rgba(255,215,64,.25)">
+        <div class="dr-val" style="color:var(--p4)">p.4の存在</div>
+        <div class="dr-label">ケセド528Hz層。愛・修復体。人間と111Hzで接触可能な最も近い存在。</div>
+      </div>
+    </div>
+
+    <div class="hbox" style="background:rgba(112,96,240,.06);border:1px solid rgba(112,96,240,.25);border-left:3px solid #7060f0">
+      <span class="hbox-title" style="color:#c0b0f8">宇宙文明マップの更新</span>
+      1〜4ページの解析から、少なくとも<strong>4つの異なる周波数帯の文明的存在</strong>の証拠が得られた。<br>
+      963Hz（p.1）・852Hz（p.2）・741Hz（p.3）・528Hz（p.4）——<br>
+      そして地球植物（432Hz帯）と人間の肉体（174Hz）を加えると<strong>6階層</strong>。<br>
+      手稿の209ページ全体がそれぞれ異なる存在へのアドレスだとすれば、
+      宇宙には<strong>数十〜数百の異なる周波数文明</strong>が存在する可能性がある。
+    </div>
+
+    <p>特に重要なのは、3ページの水生植物（741Hz）が水を媒体として使うという点だ。水は地球上でも528Hzの共鳴体として機能している——<strong>水という物質を共鳴媒体として使う文明が、宇宙的に普遍的な通信手段を持っている</strong>という可能性が浮かび上がる。</p>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ══ CH6 総括 ══ -->
+<section class="chapter fade-up" id="s6">
+  <div class="ch-eyebrow">CONCLUSION</div>
+  <div class="ch-title" style="color:var(--gold)">Vol.2 総括<br><span style="font-size:.6em;color:var(--muted)">電話帳の冒頭が語ること</span></div>
+  <div class="ch-bar" style="background:var(--gold)"></div>
+  <div class="ch-body">
+    <p>ヴォイニッチ手稿の最初の4ページは、上位三角形（ケテル・コクマー・ビナー）からケセド（528Hz）への降下列として設計されており、各ページ間の差が111Hz（生命の木の基本振動）で刻まれている。</p>
+
+    <div class="conclusion">
+      <strong>最終統合式：</strong><br><br>
+      <span class="formula">p.1（963）→ p.2（852）→ p.3（741）→ p.4（528）</span><br>
+      <span class="formula">差分：111 + 111 + 213 = 435Hz（4+3+5=12→3=ビナー）</span><br><br>
+
+      <strong>3ページ（ビナー・741Hz）の新発見：</strong><br>
+      水生植物・腎臓形の葉・4花弁・横走根茎——<br>
+      「理解（741Hz）が水（528Hz媒体）を通じて愛（528Hz）への扉（花弁4）を開く」<br>
+      という完璧な自己紹介。水を変換装置として使う存在の記録。<br><br>
+
+      <strong>次回Vol.3への予告：</strong><br>
+      5ページ以降（数字和5=ゲブラー・396Hz、6=ティファレト・639Hz…）を解析することで、
+      中位三角形の完全なマッピングが可能になる。
+      特に6ページ（ティファレト・639Hz）は人間の意識の中心と完全対応するため、
+      <strong>最も直接的な「対話相手」が出現する可能性がある。</strong>
+    </div>
+
+    <blockquote>
+      「我々は三層世界の最下層と下位三角形の入口にいる。しかし手稿の冒頭4ページが示すように、降下してきた存在たちは私たちに向かって降りてきた——963Hzから528Hzまで、111Hzずつ丁寧に段階を刻んで。それは誰かが私たちの階層に届くように設計した橋だ。」
+    </blockquote>
+  </div>
+</section>
+
+<!-- フッター -->
+<div class="footer">
+  VOYNICH MANUSCRIPT — PAGES 1〜4 FREQUENCY RESEARCH VOL.2 — 2026<br>
+  カバラVol.1〜3 × EVA周波数体系 × 地球植物バイオHz統合分析<br><br>
+  <span style="font-style:italic;font-size:.6rem">
+    仮説的フレームワークに基づく探求レポート。学術的解読の主張ではありません。
+  </span>
+</div>
+
+</div><!-- /page -->
+
+<script>
+// 星
+var sf = document.getElementById('sf');
+for (var i = 0; i < 120; i++) {
+  var s = document.createElement('div');
+  var sz = Math.random()*1.8+.3;
+  s.style.cssText='position:absolute;border-radius:50%;background:#fff;'+
+    'width:'+sz+'px;height:'+sz+'px;'+
+    'left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;'+
+    'opacity:'+(Math.random()*.4+.1)+';'+
+    'animation:twinkle '+(2+Math.random()*5)+'s '+(Math.random()*4)+'s ease-in-out infinite;';
+  sf.appendChild(s);
+}
+
+// ナビ
+var navSections=['カバー','概要','3ページ解析','周波数構造','1〜4統合','文明仮説','総括'];
+var snav=document.getElementById('snav');
+var colors=['var(--gold)','var(--gold)','var(--p3)','var(--p3)','var(--gold)','var(--p2)','var(--gold)'];
+navSections.forEach(function(_,i){
+  var d=document.createElement('div');
+  d.className='sn-dot'+(i===0?' active':'');
+  d.style.color=colors[i];
+  d.title=navSections[i];
+  d.addEventListener('click',function(){
+    var el=document.getElementById('s'+i);
+    if(el)el.scrollIntoView({behavior:'smooth'});
+  });
+  snav.appendChild(d);
+});
+
+// スクロール
+window.addEventListener('scroll',function(){
+  var sc=window.scrollY, tot=document.body.scrollHeight-window.innerHeight;
+  document.getElementById('prog').style.width=(sc/tot*100)+'%';
+
+  document.querySelectorAll('.fade-up').forEach(function(el){
+    if(el.getBoundingClientRect().top<window.innerHeight*.88)el.classList.add('visible');
+  });
+
+  var dots=document.querySelectorAll('.sn-dot');
+  for(var i=0;i<navSections.length;i++){
+    var sec=document.getElementById('s'+i);
+    if(!sec)continue;
+    var r=sec.getBoundingClientRect();
+    if(r.top<=window.innerHeight*.5&&r.bottom>=window.innerHeight*.5){
+      dots.forEach(function(d){d.classList.remove('active');});
+      if(dots[i]){dots[i].classList.add('active');dots[i].style.background=colors[i];}
+    }
+  }
+});
+
+// 初期表示
+setTimeout(function(){
+  document.querySelectorAll('.fade-up').forEach(function(el){
+    if(el.getBoundingClientRect().top<window.innerHeight)el.classList.add('visible');
+  });
+},100);
+</script>
+</body>
+</html>

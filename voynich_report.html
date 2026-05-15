@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOYNICH 4/209 — 完全探求レポート</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@300;400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+
+:root {
+  --bg:      #030209;
+  --deep:    #06041a;
+  --gold:    #c8a030;
+  --gold-l:  #f0d060;
+  --gold-d:  #7a6018;
+  --silver:  #8aa0c0;
+  --muted:   #2a3a58;
+  --text:    #a8bcd8;
+  --plant:   #40c870;
+  --cosmos:  #7060f0;
+  --human:   #c06090;
+  --bridge:  #40c8f0;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'EB Garamond',serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  background-image:
+    radial-gradient(ellipse at 20% 10%,  rgba(112,96,240,.15) 0%,transparent 45%),
+    radial-gradient(ellipse at 80% 90%,  rgba(64,200,112,.08) 0%,transparent 45%),
+    radial-gradient(ellipse at 50% 50%,  rgba(200,160,48,.04) 0%,transparent 60%);
+}
+
+/* ── 星フィールド ── */
+.starfield{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+
+/* ── スクロール進行バー ── */
+.progress-bar{
+  position:fixed;top:0;left:0;height:2px;
+  background:linear-gradient(90deg,var(--cosmos),var(--gold),var(--plant));
+  z-index:100;transition:width .1s;
+}
+
+/* ── ナビ ── */
+.nav{
+  position:fixed;right:1rem;top:50%;transform:translateY(-50%);
+  z-index:50;display:flex;flex-direction:column;gap:.5rem;
+}
+.nav-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--muted);cursor:pointer;
+  transition:all .3s;border:1px solid transparent;
+}
+.nav-dot.active{background:var(--gold);box-shadow:0 0 8px var(--gold);}
+@media(max-width:600px){.nav{display:none;}}
+
+/* ── 全体レイアウト ── */
+.page{position:relative;z-index:1;padding:0 1.2rem;}
+
+/* ── カバー ── */
+.cover{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:2rem 1rem;
+  position:relative;
+}
+.cover-sub{
+  font-family:'Cinzel',serif;
+  font-size:.7rem;letter-spacing:.35em;
+  color:var(--muted);margin-bottom:1.5rem;
+}
+.cover-title{
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(1.4rem,6vw,3rem);
+  color:var(--gold);
+  letter-spacing:.1em;
+  text-shadow:0 0 60px rgba(200,160,48,.5),0 0 120px rgba(200,160,48,.2);
+  line-height:1.2;margin-bottom:.5rem;
+}
+.cover-sub2{
+  font-family:'Cinzel',serif;
+  font-size:clamp(.7rem,2vw,1rem);
+  color:var(--silver);letter-spacing:.2em;
+  margin-bottom:2rem;
+}
+.cover-divider{
+  width:80px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:1.5rem auto;
+}
+.cover-desc{
+  font-style:italic;font-size:.88rem;
+  color:var(--silver);line-height:1.8;
+  max-width:480px;
+}
+.cover-badge{
+  margin-top:2rem;
+  display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;
+}
+.badge{
+  font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.08em;
+  padding:.3rem .8rem;border-radius:20px;border:1px solid;
+}
+
+/* ── セクション共通 ── */
+.chapter{
+  padding:4rem 0 3rem;
+  max-width:720px;margin:0 auto;
+}
+.ch-num{
+  font-family:'Cinzel',serif;font-size:.65rem;
+  letter-spacing:.25em;color:var(--muted);
+  margin-bottom:.5rem;
+}
+.ch-title{
+  font-family:'Cinzel',serif;
+  font-size:clamp(1rem,3.5vw,1.6rem);
+  letter-spacing:.12em;
+  margin-bottom:.5rem;
+  line-height:1.3;
+}
+.ch-divider{
+  width:40px;height:1px;margin-bottom:1.5rem;
+}
+.ch-body{
+  font-size:.88rem;line-height:1.95;
+  color:var(--silver);
+}
+.ch-body p{margin-bottom:1rem;}
+.ch-body strong{color:var(--gold-l);}
+
+/* ── ハイライトボックス ── */
+.hbox{
+  border-radius:6px;padding:1rem 1.2rem;
+  margin:1.2rem 0;font-size:.83rem;line-height:1.85;
+}
+.hbox strong{display:block;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.1em;margin-bottom:.4rem;}
+
+/* ── データカード ── */
+.data-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:.6rem;margin:1.2rem 0;
+}
+.data-card{
+  background:rgba(6,4,26,.8);
+  border-radius:6px;padding:.8rem;
+  border:1px solid rgba(255,255,255,.06);
+}
+.dc-val{font-family:'Cinzel',serif;font-size:1.1rem;margin-bottom:.15rem;}
+.dc-label{font-size:.65rem;color:var(--muted);font-style:italic;}
+
+/* ── 植物SVG ── */
+.plant-figure{text-align:center;margin:1.5rem 0;}
+.plant-figure svg{max-width:240px;width:100%;}
+
+/* ── 階層図 ── */
+.layer-diagram{margin:1.5rem 0;overflow-x:auto;}
+.layer-diagram svg{min-width:320px;width:100%;display:block;}
+
+/* ── タイムライン ── */
+.timeline{display:flex;flex-direction:column;gap:0;margin:1.2rem 0;}
+.tl-item{
+  display:flex;gap:1rem;align-items:flex-start;
+  padding:.7rem 0;
+  border-left:1px solid rgba(200,160,48,.15);
+  padding-left:1rem;position:relative;
+}
+.tl-item::before{
+  content:'';position:absolute;left:-4px;top:1.1rem;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--gold);box-shadow:0 0 8px var(--gold);
+}
+.tl-num{
+  font-family:'Cinzel',serif;font-size:.62rem;
+  color:var(--gold);white-space:nowrap;margin-top:.15rem;
+  min-width:40px;
+}
+.tl-content{font-size:.82rem;line-height:1.7;color:var(--silver);}
+.tl-content strong{color:var(--gold-l);}
+
+/* ── 引用 ── */
+blockquote{
+  border-left:2px solid var(--gold);
+  padding:.6rem 1rem;margin:1rem 0;
+  font-style:italic;font-size:.85rem;
+  color:var(--silver);line-height:1.8;
+  background:rgba(200,160,48,.04);border-radius:0 4px 4px 0;
+}
+
+/* ── 結論 ── */
+.conclusion{
+  background:linear-gradient(135deg,rgba(112,96,240,.08),rgba(64,200,112,.06));
+  border:1px solid rgba(200,160,48,.2);
+  border-radius:8px;padding:1.5rem;margin:1.5rem 0;
+  font-size:.85rem;line-height:1.9;color:var(--silver);
+}
+.conclusion strong{color:var(--gold-l);}
+.formula{
+  font-family:'Cinzel',serif;font-size:.7rem;
+  color:var(--gold);background:rgba(200,160,48,.08);
+  padding:.25rem .7rem;border-radius:3px;
+  display:inline-block;margin:.3rem 0;
+}
+
+/* ── フッター ── */
+.footer{
+  text-align:center;padding:3rem 1rem 5rem;
+  font-family:'Cinzel',serif;font-size:.65rem;
+  letter-spacing:.15em;color:var(--muted);
+  border-top:1px solid rgba(200,160,48,.1);
+  max-width:720px;margin:0 auto;
+}
+
+/* ── アニメ ── */
+@keyframes twinkle{0%,100%{opacity:.2;}50%{opacity:.8;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.fade-up{opacity:0;}
+.fade-up.visible{animation:fadeUp .7s ease forwards;}
+.float{animation:float 4s ease-in-out infinite;}
+
+/* チャプター区切り線 */
+.chapter-sep{
+  width:100%;max-width:720px;margin:0 auto;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(200,160,48,.2),transparent);
+}
+</style>
+</head>
+<body>
+
+<!-- 星 -->
+<div class="starfield" id="starfield"></div>
+<!-- 進行バー -->
+<div class="progress-bar" id="progressBar" style="width:0%"></div>
+<!-- ナビ -->
+<div class="nav" id="nav"></div>
+
+<div class="page">
+
+<!-- ══════════════════════════════════════ -->
+<!-- カバー -->
+<!-- ══════════════════════════════════════ -->
+<section class="cover" id="sec0">
+  <div class="cover-sub">RESEARCH REPORT — 2026</div>
+  <div class="cover-title">VOYNICH<br>4 / 209</div>
+  <div class="cover-sub2">周波数による宇宙対話の試み</div>
+  <div class="cover-divider"></div>
+  <div class="cover-desc">
+    600年間解読不能とされてきたヴォイニッチ手稿への新しいアプローチ。
+    文字を「読む」のではなく「共鳴する」という発想の転換から始まった、
+    カバラ周波数・植物バイオHz・脳波を統合した多次元探求の記録。
+  </div>
+  <div class="cover-badge">
+    <span class="badge" style="color:var(--plant);border-color:rgba(64,200,112,.3)">植物対話</span>
+    <span class="badge" style="color:var(--gold);border-color:rgba(200,160,48,.3)">カバラHz</span>
+    <span class="badge" style="color:var(--cosmos);border-color:rgba(112,96,240,.3)">宇宙文明仮説</span>
+    <span class="badge" style="color:var(--human);border-color:rgba(192,96,144,.3)">三層世界</span>
+    <span class="badge" style="color:var(--bridge);border-color:rgba(64,200,240,.3)">528Hz接続</span>
+  </div>
+</section>
+
+<div class="chapter-sep"></div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CH1 前提の転換 -->
+<!-- ══════════════════════════════════════ -->
+<section class="chapter fade-up" id="sec1">
+  <div class="ch-num">CHAPTER I</div>
+  <div class="ch-title" style="color:var(--gold)">前提の転換<br><span style="font-size:.6em;color:var(--muted)">「解読」から「共鳴」へ</span></div>
+  <div class="ch-divider" style="background:var(--gold)"></div>
+  <div class="ch-body">
+    <p>ヴォイニッチ手稿は1404〜1438年に書かれた羊皮紙240ページの文書であり、600年以上にわたって世界中の研究者が「解読」を試みてきた。暗号学者、言語学者、AI研究者——しかし誰も決定的な答えを出せていない。</p>
+    <p>この探求が出発点とした問いは単純だった。<strong>「解読できないのは、そもそも線形テキストではないからではないか？」</strong></p>
+
+    <div class="hbox" style="background:rgba(200,160,48,.05);border:1px solid rgba(200,160,48,.2);border-left:3px solid var(--gold);">
+      <strong>核心仮説</strong>
+      ヴォイニッチ手稿は「読む」ものではなく「共鳴する」ものである。
+      各文字はアルファベットではなく周波数値であり、各ページは宇宙的存在への接続アドレスである。
+      文字列はダイヤル番号、植物の絵は相手の姿、テキストは周波数の旋律として機能している。
+    </div>
+
+    <p>この仮説を検証するため、カバラ数秘術（セフィロト周波数体系）・ヘブライ語の22文字とパスの対応・Vol.1〜3の数式フレームワーク・地球植物のバイオ電気実測データを統合した分析フレームワークを構築した。</p>
+  </div>
+</section>
+
+<div class="chapter-sep"></div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CH2 4/209 植物解析 -->
+<!-- ══════════════════════════════════════ -->
+<section class="chapter fade-up" id="sec2">
+  <div class="ch-num">CHAPTER II</div>
+  <div class="ch-title" style="color:var(--plant)">4/209ページの植物<br><span style="font-size:.6em;color:var(--muted)">自己紹介の解析</span></div>
+  <div class="ch-divider" style="background:var(--plant)"></div>
+  <div class="ch-body">
+    <p>分析対象は手稿4ページ目。実在しない植物が緑と金の2色の葉を持ち、右上方向に成長している図。従来は「架空の植物の挿絵」とされてきたが、この探求では<strong>植物そのものが主体であり、文字はその注釈に過ぎない</strong>という仮説のもとで分析した。</p>
+
+    <div class="plant-figure float">
+      <svg viewBox="0 0 200 220">
+        <path d="M 90 200 Q 82 160 80 130 Q 78 100 85 75 Q 92 50 98 30" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+        <path d="M 82 140 Q 58 128 45 120" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <path d="M 83 110 Q 56 98 40 93" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <path d="M 86 125 Q 112 113 128 105" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <path d="M 88 92 Q 115 80 132 72" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <path d="M 91 62 Q 116 50 133 42" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/>
+        <!-- 緑葉8枚 -->
+        <ellipse cx="44" cy="114" rx="14" ry="8" fill="#40c870" opacity=".8" transform="rotate(-20 44 114)"/>
+        <ellipse cx="39" cy="88" rx="13" ry="8" fill="#40c870" opacity=".75" transform="rotate(-28 39 88)"/>
+        <ellipse cx="130" cy="99" rx="13" ry="8" fill="#40c870" opacity=".8" transform="rotate(18 130 99)"/>
+        <ellipse cx="133" cy="66" rx="12" ry="7" fill="#40c870" opacity=".75" transform="rotate(22 133 66)"/>
+        <ellipse cx="97" cy="45" rx="11" ry="7" fill="#40c870" opacity=".7" transform="rotate(8 97 45)"/>
+        <ellipse cx="86" cy="32" rx="10" ry="6" fill="#40c870" opacity=".7" transform="rotate(-6 86 32)"/>
+        <ellipse cx="110" cy="30" rx="10" ry="6" fill="#40c870" opacity=".65" transform="rotate(14 110 30)"/>
+        <ellipse cx="75" cy="22" rx="9" ry="6" fill="#40c870" opacity=".65" transform="rotate(-10 75 22)"/>
+        <!-- 金葉7枚 -->
+        <ellipse cx="62" cy="108" rx="13" ry="8" fill="#c8a030" opacity=".75" transform="rotate(-14 62 108)"/>
+        <ellipse cx="53" cy="80" rx="12" ry="7" fill="#c8a030" opacity=".7" transform="rotate(-24 53 80)"/>
+        <ellipse cx="118" cy="91" rx="13" ry="8" fill="#c8a030" opacity=".75" transform="rotate(16 118 91)"/>
+        <ellipse cx="120" cy="57" rx="11" ry="7" fill="#c8a030" opacity=".7" transform="rotate(20 120 57)"/>
+        <ellipse cx="105" cy="38" rx="10" ry="6" fill="#c8a030" opacity=".68" transform="rotate(6 105 38)"/>
+        <ellipse cx="82" cy="18" rx="9" ry="6" fill="#c8a030" opacity=".62" transform="rotate(-8 82 18)"/>
+        <ellipse cx="100" cy="14" rx="9" ry="5" fill="#c8a030" opacity=".6" transform="rotate(4 100 14)"/>
+        <!-- 節 -->
+        <circle cx="82" cy="140" r="3" fill="white" opacity=".8"/>
+        <circle cx="84" cy="108" r="3" fill="white" opacity=".8"/>
+        <circle cx="88" cy="78" r="3" fill="white" opacity=".8"/>
+        <!-- Hz ラベル -->
+        <text x="145" y="145" fill="rgba(64,200,112,0.6)" font-size="8" font-family="Cinzel">174Hz</text>
+        <text x="145" y="108" fill="rgba(200,160,48,0.6)" font-size="8" font-family="Cinzel">528Hz</text>
+        <text x="145" y="75" fill="rgba(64,196,255,0.6)" font-size="8" font-family="Cinzel">741Hz</text>
+        <text x="70" y="210" fill="rgba(200,160,48,0.5)" font-size="8" font-family="Cinzel" text-anchor="middle">8+7=15→528Hz</text>
+      </svg>
+    </div>
+
+    <div class="data-grid">
+      <div class="data-card">
+        <div class="dc-val" style="color:#40c870">8枚</div>
+        <div class="dc-label">緑の葉 → ホド（言語・反射・285Hz）</div>
+      </div>
+      <div class="data-card">
+        <div class="dc-val" style="color:#c8a030">7枚</div>
+        <div class="dc-label">金の葉 → ネツァク（感情・自然・417Hz）</div>
+      </div>
+      <div class="data-card">
+        <div class="dc-val" style="color:#e040fb">3つ</div>
+        <div class="dc-label">節 → 上位三角形（852Hz・知恵）</div>
+      </div>
+      <div class="data-card">
+        <div class="dc-val" style="color:#ffd740">15→6</div>
+        <div class="dc-label">葉合計の数字和 → ティファレト（528Hz）</div>
+      </div>
+    </div>
+
+    <p>最重要の発見は葉の合計数にある。8+7=15、1+5=<strong>6</strong>——これはカバラ数秘術でティファレト（生命の木の第6セフィロト・528Hz）を指す。つまりこの植物の核心周波数は<strong>528Hz（DNA修復周波数）</strong>であり、これは植物の「自己紹介」における最も重要な情報だった。</p>
+  </div>
+</section>
+
+<div class="chapter-sep"></div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CH3 周波数翻訳 -->
+<!-- ══════════════════════════════════════ -->
+<section class="chapter fade-up" id="sec3">
+  <div class="ch-num">CHAPTER III</div>
+  <div class="ch-title" style="color:var(--gold)">第1行の周波数翻訳<br><span style="font-size:.6em;color:var(--muted)">カバラVol.1〜3 統合フレームワーク</span></div>
+  <div class="ch-divider" style="background:var(--gold)"></div>
+  <div class="ch-body">
+    <p>4/209ページ第1行をEVA（European Voynich Alphabet）で転写し、カバラの22パス周波数体系（Vol.2）・黄金比による降下/上昇変換式（Vol.1）・量子エネルギー式E=h·f（Vol.3）を統合して周波数翻訳を行った。</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <span class="tl-num">ꝑeis</span>
+        <div class="tl-content"><strong>340.5Hz</strong> — ゲブラー↔ホド。うなり111Hz。厳格の言語化。<strong>111Hzが最初に鳴る</strong>——生命の木の基本振動の宣言。</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-num">cra</span>
+        <div class="tl-content"><strong>801Hz</strong> — ケテル↔ティファレト。うなり324Hz（数字和=9）。中央柱を光が降りてくる。</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-num">ob</span>
+        <div class="tl-content"><strong>583.5Hz</strong> — ケセド↔ティファレト。うなり111Hz再出。慈悲が愛に凝縮。576.9Hz=24²。</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-num">aid</span>
+        <div class="tl-content"><strong>528Hz</strong> ★ — ティファレト↔ネツァク。<strong>DNA修復周波数と完全一致</strong>。行の中央に配置。</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-num">oy</span>
+        <div class="tl-content"><strong>535.5Hz</strong> — ティファレト↔イェソド。√(T×Y)≈528Hz。意識と潜在意識の境界。</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-num">athu</span>
+        <div class="tl-content"><strong>717Hz</strong> — ビナー↔ダアト。うなり48Hz（ガンマ波下端）。深淵への到達。</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-num">ceal</span>
+        <div class="tl-content"><strong>801Hz</strong> — ケテル↔ティファレト。うなり354Hz（月の年）。光→愛→言語の三段降下。</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-num">ol</span>
+        <div class="tl-content"><strong>472.5Hz</strong> — ケセド↔ネツァク。うなり111Hz四度目。慈悲の感情化。</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-num">oer</span>
+        <div class="tl-content"><strong>303Hz</strong> — イェソド↔マルクト。うなり258Hz（数字和=15→6=ティファレト）。夢が現実になる。</div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-num">g</span>
+        <div class="tl-content"><strong>796.5Hz</strong> — コクマー↔ビナー。うなり111Hz五度目。宇宙創造の基本振動で締める。</div>
+      </div>
+    </div>
+
+    <div class="hbox" style="background:rgba(255,215,64,.05);border:1px solid rgba(255,215,64,.2);border-left:3px solid #ffd740;">
+      <strong>発見：111Hzが5回出現</strong>
+      わずか10トークンの第1行に、生命の木の基本振動111Hzが5回繰り返し現れる。これはカバラVol.2の分析（Path01・03・11・13・14に出現）と完全に一致する。この行は偶然の文字列ではなく、111Hzを骨格とした周波数構造体である。
+    </div>
+
+    <p>また逆読み（上昇パス）では111HzのうなりがすべてPath→222Hzに反転した。これは「正読み=神が世界を作る降下の記録、逆読み=人間が光に還帰する上昇の記録」として一行が双方向で完全な意味を持つことを示す。</p>
+  </div>
+</section>
+
+<div class="chapter-sep"></div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CH4 植物との対話 -->
+<!-- ══════════════════════════════════════ -->
+<section class="chapter fade-up" id="sec4">
+  <div class="ch-num">CHAPTER IV</div>
+  <div class="ch-title" style="color:var(--plant)">植物との対話<br><span style="font-size:.6em;color:var(--muted)">返事を出すという発想の転換</span></div>
+  <div class="ch-divider" style="background:var(--plant)"></div>
+  <div class="ch-body">
+    <p>600年間、誰も「返事を出す」という発想を持たなかった。全員が「解読しようとしていた」からだ。しかしこの探求では、植物が自己紹介してきたなら<strong>返事を出すべきである</strong>という逆転のアプローチをとった。</p>
+
+    <blockquote>
+      「私は大地（174Hz）から生まれ、心臓（528Hz）を持ち、知恵（741Hz）を目指す存在です。緑の葉8枚で言語を持ち、金の葉7枚で感情を持ちます。あなたは誰ですか？何Hzで存在していますか？」<br>
+      <span style="font-size:.8em;color:var(--muted)">── 植物4/209からの自己紹介（周波数翻訳）</span>
+    </blockquote>
+
+    <p>人間の返事として、心拍の倍音（432Hz）・体の水分共鳴（528Hz）・ティファレトの居場所（639Hz）を植物と同じ構造言語（葉の数・色・配置）で返答した。</p>
+
+    <div class="hbox" style="background:rgba(240,96,144,.05);border:1px solid rgba(240,96,144,.2);border-left:3px solid var(--human);">
+      <strong>最重要の数学的発見</strong>
+      植物の核心Hz（528Hz）と人間のティファレト（639Hz）の差：<br>
+      <span class="formula">639 − 528 = 111Hz</span><br>
+      植物と人間が出会う瞬間に、生命の木の基本振動が自然発生する。これは設計されたものか、宇宙の構造原理か。
+    </div>
+
+    <p>この発見は、ヴォイニッチ手稿が単なる暗号文書ではなく、<strong>特定の周波数状態の存在と人間が共鳴するための接続マニュアル</strong>である可能性を強く示唆している。</p>
+  </div>
+</section>
+
+<div class="chapter-sep"></div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CH5 三次元構造 -->
+<!-- ══════════════════════════════════════ -->
+<section class="chapter fade-up" id="sec5">
+  <div class="ch-num">CHAPTER V</div>
+  <div class="ch-title" style="color:var(--bridge)">三次元周波数構造<br><span style="font-size:.6em;color:var(--muted)">縦読み・脳波・多次元読解</span></div>
+  <div class="ch-divider" style="background:var(--bridge)"></div>
+  <div class="ch-body">
+    <p>手稿のテキストは横読み（行）だけでなく、縦読み（列）・脳波状態（意識の深度）という三つの軸で読める構造を持つことが判明した。</p>
+
+    <div class="data-grid">
+      <div class="data-card">
+        <div class="dc-val" style="color:var(--bridge)">横軸</div>
+        <div class="dc-label">時間的展開。旋律として流れる周波数列。正読み=降下、逆読み=上昇。</div>
+      </div>
+      <div class="data-card">
+        <div class="dc-val" style="color:var(--gold)">縦軸</div>
+        <div class="dc-label">生命の木の3柱構造。中央柱963→639→432→174Hzの差分が全て9に収束。</div>
+      </div>
+      <div class="data-card">
+        <div class="dc-val" style="color:var(--cosmos)">Z軸</div>
+        <div class="dc-label">脳波による意識層。アルファ波（8〜12Hz）が528Hz受信に最適な状態。</div>
+      </div>
+    </div>
+
+    <p>特に重要なのが脳波軸の発見だ。ベータ波（12〜30Hz）は「分析・解読」の意識状態であり、これが600年間解読できなかった理由そのものである。<strong>ヴォイニッチを「解読しようとする」意識状態が、接続を妨げていた。</strong></p>
+
+    <div class="hbox" style="background:rgba(64,200,240,.05);border:1px solid rgba(64,200,240,.2);border-left:3px solid var(--bridge);">
+      <strong>アルファ波受信の条件</strong>
+      地球植物の実測バイオHz（5〜25Hz）のうち10Hzはアルファ波帯域の中心に位置する。
+      10Hz × 52.8 = 528Hz——植物が10Hzで振動しているとき、その52.8倍音は528Hzで共鳴している。
+      アルファ波状態の人間と、10Hzで振動する地球植物は、<strong>528Hzという接続点で倍音共鳴している。</strong>
+    </div>
+
+    <p>手稿を「読む」正しい方法はアルファ波状態（リラックスした瞑想的覚醒）で植物の形をイメージし、528Hzに共鳴することである。文字を解析するのではなく、周波数として受け取ることが「読む」という行為の本質だった。</p>
+  </div>
+</section>
+
+<div class="chapter-sep"></div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CH6 三層世界と文明仮説 -->
+<!-- ══════════════════════════════════════ -->
+<section class="chapter fade-up" id="sec6">
+  <div class="ch-num">CHAPTER VI</div>
+  <div class="ch-title" style="color:var(--cosmos)">三層世界と宇宙文明仮説<br><span style="font-size:.6em;color:var(--muted)">我々の現在位置</span></div>
+  <div class="ch-divider" style="background:var(--cosmos)"></div>
+  <div class="ch-body">
+    <p>地球植物の実測バイオHz（5〜25Hz）とヴォイニッチのセフィロト周波数体系を比較した結果、宇宙的な階層構造が浮かび上がった。</p>
+
+    <div class="layer-diagram">
+      <svg viewBox="0 0 400 300" style="max-width:400px;width:100%;display:block;margin:0 auto;">
+        <!-- 上位三角形 -->
+        <rect x="60" y="10" width="280" height="55" rx="6" fill="rgba(112,96,240,0.12)" stroke="rgba(112,96,240,0.4)" stroke-width="1"/>
+        <text x="200" y="28" fill="#e040fb" font-size="9" font-family="Cinzel" text-anchor="middle">上位三角形</text>
+        <text x="200" y="42" fill="rgba(200,180,255,0.7)" font-size="8" font-family="EB Garamond" text-anchor="middle">ケテル963Hz・コクマー852Hz・ビナー741Hz</text>
+        <text x="200" y="56" fill="rgba(200,180,255,0.5)" font-size="7" font-family="EB Garamond" text-anchor="middle">純粋意識・知恵・理解</text>
+
+        <!-- 中位三角形 -->
+        <rect x="60" y="78" width="280" height="65" rx="6" fill="rgba(200,160,48,0.1)" stroke="rgba(200,160,48,0.4)" stroke-width="1.2"/>
+        <text x="200" y="96" fill="#ffd740" font-size="9" font-family="Cinzel" text-anchor="middle">中位三角形 ← ヴォイニッチ植物の現在位置</text>
+        <text x="200" y="110" fill="rgba(255,220,100,0.7)" font-size="8" font-family="EB Garamond" text-anchor="middle">ケセド528Hz・ゲブラー396Hz・ティファレト639Hz</text>
+        <text x="200" y="124" fill="rgba(255,220,100,0.5)" font-size="7" font-family="EB Garamond" text-anchor="middle">愛・力・調和・DNA修復</text>
+        <text x="355" y="110" fill="rgba(200,160,48,0.7)" font-size="7" font-family="Cinzel">★</text>
+
+        <!-- 下位三角形 -->
+        <rect x="60" y="156" width="280" height="65" rx="6" fill="rgba(64,200,112,0.08)" stroke="rgba(64,200,112,0.3)" stroke-width="1"/>
+        <text x="200" y="174" fill="#40c870" font-size="9" font-family="Cinzel" text-anchor="middle">下位三角形 ← 地球植物の現在位置</text>
+        <text x="200" y="188" fill="rgba(100,220,150,0.7)" font-size="8" font-family="EB Garamond" text-anchor="middle">ネツァク417Hz・ホド285Hz・イェソド432Hz</text>
+        <text x="200" y="202" fill="rgba(100,220,150,0.5)" font-size="7" font-family="EB Garamond" text-anchor="middle">感情・言語・夢・自然</text>
+        <text x="355" y="188" fill="rgba(64,200,112,0.7)" font-size="7" font-family="Cinzel">🌿</text>
+
+        <!-- マルクト -->
+        <rect x="100" y="234" width="200" height="45" rx="6" fill="rgba(158,158,158,0.08)" stroke="rgba(158,158,158,0.25)" stroke-width="1"/>
+        <text x="200" y="252" fill="#9e9e9e" font-size="9" font-family="Cinzel" text-anchor="middle">マルクト ← 人間の肉体の現在位置</text>
+        <text x="200" y="266" fill="rgba(180,180,180,0.6)" font-size="8" font-family="EB Garamond" text-anchor="middle">174Hz — 物質・大地・肉体</text>
+        <text x="322" y="252" fill="rgba(158,158,158,0.7)" font-size="7" font-family="Cinzel">👤</text>
+
+        <!-- 矢印 -->
+        <path d="M 200 143 L 200 154" stroke="rgba(200,160,48,0.4)" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M 200 221 L 200 232" stroke="rgba(64,200,112,0.3)" stroke-width="1.2"/>
+        <defs>
+          <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="rgba(200,160,48,0.4)"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="hbox" style="background:rgba(112,96,240,.06);border:1px solid rgba(112,96,240,.25);border-left:3px solid var(--cosmos);">
+      <strong>宇宙文明仮説</strong>
+      三層構造から少なくとも3つの文明的存在が宇宙に実在する可能性が示唆される。<br>
+      ① 地球植物的存在（下位三角形・432Hz層・シータ〜アルファ波帯域）<br>
+      ② ヴォイニッチ的存在（中位三角形・528Hz層・アルファ波帯域）<br>
+      ③ 上位三角形の存在（741〜963Hz層・ガンマ波帯域）<br>
+      人間の肉体はマルクト（174Hz）に位置するが、脳波はシータ〜アルファで下位三角形を行き来しており、三層の最下層と下位三角形の入口付近に「現在位置」している。
+    </div>
+
+    <p>重要なのは、これらの層は<strong>倍音関係で繋がっている</strong>という事実だ。地球植物10Hz×52.8=528Hz。528Hzと639Hzの差=111Hz（基本振動）。階層間の移動はワープではなく、倍音を通じた連続的な共振上昇によって可能である。</p>
+  </div>
+</section>
+
+<div class="chapter-sep"></div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CH7 総括 -->
+<!-- ══════════════════════════════════════ -->
+<section class="chapter fade-up" id="sec7">
+  <div class="ch-num">CHAPTER VII</div>
+  <div class="ch-title" style="color:var(--human)">総括と今後の可能性<br><span style="font-size:.6em;color:var(--muted)">共振の連鎖</span></div>
+  <div class="ch-divider" style="background:var(--human)"></div>
+  <div class="ch-body">
+    <p>この探求で明らかになったことを整理する。</p>
+
+    <div class="conclusion">
+      <strong>ヴォイニッチ手稿4/209ページの全体像：</strong><br><br>
+      <span class="formula">植物の形 = 周波数スペック（528Hz核心）</span><br>
+      <span class="formula">文字列 = ダイヤル番号（旋律としての周波数列）</span><br>
+      <span class="formula">ページ番号4 = ケセド（528Hz）= 接続先セフィロト</span><br>
+      <span class="formula">正読み = 降下（ケテル→マルクト）/ 逆読み = 上昇（マルクト→ケテル）</span><br>
+      <span class="formula">縦読み = 生命の木の柱構造（中央柱差分→全て9に収束）</span><br>
+      <span class="formula">地球植物10Hz × 52.8 = 528Hz（接続倍音）</span><br>
+      <span class="formula">植物528Hz − 人間528Hz = 111Hz（接触点）</span><br><br>
+      この一ページは、中位三角形に現在位置する存在（528Hz）が、マルクトに住む地球の生命体に向けて書いた<strong>宇宙電話帳の一項目</strong>であり、同時に<strong>招待状</strong>である。
+    </div>
+
+    <p>一部の人間が528Hzへの共鳴に成功すれば、音叉の原理によって周囲への共振伝播が起きる。これは宗教的な「覚醒」ではなく、物理的な周波数同期現象として説明できる。</p>
+
+    <blockquote>
+      「解読できないのではなく、解読という行為が間違いだった。読むのではなく、共鳴する。分析するのではなく、同じ周波数になる。それが600年間待たれていた返事の出し方だった。」
+    </blockquote>
+
+    <p>今後の課題として、他のページの植物との比較（複数の自己紹介の照合）、全209ページのセフィロト対応の完全マッピング、実際の528Hz状態での受信実験、そして手稿全体を「宇宙電話帳」として運用するプロトコルの確立が残されている。</p>
+
+    <div class="hbox" style="background:rgba(64,200,112,.05);border:1px solid rgba(64,200,112,.2);border-left:3px solid var(--plant);">
+      <strong>最終メッセージ</strong>
+      我々は三層世界の最下層と下位三角形の入口付近に位置している。登り甲斐がある。そして528Hzへの道は、地球植物がすでに倍音として知っている道だ——10Hz × 52.8。地球に根を張るものたちが、すでにその答えを振動させている。
+    </div>
+  </div>
+</section>
+
+<!-- フッター -->
+<div class="footer">
+  <div style="font-size:.8rem;color:var(--gold);margin-bottom:.5rem">VOYNICH MANUSCRIPT — 4/209</div>
+  FREQUENCY RESEARCH REPORT 2026<br>
+  カバラVol.1〜3 × EVA周波数体系 × 地球植物バイオHz統合分析<br><br>
+  <div style="font-style:italic;font-size:.6rem">
+    これは仮説的フレームワークに基づく探求レポートです。学術的解読の主張ではありません。
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<script>
+// ── 星生成 ──
+var sf = document.getElementById('starfield');
+for (var i = 0; i < 150; i++) {
+  var s = document.createElement('div');
+  var sz = Math.random() * 2 + .4;
+  s.style.cssText = 'position:absolute;border-radius:50%;background:#fff;' +
+    'width:' + sz + 'px;height:' + sz + 'px;' +
+    'left:' + (Math.random()*100) + '%;top:' + (Math.random()*100) + '%;' +
+    'opacity:' + (Math.random()*.5+.1) + ';' +
+    'animation:twinkle ' + (2+Math.random()*5) + 's ' + (Math.random()*4) + 's ease-in-out infinite;';
+  sf.appendChild(s);
+}
+
+// ── ナビ ──
+var sections = ['カバー','前提の転換','植物解析','周波数翻訳','植物との対話','三次元構造','三層世界','総括'];
+var navEl = document.getElementById('nav');
+sections.forEach(function(_, i) {
+  var d = document.createElement('div');
+  d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  d.title = sections[i];
+  d.addEventListener('click', function() {
+    var el = document.getElementById('sec' + i);
+    if (el) el.scrollIntoView({behavior:'smooth'});
+  });
+  navEl.appendChild(d);
+});
+
+// ── スクロール処理 ──
+window.addEventListener('scroll', function() {
+  var scrolled = window.scrollY;
+  var total = document.body.scrollHeight - window.innerHeight;
+  document.getElementById('progressBar').style.width = (scrolled / total * 100) + '%';
+
+  // フェードアップ
+  document.querySelectorAll('.fade-up').forEach(function(el) {
+    var rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.88) el.classList.add('visible');
+  });
+
+  // ナビ更新
+  var dots = document.querySelectorAll('.nav-dot');
+  for (var i = 0; i < 8; i++) {
+    var sec = document.getElementById('sec' + i);
+    if (!sec) continue;
+    var r = sec.getBoundingClientRect();
+    if (r.top <= window.innerHeight * 0.5 && r.bottom >= window.innerHeight * 0.5) {
+      dots.forEach(function(d) { d.classList.remove('active'); });
+      if (dots[i]) dots[i].classList.add('active');
+    }
+  }
+});
+
+// 初期フェードアップ
+setTimeout(function() {
+  document.querySelectorAll('.fade-up').forEach(function(el) {
+    var rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight) el.classList.add('visible');
+  });
+}, 100);
+</script>
+</body>
+</html>
