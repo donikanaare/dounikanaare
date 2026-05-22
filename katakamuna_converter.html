@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カタカムナ周波数変換器 v2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Shippori+Mincho:wght@400;600&display=swap');
+:root{
+  --bg:#04050e;--gold:#c8a84b;--gold-l:#e8d48a;
+  --text:#c8c8e0;--muted:#7a7898;--silver:#c0c4d8;
+  --jade:#80d0a0;--lotus:#e090b0;--vio:#b090e8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Shippori Mincho',serif;
+  min-height:100vh;padding:1.2rem .8rem 3rem;
+  background-image:
+    radial-gradient(ellipse at 30% 20%,rgba(80,60,160,.1) 0%,transparent 55%),
+    radial-gradient(ellipse at 80% 80%,rgba(200,168,75,.05) 0%,transparent 50%);}
+
+.hdr{text-align:center;margin-bottom:1.2rem;}
+h1{font-family:'Cinzel',serif;font-size:clamp(.8rem,3vw,1.25rem);color:var(--gold-l);
+  letter-spacing:.2em;text-shadow:0 0 30px rgba(232,212,138,.4);margin-bottom:.2rem;}
+.sub{font-size:.62rem;color:var(--muted);font-style:italic;letter-spacing:.08em;}
+.divider{width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:.4rem auto;opacity:.35;}
+
+/* LANG TOGGLE */
+.lang-row{display:flex;justify-content:center;gap:.4rem;margin-bottom:.8rem;}
+.ltb{font-family:'Cinzel',serif;font-size:.6rem;padding:.22rem .65rem;border-radius:20px;
+  border:1px solid rgba(200,168,75,.22);color:var(--muted);background:transparent;cursor:pointer;transition:all .2s;}
+.ltb.on{background:rgba(200,168,75,.18);border-color:var(--gold);color:var(--gold-l);}
+
+/* INPUT */
+.input-area{background:rgba(8,6,20,.9);border:1px solid rgba(200,168,75,.2);border-radius:8px;
+  padding:.9rem;margin-bottom:.9rem;}
+.input-label{font-family:'Cinzel',serif;font-size:.68rem;color:var(--gold);letter-spacing:.1em;margin-bottom:.4rem;}
+textarea{width:100%;background:rgba(4,5,14,.8);border:1px solid rgba(200,168,75,.15);
+  border-radius:5px;color:var(--text);font-family:'Shippori Mincho',serif;font-size:.95rem;
+  padding:.55rem .65rem;resize:vertical;min-height:65px;outline:none;line-height:1.7;}
+textarea:focus{border-color:rgba(200,168,75,.4);}
+.btn-row{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.55rem;}
+.btn{font-family:'Cinzel',serif;font-size:.58rem;padding:.26rem .65rem;border-radius:4px;
+  border:1px solid rgba(200,168,75,.22);color:var(--gold);background:transparent;
+  cursor:pointer;letter-spacing:.05em;transition:all .2s;}
+.btn:hover{background:rgba(200,168,75,.1);border-color:var(--gold);}
+.btn.primary{background:rgba(200,168,75,.18);border-color:var(--gold);color:var(--gold-l);}
+
+/* CONVERSION NOTE */
+.conv-note{font-size:.58rem;color:var(--muted);margin-top:.4rem;line-height:1.6;}
+.conv-note span{color:var(--jade);}
+
+/* PRESETS */
+.preset-row{margin-top:.45rem;}
+.preset-label{font-size:.58rem;color:var(--muted);margin-bottom:.25rem;font-family:'Cinzel',serif;letter-spacing:.05em;}
+.preset-tags{display:flex;flex-wrap:wrap;gap:.25rem;}
+.ptag{font-size:.56rem;padding:.1rem .38rem;border-radius:3px;border:1px solid rgba(200,168,75,.18);
+  color:var(--gold);cursor:pointer;transition:all .2s;}
+.ptag:hover{background:rgba(200,168,75,.1);}
+.ptag.en{color:var(--jade);border-color:rgba(128,208,160,.22);}
+
+/* TOKEN STRIP */
+.strip-wrap{background:rgba(8,6,20,.7);border:1px solid rgba(200,168,75,.1);border-radius:6px;
+  padding:.4rem;margin-bottom:.9rem;min-height:52px;}
+.strip-inner{display:flex;flex-wrap:wrap;gap:.25rem;}
+.tok{display:flex;flex-direction:column;align-items:center;
+  background:rgba(12,9,24,.9);border:1px solid rgba(200,168,75,.12);border-radius:5px;
+  padding:.28rem .38rem;min-width:40px;cursor:pointer;transition:all .2s;}
+.tok:hover{border-color:rgba(200,168,75,.4);}
+.tok.active{border-color:var(--gold);background:rgba(200,168,75,.1);}
+.tok-char{font-size:1rem;line-height:1;}
+.tok-sub{font-size:.48rem;color:var(--muted);font-family:'Cinzel',serif;margin-top:.08rem;}
+.tok-hz{font-size:.5rem;margin-top:.08rem;font-family:'Cinzel',serif;}
+.tok-src{font-size:.44rem;padding:.04rem .2rem;border-radius:2px;margin-top:.06rem;font-family:'Cinzel',serif;}
+.src-jp{background:rgba(128,208,160,.15);color:var(--jade);}
+.src-en{background:rgba(176,144,232,.15);color:var(--vio);}
+.src-kanji{background:rgba(200,168,75,.15);color:var(--gold);}
+.src-approx{background:rgba(224,144,176,.15);color:var(--lotus);}
+.tok-space{width:10px;border:none!important;background:transparent!important;cursor:default;}
+.tok-unknown{opacity:.35;}
+
+/* CANVASES */
+.cv-label{font-family:'Cinzel',serif;font-size:.66rem;color:var(--gold);margin-bottom:.35rem;letter-spacing:.07em;}
+#scoreCanvas,#waveCanvas,#vortexCanvas{width:100%;border-radius:6px;display:block;margin-bottom:.9rem;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:.38rem;margin-bottom:.9rem;}
+.stat{background:rgba(8,6,20,.85);border:1px solid rgba(200,168,75,.12);border-radius:5px;padding:.45rem .55rem;}
+.stat-label{font-size:.55rem;color:var(--muted);font-family:'Cinzel',serif;letter-spacing:.04em;margin-bottom:.12rem;}
+.stat-val{font-family:'Cinzel',serif;font-size:.9rem;color:var(--gold-l);}
+.stat-sub{font-size:.52rem;color:var(--muted);margin-top:.06rem;}
+
+/* DETAIL */
+.detail{background:rgba(8,6,20,.85);border:1px solid rgba(200,168,75,.18);
+  border-left:3px solid var(--gold);border-radius:5px;padding:.65rem .85rem;
+  margin-bottom:.9rem;font-size:.68rem;line-height:1.85;min-height:56px;}
+.dt{font-family:'Cinzel',serif;color:var(--gold-l);font-size:.7rem;margin-bottom:.22rem;}
+
+/* SEF MAP */
+.sef-map{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:.32rem;margin-bottom:.9rem;}
+.sef{background:rgba(8,6,20,.8);border:1px solid rgba(200,168,75,.1);border-radius:5px;padding:.38rem .45rem;text-align:center;}
+.sef-name{font-family:'Cinzel',serif;font-size:.62rem;margin-bottom:.12rem;}
+.sef-hz{font-size:.65rem;font-family:'Cinzel',serif;margin-bottom:.1rem;}
+.sef-bar-wrap{height:3px;background:rgba(255,255,255,.05);border-radius:2px;margin-bottom:.08rem;overflow:hidden;}
+.sef-bar{height:100%;border-radius:2px;}
+.sef-count{font-size:.52rem;color:var(--muted);}
+
+/* WAKA */
+.waka-result{background:rgba(8,6,20,.85);border:1px solid rgba(200,168,75,.15);
+  border-radius:6px;padding:.75rem .9rem;margin-bottom:.9rem;}
+.waka-title{font-family:'Cinzel',serif;color:var(--gold);font-size:.7rem;margin-bottom:.4rem;letter-spacing:.07em;}
+.waka-line{display:flex;align-items:center;gap:.45rem;margin-bottom:.28rem;font-size:.7rem;}
+.waka-mora{font-family:'Cinzel',serif;font-size:.58rem;color:var(--muted);width:22px;flex-shrink:0;}
+
+.note{font-size:.6rem;color:var(--muted);text-align:center;margin-top:1.2rem;font-style:italic;line-height:1.7;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>KATAKAMUNA FREQUENCY CONVERTER</h1>
+  <p class="sub">日本語 / English → カタカムナ周波数 → 音楽スコア・渦巻き座標　v2.0</p>
+  <div class="divider"></div>
+</div>
+
+<!-- LANG TOGGLE -->
+<div class="lang-row">
+  <button class="ltb on" id="ltJP" onclick="setLang('jp')">🇯🇵 日本語</button>
+  <button class="ltb" id="ltEN" onclick="setLang('en')">🇺🇸 English</button>
+  <button class="ltb" id="ltMIX" onclick="setLang('mix')">🌐 Mix</button>
+</div>
+
+<!-- INPUT -->
+<div class="input-area">
+  <div class="input-label" id="inputLabel">◈ テキストを入力（ひらがな・カタカナ・漢字・小文字対応）</div>
+  <textarea id="inputText" placeholder="例：かんしゃ　ありがとう　感謝..."></textarea>
+  <div class="btn-row">
+    <button class="btn primary" onclick="convert()">▶ 変換・分析</button>
+    <button class="btn" onclick="clearAll()">✕ クリア</button>
+    <button class="btn" onclick="playSound()">♪ 音を鳴らす</button>
+  </div>
+  <div class="conv-note" id="convNote">
+    <span>対応：</span>ひらがな・カタカナ・濁音・半濁音・<span>小文字（っ→つ、ゃ→や 等）</span>・<span>よく使う漢字（自動読み仮名変換）</span>
+  </div>
+  <!-- PRESETS -->
+  <div class="preset-row">
+    <div class="preset-label" id="presetLabel">◈ プリセット</div>
+    <div class="preset-tags" id="presetTags"></div>
+  </div>
+</div>
+
+<!-- TOKEN STRIP -->
+<div class="cv-label">◈ 音素分解 — タップで詳細</div>
+<div class="strip-wrap"><div class="strip-inner" id="tokenStrip"></div></div>
+
+<!-- SCORE -->
+<div class="cv-label">◈ 周波数スコア（楽譜的表示）</div>
+<canvas id="scoreCanvas" height="160"></canvas>
+
+<!-- WAVE -->
+<div class="cv-label">◈ 合成波形（全音素の重ね合わせ）</div>
+<canvas id="waveCanvas" height="90"></canvas>
+
+<!-- STATS -->
+<div class="stats-grid" id="statsGrid"></div>
+
+<!-- DETAIL -->
+<div class="detail" id="detailPanel">
+  <div class="dt">◈ 音素詳細</div>
+  <div id="detailText">音素をタップすると思念・セフィロト対応・周波数が表示されます。</div>
+</div>
+
+<!-- VORTEX -->
+<div class="cv-label">◈ カタカムナ渦巻き座標マップ</div>
+<canvas id="vortexCanvas" height="270"></canvas>
+
+<!-- SEF MAP -->
+<div class="cv-label">◈ セフィロト分布</div>
+<div class="sef-map" id="sefMap"></div>
+
+<!-- WAKA -->
+<div class="waka-result" id="wakaResult" style="display:none">
+  <div class="waka-title">◈ 音数律 検出</div>
+  <div id="wakaContent"></div>
+</div>
+
+<p class="note">
+  ※ 漢字変換は内蔵辞書（約200語）による近似変換です。<br>
+  ※ 英語はヘブライ文字ゲマトリア経由でカタカムナ周波数に変換します（A=ア相当 等）。<br>
+  ※ 周波数値は思念・形状属性からの推定値であり実測値ではありません。
+</p>
+
+<script>
+// ════════════════════════════════════
+// カタカムナ 48音データ
+// ════════════════════════════════════
+const KATA={
+  'ひ':{n:1, r:1.2,s:'根源の力・霊・日',   hz:963,sef:'ケテル',   col:'#e040fb'},
+  'ふ':{n:2, r:2.1,s:'広がり・不・負',      hz:852,sef:'コクマー', col:'#7c4dff'},
+  'み':{n:3, r:2.8,s:'実体・見・身',         hz:741,sef:'ビナー',   col:'#40c4ff'},
+  'よ':{n:4, r:3.4,s:'統合・四・世',         hz:693,sef:'ダアト',   col:'#ff5252'},
+  'い':{n:5, r:3.9,s:'生命粒子・意',         hz:528,sef:'ケセド',   col:'#69f0ae'},
+  'ま':{n:6, r:4.3,s:'間・真・魔',           hz:639,sef:'ティファレト',col:'#ffd740'},
+  'わ':{n:7, r:4.6,s:'和・輪・環',           hz:417,sef:'ネツァク', col:'#40ffea'},
+  'り':{n:8, r:4.8,s:'離れ・理・利',         hz:285,sef:'ホド',     col:'#b388ff'},
+  'て':{n:9, r:5.0,s:'出て・手・天',         hz:432,sef:'イェソド', col:'#80d8ff'},
+  'め':{n:10,r:5.1,s:'目・芽・命',           hz:174,sef:'マルクト', col:'#9e9e9e'},
+  'く':{n:11,r:5.2,s:'来る・繰・句',         hz:528,sef:'ケセド',   col:'#69f0ae'},
+  'む':{n:12,r:5.2,s:'広がり・無・夢',       hz:852,sef:'コクマー', col:'#7c4dff'},
+  'な':{n:13,r:5.1,s:'核・中心・名',         hz:639,sef:'ティファレト',col:'#ffd740'},
+  'や':{n:14,r:4.9,s:'弥・八・矢',           hz:741,sef:'ビナー',   col:'#40c4ff'},
+  'こ':{n:15,r:4.7,s:'個・子・来',           hz:417,sef:'ネツァク', col:'#40ffea'},
+  'と':{n:16,r:4.4,s:'統・渡・止',           hz:396,sef:'ゲブラー', col:'#ff6e40'},
+  'あ':{n:17,r:4.0,s:'現れ・在・天',         hz:963,sef:'ケテル',   col:'#e040fb'},
+  'う':{n:18,r:3.6,s:'有・宇・内',           hz:528,sef:'ケセド',   col:'#69f0ae'},
+  'の':{n:19,r:3.2,s:'延び・野・乗',         hz:285,sef:'ホド',     col:'#b388ff'},
+  'し':{n:20,r:2.8,s:'示し・死・四',         hz:432,sef:'イェソド', col:'#80d8ff'},
+  'へ':{n:21,r:2.4,s:'変・辺・経',           hz:174,sef:'マルクト', col:'#9e9e9e'},
+  'か':{n:22,r:1.9,s:'力・変化・火',         hz:396,sef:'ゲブラー', col:'#ff6e40'},
+  'た':{n:23,r:1.5,s:'立つ・他・多',         hz:528,sef:'ケセド',   col:'#69f0ae'},
+  'ち':{n:24,r:1.1,s:'地・知・血',           hz:639,sef:'ティファレト',col:'#ffd740'},
+  'さ':{n:25,r:0.8,s:'差・作・定',           hz:741,sef:'ビナー',   col:'#40c4ff'},
+  'き':{n:26,r:0.5,s:'気・木・来',           hz:852,sef:'コクマー', col:'#7c4dff'},
+  'そ':{n:27,r:1.0,s:'双・素・祖',           hz:693,sef:'ダアト',   col:'#ff5252'},
+  'ら':{n:28,r:1.6,s:'来・等・裸',           hz:528,sef:'ケセド',   col:'#69f0ae'},
+  'に':{n:29,r:2.2,s:'二・似・荷',           hz:285,sef:'ホド',     col:'#b388ff'},
+  'も':{n:30,r:2.7,s:'持つ・模・藻',         hz:432,sef:'イェソド', col:'#80d8ff'},
+  'ろ':{n:31,r:3.2,s:'路・露・炉',           hz:963,sef:'ケテル',   col:'#e040fb'},
+  'け':{n:32,r:3.6,s:'気・消え・毛',         hz:528,sef:'ケセド',   col:'#69f0ae'},
+  'せ':{n:33,r:3.9,s:'迫・正・性',           hz:396,sef:'ゲブラー', col:'#ff6e40'},
+  'ゆ':{n:34,r:4.2,s:'湧く・結・由',         hz:741,sef:'ビナー',   col:'#40c4ff'},
+  'ぬ':{n:36,r:4.5,s:'抜け・塗・主',         hz:528,sef:'ケセド',   col:'#69f0ae'},
+  'お':{n:37,r:4.5,s:'表・奥・雄',           hz:852,sef:'コクマー', col:'#7c4dff'},
+  'を':{n:38,r:4.4,s:'緒・男・小',           hz:852,sef:'コクマー', col:'#7c4dff'},
+  'は':{n:39,r:4.2,s:'放つ・葉・波',         hz:417,sef:'ネツァク', col:'#40ffea'},
+  'え':{n:40,r:3.9,s:'得・絵・柄',           hz:285,sef:'ホド',     col:'#b388ff'},
+  'つ':{n:41,r:3.6,s:'集まり・続・通',       hz:432,sef:'イェソド', col:'#80d8ff'},
+  'ね':{n:43,r:2.8,s:'根・音・願',           hz:639,sef:'ティファレト',col:'#ffd740'},
+  'ほ':{n:44,r:2.3,s:'本・穂・炎',           hz:396,sef:'ゲブラー', col:'#ff6e40'},
+  'ん':{n:45,r:1.8,s:'音・陰・因',           hz:285,sef:'ホド',     col:'#b388ff'},
+  'れ':{n:46,r:1.4,s:'連・礼・零',           hz:528,sef:'ケセド',   col:'#69f0ae'},
+  'す':{n:47,r:1.0,s:'透き・住・数',         hz:396,sef:'ゲブラー', col:'#ff6e40'},
+  'お':{n:37,r:4.5,s:'表・奥・雄',           hz:852,sef:'コクマー', col:'#7c4dff'},
+  // 濁音
+  'が':{n:22,r:1.9,s:'力の変容',hz:396,sef:'ゲブラー',col:'#ff6e40'},
+  'ぎ':{n:26,r:0.5,s:'気の変容',hz:852,sef:'コクマー',col:'#7c4dff'},
+  'ぐ':{n:11,r:5.2,s:'来る変容',hz:528,sef:'ケセド',  col:'#69f0ae'},
+  'げ':{n:40,r:3.9,s:'得の変容',hz:285,sef:'ホド',    col:'#b388ff'},
+  'ご':{n:15,r:4.7,s:'個の変容',hz:417,sef:'ネツァク',col:'#40ffea'},
+  'ざ':{n:25,r:0.8,s:'差の変容',hz:741,sef:'ビナー',  col:'#40c4ff'},
+  'じ':{n:20,r:2.8,s:'示しの変容',hz:432,sef:'イェソド',col:'#80d8ff'},
+  'ず':{n:41,r:3.6,s:'集まりの変容',hz:432,sef:'イェソド',col:'#80d8ff'},
+  'ぜ':{n:33,r:3.9,s:'迫の変容',hz:396,sef:'ゲブラー',col:'#ff6e40'},
+  'ぞ':{n:27,r:1.0,s:'双の変容',hz:693,sef:'ダアト',  col:'#ff5252'},
+  'だ':{n:23,r:1.5,s:'立つの変容',hz:528,sef:'ケセド', col:'#69f0ae'},
+  'ぢ':{n:24,r:1.1,s:'地の変容',hz:639,sef:'ティファレト',col:'#ffd740'},
+  'づ':{n:41,r:3.6,s:'集まりの変容',hz:432,sef:'イェソド',col:'#80d8ff'},
+  'で':{n:9, r:5.0,s:'出ての変容',hz:432,sef:'イェソド',col:'#80d8ff'},
+  'ど':{n:16,r:4.4,s:'統の変容',hz:396,sef:'ゲブラー',col:'#ff6e40'},
+  'ば':{n:39,r:4.2,s:'放つの変容',hz:417,sef:'ネツァク',col:'#40ffea'},
+  'び':{n:3, r:2.8,s:'実体の変容',hz:741,sef:'ビナー',  col:'#40c4ff'},
+  'ぶ':{n:2, r:2.1,s:'広がりの変容',hz:852,sef:'コクマー',col:'#7c4dff'},
+  'べ':{n:21,r:2.4,s:'変の変容',hz:174,sef:'マルクト',col:'#9e9e9e'},
+  'ぼ':{n:44,r:2.3,s:'本の変容',hz:396,sef:'ゲブラー',col:'#ff6e40'},
+  'ぱ':{n:39,r:4.2,s:'放つの半',hz:417,sef:'ネツァク',col:'#40ffea'},
+  'ぴ':{n:3, r:2.8,s:'実体の半',hz:741,sef:'ビナー',  col:'#40c4ff'},
+  'ぷ':{n:2, r:2.1,s:'広がりの半',hz:852,sef:'コクマー',col:'#7c4dff'},
+  'ぺ':{n:21,r:2.4,s:'変の半',hz:174,sef:'マルクト',col:'#9e9e9e'},
+  'ぽ':{n:44,r:2.3,s:'本の半',hz:396,sef:'ゲブラー',col:'#ff6e40'},
+};
+
+// ── 小文字マッピング ──
+const SMALL_MAP={
+  'っ':'つ','ゃ':'や','ゅ':'ゆ','ょ':'よ','ぁ':'あ','ぃ':'い','ぅ':'う','ぇ':'え','ぉ':'お',
+  'ッ':'つ','ャ':'や','ュ':'ゆ','ョ':'よ','ァ':'あ','ィ':'い','ゥ':'う','ェ':'え','ォ':'お',
+  'ー':'*long*', // 長音：直前の音を延長
+};
+
+// ── 漢字辞書（約200語）──
+const KANJI_DICT={
+  '感謝':'かんしゃ','ありがとう':'ありがとう','愛':'あい','心':'こころ','命':'いのち',
+  '光':'ひかり','水':'みず','火':'ひ','風':'かぜ','地':'ち','空':'そら','海':'うみ',
+  '山':'やま','川':'かわ','花':'はな','木':'き','道':'みち','言葉':'ことば','音':'おと',
+  '声':'こえ','魂':'たましい','神':'かみ','宇宙':'うちゅう','時間':'じかん','空間':'くうかん',
+  '意識':'いしき','夢':'ゆめ','現実':'げんじつ','真実':'しんじつ','知恵':'ちえ','力':'ちから',
+  '愛情':'あいじょう','平和':'へいわ','自由':'じゆう','希望':'きぼう','信頼':'しんらい',
+  '調和':'ちょうわ','創造':'そうぞう','変化':'へんか','進化':'しんか','成長':'せいちょう',
+  '悟り':'さとり','瞑想':'めいそう','祈り':'いのり','癒し':'いやし','喜び':'よろこび',
+  '幸せ':'しあわせ','美しい':'うつくしい','優しい':'やさしい','強い':'つよい','深い':'ふかい',
+  '高い':'たかい','広い':'ひろい','大きい':'おおきい','小さい':'ちいさい','新しい':'あたらしい',
+  '古い':'ふるい','白':'しろ','黒':'くろ','赤':'あか','青':'あお','緑':'みどり','金':'きん',
+  '銀':'ぎん','月':'つき','太陽':'たいよう','星':'ほし','銀河':'ぎんが','地球':'ちきゅう',
+  '人':'ひと','子':'こ','親':'おや','家':'いえ','国':'くに','世界':'せかい','今':'いま',
+  '過去':'かこ','未来':'みらい','生命':'せいめい','死':'し','誕生':'たんじょう','再生':'さいせい',
+  '波動':'はどう','振動':'しんどう','周波数':'しゅうはすう','共鳴':'きょうめい','統合':'とうごう',
+  '分離':'ぶんり','上':'うえ','下':'した','左':'ひだり','右':'みぎ','内':'うち','外':'そと',
+  '始まり':'はじまり','終わり':'おわり','循環':'じゅんかん','螺旋':'らせん','点':'てん',
+  '線':'せん','円':'えん','三角':'さんかく','四角':'しかく','球':'たま',
+  '一':'いち','二':'に','三':'さん','四':'し','五':'ご','六':'ろく','七':'なな','八':'はち','九':'く','十':'じゅう',
+  '天':'てん','地':'ち','人':'ひと','和':'わ','気':'き','間':'ま','縁':'えん',
+  '言':'こと','葉':'は','種':'たね','根':'ね','実':'み','芽':'め','枝':'えだ',
+  '形':'かたち','色':'いろ','香り':'かおり','温度':'おんど','重さ':'おもさ',
+  '速さ':'はやさ','距離':'きょり','深さ':'ふかさ','広さ':'ひろさ','高さ':'たかさ',
+};
+
+// ── 英語→カタカムナ変換（ヘブライ文字経由）──
+// 英語音素をヘブライ文字的な子音分類→カタカムナ対応音にマッピング
+const EN_TO_KATA={
+  'a':'あ','b':'ば','c':'か','d':'だ','e':'え','f':'ふ','g':'が','h':'は',
+  'i':'い','j':'じ','k':'き','l':'ら','m':'ま','n':'な','o':'お','p':'ぱ',
+  'q':'く','r':'ら','s':'さ','t':'た','u':'う','v':'ぶ','w':'わ','x':'さ',
+  'y':'や','z':'ざ',
+  // 大文字も
+  'A':'あ','B':'ば','C':'か','D':'だ','E':'え','F':'ふ','G':'が','H':'は',
+  'I':'い','J':'じ','K':'き','L':'ら','M':'ま','N':'な','O':'お','P':'ぱ',
+  'Q':'く','R':'ら','S':'さ','T':'た','U':'う','V':'ぶ','W':'わ','X':'さ',
+  'Y':'や','Z':'ざ',
+};
+
+// セフィロトデータ
+const SEF={
+  'ケテル':   {hz:963,col:'#e040fb'},
+  'コクマー': {hz:852,col:'#7c4dff'},
+  'ビナー':   {hz:741,col:'#40c4ff'},
+  'ダアト':   {hz:693,col:'#ff5252'},
+  'ケセド':   {hz:528,col:'#69f0ae'},
+  'ゲブラー': {hz:396,col:'#ff6e40'},
+  'ティファレト':{hz:639,col:'#ffd740'},
+  'ネツァク': {hz:417,col:'#40ffea'},
+  'ホド':     {hz:285,col:'#b388ff'},
+  'イェソド': {hz:432,col:'#80d8ff'},
+  'マルクト': {hz:174,col:'#9e9e9e'},
+};
+
+// ════════════════════════════════════
+// プリセット
+// ════════════════════════════════════
+const PRESETS_JP=[
+  {label:'かんしゃ',text:'かんしゃ'},
+  {label:'感謝（漢字）',text:'感謝'},
+  {label:'こころ',text:'こころ'},
+  {label:'ことば',text:'ことば'},
+  {label:'いのちはひかり',text:'いのちはひかり'},
+  {label:'ありがとう',text:'ありがとう'},
+  {label:'宇宙（漢字）',text:'宇宙'},
+  {label:'しらぬひふりかえれば（和歌）',text:'しらぬひふりかえれば'},
+];
+const PRESETS_EN=[
+  {label:'love',text:'love'},
+  {label:'light',text:'light'},
+  {label:'heart',text:'heart'},
+  {label:'universe',text:'universe'},
+  {label:'gratitude',text:'gratitude'},
+  {label:'harmony',text:'harmony'},
+  {label:'consciousness',text:'consciousness'},
+  {label:'infinity',text:'infinity'},
+];
+const PRESETS_MIX=[
+  {label:'love愛',text:'love愛'},
+  {label:'heart心',text:'heart心'},
+  {label:'ありがとうgratitude',text:'ありがとうgratitude'},
+];
+
+let currentLang='jp';
+let currentTokens=[];
+let audioCtx=null;
+
+function setLang(lang){
+  currentLang=lang;
+  ['ltJP','ltEN','ltMIX'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  document.getElementById(lang==='jp'?'ltJP':lang==='en'?'ltEN':'ltMIX').classList.add('on');
+  const lbl=document.getElementById('inputLabel');
+  const note=document.getElementById('convNote');
+  if(lang==='jp'){
+    lbl.textContent='◈ テキストを入力（ひらがな・カタカナ・漢字・小文字対応）';
+    note.innerHTML='<span>対応：</span>ひらがな・カタカナ・濁音・半濁音・<span>小文字（っ→つ 等）</span>・<span>漢字（自動よみがな変換）</span>';
+  } else if(lang==='en'){
+    lbl.textContent='◈ Enter text (English → Katakamuna via Hebrew phoneme mapping)';
+    note.innerHTML='<span>Supported:</span> A–Z (uppercase/lowercase) → mapped to Katakamuna via Hebrew consonant equivalents';
+  } else {
+    lbl.textContent='◈ Mix / 混合入力（日本語 + English）';
+    note.innerHTML='<span>対応：</span>日本語と英語を混合入力できます。自動判定して変換します。';
+  }
+  renderPresets();
+  document.getElementById('inputText').value='';
+}
+
+function renderPresets(){
+  const wrap=document.getElementById('presetTags');
+  wrap.innerHTML='';
+  const list=currentLang==='jp'?PRESETS_JP:currentLang==='en'?PRESETS_EN:PRESETS_MIX;
+  list.forEach(p=>{
+    const s=document.createElement('span');
+    s.className='ptag'+(currentLang==='en'?' en':'');
+    s.textContent=p.label;
+    s.onclick=()=>{ document.getElementById('inputText').value=p.text; convert(); };
+    wrap.appendChild(s);
+  });
+}
+renderPresets();
+
+// ════════════════════════════════════
+// テキスト → トークン変換
+// ════════════════════════════════════
+function toHira(str){
+  return str.replace(/[\u30A1-\u30F6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));
+}
+
+function convertKanji(text){
+  // 漢字辞書で longest-match 変換
+  let result='';
+  let i=0;
+  while(i<text.length){
+    let matched=false;
+    // 最長一致（4文字から順に試す）
+    for(let len=4;len>=1;len--){
+      const chunk=text.substr(i,len);
+      if(KANJI_DICT[chunk]){
+        result+=KANJI_DICT[chunk];
+        i+=len;
+        matched=true;
+        break;
+      }
+    }
+    if(!matched){ result+=text[i]; i++; }
+  }
+  return result;
+}
+
+function textToTokens(rawText){
+  // 1. 漢字変換
+  let text=convertKanji(rawText);
+  // 2. カタカナ→ひらがな
+  text=toHira(text);
+
+  const tokens=[];
+  let prevHira=null;
+
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    const orig=rawText[i]||c;
+
+    // スペース・改行
+    if(c===' '||c==='　'||c==='\n'){ tokens.push({type:'space'}); prevHira=null; continue; }
+
+    // 長音処理
+    if(c==='ー'||c==='-'){
+      if(prevHira&&KATA[prevHira]){
+        const d=KATA[prevHira];
+        tokens.push({type:'kana',char:prevHira,orig:'ー',src:'approx',...d,
+          s:d.s+'（延長）',display:'ー'});
+      }
+      continue;
+    }
+
+    // 小文字処理
+    const mapped=SMALL_MAP[c];
+    if(mapped&&mapped!=='*long*'){
+      const d=KATA[mapped];
+      if(d){ tokens.push({type:'kana',char:mapped,orig:c,src:'approx',...d,display:c}); prevHira=mapped; continue; }
+    }
+
+    // 英字処理
+    if(/[a-zA-Z]/.test(c)){
+      const kana=EN_TO_KATA[c];
+      if(kana&&KATA[kana]){
+        const d=KATA[kana];
+        tokens.push({type:'kana',char:kana,orig:c,src:'en',...d,display:c}); prevHira=kana;
+      } else {
+        tokens.push({type:'unknown',char:c,orig:c});
+      }
+      continue;
+    }
+
+    // 通常ひらがな
+    if(KATA[c]){
+      tokens.push({type:'kana',char:c,orig:c,src:'jp',...KATA[c],display:c});
+      prevHira=c;
+    } else {
+      // 未対応文字
+      tokens.push({type:'unknown',char:c,orig:c});
+      prevHira=null;
+    }
+  }
+  return tokens;
+}
+
+// ════════════════════════════════════
+// CONVERT MAIN
+// ════════════════════════════════════
+function convert(){
+  const raw=document.getElementById('inputText').value.trim();
+  if(!raw) return;
+  currentTokens=textToTokens(raw);
+  renderTokens(currentTokens);
+  renderScore(currentTokens);
+  renderWave(currentTokens);
+  renderStats(currentTokens);
+  renderVortex(currentTokens);
+  renderSefMap(currentTokens);
+  analyzeWaka(currentTokens);
+}
+
+// ── TOKEN STRIP ──
+function renderTokens(tokens){
+  const strip=document.getElementById('tokenStrip');
+  strip.innerHTML='';
+  tokens.forEach((t,i)=>{
+    if(t.type==='space'){
+      const sp=document.createElement('div'); sp.className='tok tok-space'; strip.appendChild(sp); return;
+    }
+    const el=document.createElement('div');
+    if(t.type==='unknown'){
+      el.className='tok tok-unknown';
+      el.innerHTML=`<span class="tok-char" style="color:var(--muted)">${t.orig}</span>
+        <span class="tok-sub">?</span><span class="tok-hz" style="color:var(--muted)">—</span>`;
+    } else {
+      const srcLabel=t.src==='en'?'EN':t.src==='approx'?'≈':t.src==='kanji'?'漢':'JP';
+      const srcCls=t.src==='en'?'src-en':t.src==='approx'?'src-approx':t.src==='kanji'?'src-kanji':'src-jp';
+      el.className='tok';
+      el.innerHTML=`<span class="tok-char" style="color:${t.col}">${t.display||t.orig}</span>
+        <span class="tok-sub" style="color:${t.col}88">#${t.n}</span>
+        <span class="tok-hz" style="color:${t.col}">${t.hz}</span>
+        <span class="tok-src ${srcCls}">${srcLabel}</span>`;
+      el.addEventListener('click',()=>{
+        document.querySelectorAll('.tok').forEach(x=>x.classList.remove('active'));
+        el.classList.add('active');
+        showDetail(t);
+      });
+    }
+    strip.appendChild(el);
+  });
+}
+
+function showDetail(t){
+  const srcText=t.src==='en'?'英語（ヘブライ音素経由）':t.src==='approx'?'小文字・近似変換':t.src==='kanji'?'漢字辞書変換':'ひらがな直接';
+  document.getElementById('detailPanel').style.borderLeftColor=t.col;
+  document.getElementById('detailText').innerHTML=
+    `<strong style="color:${t.col}">「${t.display||t.orig}」→ カタカムナ「${t.char}」</strong><br>
+    変換種別：<span style="color:var(--jade)">${srcText}</span><br>
+    カタカムナ第${t.n}音　渦半径 ${t.r}<br>
+    <span style="color:var(--gold)">思念：</span>${t.s}<br>
+    <span style="color:${t.col}">周波数：${t.hz} Hz</span>　
+    <span style="color:var(--vio)">セフィロト：${t.sef}（${SEF[t.sef]?.hz}Hz）</span><br>
+    <span style="color:var(--muted)">渦の座標：半径${t.r}、第${t.n}番</span>`;
+}
+
+// ── SCORE CANVAS ──
+function renderScore(tokens){
+  const cv=document.getElementById('scoreCanvas');
+  const W=cv.clientWidth;
+  cv.width=W*devicePixelRatio; cv.height=160*devicePixelRatio;
+  const ctx=cv.getContext('2d');
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  const H=160;
+  ctx.fillStyle='#06050f'; ctx.fillRect(0,0,W,H);
+  const kana=tokens.filter(t=>t.type==='kana');
+  if(!kana.length) return;
+  const minHz=174,maxHz=963,pL=42,pR=10,pT=15,pB=28;
+  const w=W-pL-pR, h=H-pT-pB;
+  Object.entries(SEF).forEach(([name,d])=>{
+    const y=pT+h-(d.hz-minHz)/(maxHz-minHz)*h;
+    ctx.strokeStyle=d.col+'22'; ctx.lineWidth=.5; ctx.setLineDash([2,4]);
+    ctx.beginPath(); ctx.moveTo(pL,y); ctx.lineTo(W-pR,y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=d.col+'60'; ctx.font='6px Shippori Mincho'; ctx.textAlign='right';
+    ctx.fillText(name,pL-2,y+3);
+  });
+  const step=Math.max(8,w/kana.length);
+  ctx.beginPath();
+  kana.forEach((t,i)=>{
+    const x=pL+i*step+step/2;
+    const y=pT+h-(t.hz-minHz)/(maxHz-minHz)*h;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle='rgba(200,168,75,.28)'; ctx.lineWidth=.8; ctx.setLineDash([3,3]); ctx.stroke(); ctx.setLineDash([]);
+  kana.forEach((t,i)=>{
+    const x=pL+i*step+step/2;
+    const y=pT+h-(t.hz-minHz)/(maxHz-minHz)*h;
+    const grd=ctx.createRadialGradient(x,y,0,x,y,6);
+    grd.addColorStop(0,t.col+'cc'); grd.addColorStop(1,t.col+'00');
+    ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.fillStyle=grd; ctx.fill();
+    ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fillStyle=t.col; ctx.fill();
+    ctx.fillStyle=t.col; ctx.font='8px Shippori Mincho'; ctx.textAlign='center';
+    ctx.fillText(t.display||t.orig,x,y-7);
+    ctx.fillStyle=t.col+'88'; ctx.font='5.5px Cinzel';
+    ctx.fillText(t.hz,x,H-pB+10);
+  });
+  ctx.fillStyle='rgba(200,168,75,.4)'; ctx.font='7px Shippori Mincho';
+  ctx.save(); ctx.translate(8,pT+h/2); ctx.rotate(-Math.PI/2); ctx.textAlign='center'; ctx.fillText('Hz',0,0); ctx.restore();
+}
+
+// ── WAVE CANVAS ──
+function renderWave(tokens){
+  const cv=document.getElementById('waveCanvas');
+  const W=cv.clientWidth;
+  cv.width=W*devicePixelRatio; cv.height=90*devicePixelRatio;
+  const ctx=cv.getContext('2d');
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  const H=90;
+  ctx.fillStyle='#06050f'; ctx.fillRect(0,0,W,H);
+  const kana=tokens.filter(t=>t.type==='kana');
+  if(!kana.length) return;
+  const CY=H/2;
+  ctx.beginPath();
+  for(let x=0;x<W;x++){
+    let y=0;
+    kana.forEach((t,i)=>{
+      const freq=t.hz/10000, phase=i*0.8, amp=(6-Math.min(t.r,5))*2.5;
+      y+=amp*Math.sin(x*freq*Math.PI*2+phase);
+    });
+    y=y/Math.max(1,kana.length*0.5);
+    x===0?ctx.moveTo(x,CY+y):ctx.lineTo(x,CY+y);
+  }
+  const grd=ctx.createLinearGradient(0,0,W,0);
+  kana.forEach((t,i)=>{ grd.addColorStop(Math.min(i/(kana.length-1||1),1),t.col); });
+  ctx.strokeStyle=grd; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,CY); ctx.lineTo(W,CY);
+  ctx.strokeStyle='rgba(200,168,75,.12)'; ctx.lineWidth=.5; ctx.stroke();
+}
+
+// ── STATS ──
+function renderStats(tokens){
+  const kana=tokens.filter(t=>t.type==='kana');
+  if(!kana.length) return;
+  const hzList=kana.map(t=>t.hz);
+  const avg=Math.round(hzList.reduce((a,b)=>a+b)/hzList.length);
+  const max=Math.max(...hzList), min=Math.min(...hzList);
+  const maxT=kana.find(t=>t.hz===max), minT=kana.find(t=>t.hz===min);
+  const sefCount={};
+  kana.forEach(t=>{ sefCount[t.sef]=(sefCount[t.sef]||0)+1; });
+  const topSef=Object.entries(sefCount).sort((a,b)=>b[1]-a[1])[0];
+  const avgR=(kana.reduce((a,t)=>a+t.r,0)/kana.length).toFixed(2);
+  const enCount=kana.filter(t=>t.src==='en').length;
+  const approxCount=kana.filter(t=>t.src==='approx').length;
+  const topCol=SEF[topSef?.[0]]?.col||'#c8a84b';
+  const stats=[
+    {label:'平均周波数 / Avg Hz',val:avg+' Hz',sub:topSef?.[0]||'—'},
+    {label:'最高音 / Highest',val:maxT?.display||maxT?.orig||'—',sub:max+' Hz · '+maxT?.sef},
+    {label:'最低音 / Lowest',val:minT?.display||minT?.orig||'—',sub:min+' Hz · '+minT?.sef},
+    {label:'音域 / Range',val:(max-min)+' Hz',sub:'高低差'},
+    {label:'主要セフィロト',val:topSef?.[0]||'—',sub:topSef?.[1]+'音'},
+    {label:'音素数 / Tokens',val:kana.length,sub:`JP:${kana.filter(t=>t.src==='jp').length} EN:${enCount} ≈:${approxCount}`},
+    {label:'平均渦半径',val:avgR,sub:'宇宙座標'},
+    {label:'未変換文字',val:tokens.filter(t=>t.type==='unknown').length,sub:'未対応'},
+  ];
+  const sg=document.getElementById('statsGrid');
+  sg.innerHTML='';
+  stats.forEach(s=>{
+    sg.innerHTML+=`<div class="stat">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-val" style="color:${s.label.includes('セフィロト')?topCol:'var(--gold-l)'}">${s.val}</div>
+      <div class="stat-sub">${s.sub}</div>
+    </div>`;
+  });
+}
+
+// ── VORTEX ──
+function renderVortex(tokens){
+  const cv=document.getElementById('vortexCanvas');
+  const W=cv.clientWidth;
+  cv.width=W*devicePixelRatio; cv.height=270*devicePixelRatio;
+  const ctx=cv.getContext('2d');
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  const H=270, CX=W/2, CY=H/2;
+  const scale=Math.min(W,H)*0.082;
+  ctx.fillStyle='#06050f'; ctx.fillRect(0,0,W,H);
+  // 基準螺旋
+  const sp=[];
+  for(let i=0;i<48;i++){
+    const t=i/48,a=t*Math.PI*8,r=(0.3+t*5.5)*scale;
+    sp.push([CX+r*Math.cos(a),CY+r*Math.sin(a)]);
+  }
+  ctx.beginPath(); sp.forEach((p,i)=>{ i===0?ctx.moveTo(p[0],p[1]):ctx.lineTo(p[0],p[1]); });
+  ctx.strokeStyle='rgba(200,168,75,.08)'; ctx.lineWidth=.5; ctx.stroke();
+  [1,2,3,4,5].forEach(r=>{
+    ctx.beginPath(); ctx.arc(CX,CY,r*scale,0,Math.PI*2);
+    ctx.strokeStyle='rgba(200,168,75,.05)'; ctx.lineWidth=.4; ctx.stroke();
+  });
+  const kana=tokens.filter(t=>t.type==='kana');
+  const placed=kana.map((t,i)=>{
+    const prog=i/Math.max(kana.length-1,1);
+    const a=prog*Math.PI*6, r=t.r*scale;
+    return {...t,px:CX+r*Math.cos(a),py:CY+r*Math.sin(a)};
+  });
+  // 接続線（EN/JP/近似で色分け）
+  for(let i=0;i<placed.length-1;i++){
+    const p=placed[i],q=placed[i+1];
+    ctx.beginPath(); ctx.moveTo(p.px,p.py); ctx.lineTo(q.px,q.py);
+    const lc=p.src==='en'?'rgba(176,144,232,.5)':p.src==='approx'?'rgba(224,144,176,.4)':'rgba(200,168,75,.35)';
+    ctx.strokeStyle=lc; ctx.lineWidth=.8; ctx.stroke();
+  }
+  placed.forEach(t=>{
+    const grd=ctx.createRadialGradient(t.px,t.py,0,t.px,t.py,10);
+    grd.addColorStop(0,t.col+'88'); grd.addColorStop(1,t.col+'00');
+    ctx.beginPath(); ctx.arc(t.px,t.py,10,0,Math.PI*2); ctx.fillStyle=grd; ctx.fill();
+    ctx.beginPath(); ctx.arc(t.px,t.py,4,0,Math.PI*2); ctx.fillStyle=t.col; ctx.fill();
+    ctx.fillStyle=t.col; ctx.font='bold 8px Shippori Mincho'; ctx.textAlign='center';
+    ctx.fillText(t.display||t.orig,t.px,t.py-7);
+    // EN表示に下線
+    if(t.src==='en'){
+      ctx.strokeStyle=t.col+'88'; ctx.lineWidth=.7;
+      const tw=ctx.measureText(t.display||t.orig).width;
+      ctx.beginPath(); ctx.moveTo(t.px-tw/2,t.py-4); ctx.lineTo(t.px+tw/2,t.py-4); ctx.stroke();
+    }
+  });
+  const cg=ctx.createRadialGradient(CX,CY,0,CX,CY,12);
+  cg.addColorStop(0,'rgba(232,212,138,.5)'); cg.addColorStop(1,'rgba(232,212,138,0)');
+  ctx.beginPath(); ctx.arc(CX,CY,12,0,Math.PI*2); ctx.fillStyle=cg; ctx.fill();
+  ctx.beginPath(); ctx.arc(CX,CY,4,0,Math.PI*2); ctx.fillStyle='#e8d48a'; ctx.fill();
+  ctx.fillStyle='rgba(200,168,75,.35)'; ctx.font='6.5px Cinzel'; ctx.textAlign='center';
+  ctx.fillText('KATAKAMUNA VORTEX　金=JP　紫=EN　ピンク=近似',CX,H-6);
+}
+
+// ── SEF MAP ──
+function renderSefMap(tokens){
+  const kana=tokens.filter(t=>t.type==='kana');
+  if(!kana.length) return;
+  const counts={},hzSum={};
+  kana.forEach(t=>{ counts[t.sef]=(counts[t.sef]||0)+1; hzSum[t.sef]=(hzSum[t.sef]||0)+t.hz; });
+  const maxC=Math.max(1,...Object.values(counts));
+  const sm=document.getElementById('sefMap');
+  sm.innerHTML='';
+  Object.entries(SEF).forEach(([name,d])=>{
+    const c=counts[name]||0, pct=Math.round(c/maxC*100)||0;
+    sm.innerHTML+=`<div class="sef" style="border-color:${d.col}${c>0?'44':'18'}">
+      <div class="sef-name" style="color:${d.col}">${name}</div>
+      <div class="sef-hz" style="color:${d.col}">${d.hz}Hz</div>
+      <div class="sef-bar-wrap"><div class="sef-bar" style="width:${pct}%;background:${d.col}"></div></div>
+      <div class="sef-count">${c}音 (${pct}%)</div>
+    </div>`;
+  });
+}
+
+// ── WAKA ──
+function analyzeWaka(tokens){
+  const kana=tokens.filter(t=>t.type==='kana'||t.type==='unknown');
+  const total=kana.length;
+  const patterns=[
+    {name:'俳句 (5-7-5)',groups:[5,7,5]},
+    {name:'短歌 (5-7-5-7-7)',groups:[5,7,5,7,7]},
+    {name:'Haiku in English (5-7-5)',groups:[5,7,5]},
+    {name:'都々逸 (7-7-7-5)',groups:[7,7,7,5]},
+  ];
+  const wakaDiv=document.getElementById('wakaResult');
+  let html='';
+  patterns.forEach(p=>{
+    if(p.groups.reduce((a,b)=>a+b)===total){
+      html+=`<div style="color:var(--gold-l);font-family:'Cinzel',serif;font-size:.7rem;margin-bottom:.35rem">★ ${p.name} 検出</div>`;
+      let pos=0;
+      p.groups.forEach((g,gi)=>{
+        const slice=kana.slice(pos,pos+g);
+        const avgHz=slice.filter(t=>t.hz).length>0
+          ?Math.round(slice.filter(t=>t.hz).reduce((a,t)=>a+t.hz,0)/slice.filter(t=>t.hz).length):0;
+        const chars=slice.map(t=>t.display||t.orig).join('');
+        const sefs=[...new Set(slice.filter(t=>t.sef).map(t=>t.sef))].join('・');
+        html+=`<div class="waka-line">
+          <span class="waka-mora">${g}音</span>
+          <span style="color:var(--gold-l);font-size:.85rem">${chars}</span>
+          <span style="font-size:.6rem;color:var(--jade)">avg ${avgHz}Hz / ${sefs||'—'}</span>
+        </div>`;
+        pos+=g;
+      });
+    }
+  });
+  if(html){ wakaDiv.style.display='block'; document.getElementById('wakaContent').innerHTML=html; }
+  else { wakaDiv.style.display='none'; }
+}
+
+// ── PLAY ──
+function playSound(){
+  const kana=currentTokens.filter(t=>t.type==='kana');
+  if(!kana.length) return;
+  try{
+    if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    const now=audioCtx.currentTime;
+    kana.forEach((t,i)=>{
+      const osc=audioCtx.createOscillator();
+      const gain=audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.frequency.value=t.hz/4;
+      osc.type=t.src==='en'?'triangle':'sine';
+      const start=now+i*0.32, dur=0.28;
+      gain.gain.setValueAtTime(0,start);
+      gain.gain.linearRampToValueAtTime(0.14,start+0.05);
+      gain.gain.linearRampToValueAtTime(0,start+dur);
+      osc.start(start); osc.stop(start+dur+0.05);
+    });
+  } catch(e){ alert('音声再生に対応していない環境です。'); }
+}
+
+function clearAll(){
+  document.getElementById('inputText').value='';
+  document.getElementById('tokenStrip').innerHTML='';
+  document.getElementById('statsGrid').innerHTML='';
+  document.getElementById('detailText').textContent='音素をタップすると詳細が表示されます。';
+  document.getElementById('wakaResult').style.display='none';
+  currentTokens=[];
+  ['scoreCanvas','waveCanvas','vortexCanvas'].forEach(id=>{
+    const cv=document.getElementById(id);
+    const ctx=cv.getContext('2d');
+    ctx.fillStyle='#06050f'; ctx.fillRect(0,0,cv.width,cv.height);
+  });
+}
+
+// 初期表示
+document.getElementById('inputText').value='かんしゃ';
+convert();
+</script>
+</body>
+</html>
