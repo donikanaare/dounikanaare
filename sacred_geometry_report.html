@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SACRED GEOMETRY OF LANGUAGE</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Shippori+Mincho:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
+:root{
+  --bg:#03040a;--deep:#07060f;
+  --gold:#c8a84b;--gold-l:#e8d48a;--gold-d:#a07830;
+  --vio:#b090e8;--jade:#80d0a0;--lotus:#e090b0;
+  --text:#c8c8e0;--muted:#7a7898;--silver:#c0c4d8;
+  --p1:#b090e8;--p2:#80d0a0;--p3:#e8d48a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;overflow-x:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'EB Garamond',serif;
+  overflow-x:hidden;word-break:break-word;
+  background-image:
+    radial-gradient(ellipse at 20% 5%,rgba(128,80,192,.1) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 95%,rgba(200,168,75,.06) 0%,transparent 50%);}
+
+/* ── COVER ── */
+.cover{min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  align-items:center;text-align:center;padding:2rem 1.2rem;position:relative;
+  border-bottom:1px solid rgba(200,168,75,.1);overflow:hidden;}
+.cover-glyph{font-size:clamp(1.8rem,8vw,4rem);color:var(--gold);
+  text-shadow:0 0 60px rgba(200,168,75,.4);margin-bottom:1.2rem;
+  font-family:'Cinzel',serif;letter-spacing:.2em;}
+.cover h1{font-family:'Cinzel',serif;font-size:clamp(1.2rem,5vw,2.4rem);
+  color:var(--gold-l);letter-spacing:.22em;line-height:1.4;
+  text-shadow:0 0 40px rgba(232,212,138,.4);margin-bottom:.6rem;}
+.cover-sub{font-size:clamp(.75rem,2.5vw,1rem);color:var(--muted);
+  font-style:italic;letter-spacing:.12em;margin-bottom:1.5rem;line-height:1.7;}
+.cover-divider{width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:.8rem auto;opacity:.5;}
+.cover-note{font-size:.72rem;color:var(--muted);max-width:480px;line-height:1.8;font-style:italic;}
+.cover-toc{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin-top:1.8rem;}
+.toc-btn{font-family:'Cinzel',serif;font-size:.62rem;padding:.3rem .8rem;border-radius:20px;
+  border:1px solid rgba(200,168,75,.25);color:var(--gold);text-decoration:none;transition:all .2s;}
+.toc-btn:hover{background:rgba(200,168,75,.12);border-color:var(--gold);}
+.toc-btn.p1{border-color:rgba(176,144,232,.35);color:var(--p1);}
+.toc-btn.p2{border-color:rgba(128,208,160,.35);color:var(--p2);}
+.toc-btn.p3{border-color:rgba(232,212,138,.35);color:var(--p3);}
+.scroll-hint{position:absolute;bottom:1.5rem;font-size:.6rem;color:var(--muted);
+  font-family:'Cinzel',serif;letter-spacing:.12em;animation:fade 2s ease-in-out infinite;}
+@keyframes fade{0%,100%{opacity:.3;}50%{opacity:.8;}}
+
+/* ── CANVAS COVER ── */
+#coverCanvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.cover-content{position:relative;z-index:1;}
+
+/* ── SECTION ── */
+.part{padding:3rem 1.2rem 2.5rem;border-bottom:1px solid rgba(200,168,75,.07);
+  max-width:780px;margin:0 auto;overflow-x:hidden;word-break:break-word;}
+.part-badge{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.15em;
+  padding:.2rem .7rem;border-radius:20px;display:inline-block;margin-bottom:.9rem;}
+.part-badge.b1{background:rgba(176,144,232,.12);color:var(--p1);border:1px solid rgba(176,144,232,.25);}
+.part-badge.b2{background:rgba(128,208,160,.12);color:var(--p2);border:1px solid rgba(128,208,160,.25);}
+.part-badge.b3{background:rgba(232,212,138,.12);color:var(--p3);border:1px solid rgba(232,212,138,.25);}
+.part h2{font-family:'Cinzel',serif;font-size:clamp(1rem,4vw,1.6rem);
+  letter-spacing:.18em;margin-bottom:.3rem;line-height:1.35;}
+.part-sub{font-size:.78rem;color:var(--muted);font-style:italic;margin-bottom:1.4rem;letter-spacing:.08em;}
+.part p{font-size:.9rem;line-height:2;margin-bottom:1rem;color:var(--text);}
+.part strong{color:var(--gold-l);}
+.part em{font-style:normal;}
+
+/* ── HIGHLIGHT BOXES ── */
+.hbox{border-radius:6px;padding:.9rem 1rem;margin:1.2rem 0;font-size:.82rem;
+  line-height:1.9;overflow-x:hidden;word-break:break-word;}
+.hbox.gold{background:rgba(200,168,75,.07);border:1px solid rgba(200,168,75,.2);border-left:3px solid var(--gold);}
+.hbox.vio{background:rgba(176,144,232,.06);border:1px solid rgba(176,144,232,.18);border-left:3px solid var(--p1);}
+.hbox.jade{background:rgba(128,208,160,.06);border:1px solid rgba(128,208,160,.18);border-left:3px solid var(--p2);}
+.hbox code{font-family:'Cinzel',serif;font-size:.78rem;color:var(--gold-l);
+  background:rgba(200,168,75,.1);padding:.1rem .3rem;border-radius:3px;word-break:break-all;}
+
+/* ── DATA TABLE ── */
+.dtbl{width:100%;border-collapse:collapse;font-size:.72rem;margin:1rem 0 1.4rem;}
+.dtbl th{font-family:'Cinzel',serif;background:rgba(8,6,20,.9);color:var(--gold);
+  padding:.42rem .45rem;font-size:.62rem;letter-spacing:.05em;
+  border:1px solid rgba(200,168,75,.12);text-align:left;}
+.dtbl td{padding:.35rem .45rem;border:1px solid rgba(200,168,75,.07);font-size:.7rem;line-height:1.5;}
+.dtbl tr:nth-child(even) td{background:rgba(255,255,255,.01);}
+.dtbl tr.top td{background:rgba(200,168,75,.05)!important;}
+
+/* ── SCORE BARS ── */
+.score-row{display:flex;align-items:center;gap:.4rem;margin-bottom:.3rem;}
+.score-label{font-size:.6rem;color:var(--muted);width:80px;flex-shrink:0;font-family:'Cinzel',serif;}
+.score-bar{flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;}
+.score-fill{height:100%;border-radius:3px;}
+.score-val{font-size:.6rem;color:var(--muted);width:24px;text-align:right;flex-shrink:0;font-family:'Cinzel',serif;}
+
+/* ── FORMULA ── */
+.formula-big{font-family:'Cinzel',serif;font-size:clamp(1.1rem,4vw,1.8rem);
+  color:var(--gold-l);text-align:center;padding:1.2rem;
+  background:rgba(200,168,75,.05);border:1px solid rgba(200,168,75,.15);
+  border-radius:6px;margin:1rem 0;text-shadow:0 0 20px rgba(232,212,138,.3);}
+
+/* ── CLUSTER VISUAL ── */
+.cluster{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:1rem 0;}
+.cluster-card{border-radius:6px;padding:.6rem .75rem;}
+.cc-cosmic{background:rgba(176,144,232,.07);border:1px solid rgba(176,144,232,.2);}
+.cc-modern{background:rgba(128,208,160,.07);border:1px solid rgba(128,208,160,.2);}
+.cc-title{font-family:'Cinzel',serif;font-size:.68rem;margin-bottom:.4rem;letter-spacing:.06em;}
+.cc-item{font-size:.65rem;line-height:1.8;color:var(--silver);}
+
+/* ── CONDITION LIST ── */
+.cond-list{display:flex;flex-direction:column;gap:.4rem;margin:1rem 0;}
+.cond{display:flex;gap:.6rem;align-items:flex-start;padding:.6rem .7rem;
+  background:rgba(8,6,20,.7);border-radius:5px;border:1px solid rgba(200,168,75,.1);}
+.cond-num{font-family:'Cinzel',serif;font-size:.8rem;color:var(--gold);
+  width:22px;flex-shrink:0;text-align:center;}
+.cond-body{font-size:.72rem;line-height:1.75;}
+.cond-body strong{color:var(--gold-l);}
+
+/* ── CANVAS SECTION ── */
+#p1Canvas,#p2Canvas,#p3Canvas{width:100%;border-radius:6px;display:block;margin:1rem 0;}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:2.5rem 1rem 3rem;
+  border-top:1px solid rgba(200,168,75,.1);}
+.footer-title{font-family:'Cinzel',serif;font-size:.8rem;color:var(--gold);
+  letter-spacing:.15em;margin-bottom:.6rem;}
+.footer-text{font-size:.68rem;color:var(--muted);line-height:1.9;font-style:italic;max-width:500px;margin:0 auto;}
+.footer-divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1rem auto;opacity:.3;}
+</style>
+</head>
+<body>
+
+<!-- ── COVER ── -->
+<div class="cover">
+  <canvas id="coverCanvas"></canvas>
+  <div class="cover-content">
+    <div class="cover-glyph">✦ אבג ✦ ヒフミ ✦ अआइ ✦</div>
+    <h1>SACRED GEOMETRY<br>OF LANGUAGE</h1>
+    <div class="cover-divider"></div>
+    <p class="cover-sub">言語と宇宙構造の周波数的統一 — 研究考察ノート<br>
+    A Speculative Inquiry into the Frequency Structure of Sacred Scripts</p>
+    <p class="cover-note">
+      カバラ・カタカムナ・梵字・ヴォイニッチ手稿・ヴァーリンデの創発的重力——<br>
+      これらは別々の体系ではなく、同じ宇宙の構造を異なる角度から記述しているのかもしれない。
+    </p>
+    <nav class="cover-toc">
+      <a class="toc-btn" href="#intro">序文</a>
+      <a class="toc-btn p1" href="#part1">Part 1: Language Hz</a>
+      <a class="toc-btn p2" href="#part2">Part 2: Kabbalah</a>
+      <a class="toc-btn p3" href="#part3">Part 3: Verlinde</a>
+      <a class="toc-btn" href="#conclusion">結論</a>
+    </nav>
+    <div class="scroll-hint">↓ scroll</div>
+  </div>
+</div>
+
+<!-- ── INTRO ── -->
+<div class="part" id="intro">
+  <div class="part-badge b1">INTRODUCTION</div>
+  <h2 style="color:var(--gold-l)">はじめに</h2>
+  <p class="part-sub">Why do ancient scripts share the same structure?</p>
+  <p>ある日、カバラのゲマトリアについて調べていた。ヘブライ文字に数値が割り当てられ、単語の数値の一致が「隠れた意味的つながり」を示すという体系だ。</p>
+  <p>そこから始まった探求は、梵字、カタカムナ、ヴォイニッチ手稿、ダークマターへと繋がり、最終的に「重力とは何か」という問いに到達した。</p>
+  <div class="hbox gold">
+    <strong>中心的な問い：</strong><br>
+    なぜ時代も地域も異なる複数の神秘体系が、これほど類似した構造を持つのか。<br>
+    偶然と呼ぶには、一致が多すぎる。
+  </div>
+  <p>この考察ノートは、科学的実証ではなく思考実験だ。しかし思考実験こそが、時に最も重要な問いを立てる。</p>
+</div>
+
+<!-- ── PART 1 ── -->
+<div class="part" id="part1">
+  <div class="part-badge b1">PART 1 — LANGUAGE Hz</div>
+  <h2 style="color:var(--p1)">言語と周波数</h2>
+  <p class="part-sub">20 writing systems evaluated across 5 dimensions</p>
+
+  <p>20の文字体系を5軸（宇宙スケール・現在スケール・カバラ適合・Hz整合・構造深度）で数値化した。最も驚いた発見は<strong>反比例の傾向</strong>だった。</p>
+
+  <div class="cluster">
+    <div class="cluster-card cc-cosmic">
+      <div class="cc-title" style="color:var(--p1)">神聖言語クラスター（宇宙的）</div>
+      <div class="cc-item">ヘブライ語　宇宙98 / 現在42</div>
+      <div class="cc-item">梵字（悉曇）宇宙95 / 現在38</div>
+      <div class="cc-item">カタカムナ　宇宙90 / 現在22</div>
+      <div class="cc-item">ヴォイニッチ 宇宙88 / 現在15</div>
+    </div>
+    <div class="cluster-card cc-modern">
+      <div class="cc-title" style="color:var(--p2)">現代言語クラスター（実用的）</div>
+      <div class="cc-item">英語　　　　宇宙48 / 現在98</div>
+      <div class="cc-item">中国語　　　宇宙65 / 現在95</div>
+      <div class="cc-item">スペイン語　宇宙38 / 現在82</div>
+      <div class="cc-item">日本語（仮名）宇宙60 / 現在72</div>
+    </div>
+  </div>
+
+  <div class="hbox vio">
+    <strong>英語の逆説：</strong><br>
+    現在スケール98（世界最高）だが宇宙スケール48・カバラ適合35。<br>
+    「最も使われているが宇宙の構造から最も遠い言語」——これは何を意味するのか。
+  </div>
+
+  <p><strong>日本語（仮名）の特異な位置：</strong>宇宙60・現在72というバランス型。カタカムナと英語の中間に位置し、神秘体系と現代語の橋渡しができる可能性がある。50音という体系がその鍵だ。カタカムナも48音。梵字も50音——この音数の一致は偶然ではないかもしれない。</p>
+
+  <canvas id="p1Canvas" height="180"></canvas>
+
+  <div class="hbox gold">
+    <strong>カタカムナ周波数変換の実験：</strong><br>
+    日本語をカタカムナ48音の周波数に変換すると、言葉が「宇宙的座標」になる。<br>
+    「感謝」= か（396Hz）→ ん（285Hz）→ しゃ（432Hz）<br>
+    名前・生年月日・今の言葉から「個人共振スコア」も算出できる。
+  </div>
+</div>
+
+<!-- ── ANCIENT MUSIC QUOTE ── -->
+<div style="text-align:center;padding:2.5rem 1.2rem;border-bottom:1px solid rgba(200,168,75,.07);max-width:780px;margin:0 auto;overflow-x:hidden;word-break:break-word;">
+  <div style="font-size:.55rem;font-family:'Cinzel',serif;color:var(--muted);letter-spacing:.2em;margin-bottom:1rem;">✦ HYPOTHESIS ✦</div>
+  <div style="font-family:'EB Garamond',serif;font-size:clamp(1.1rem,4vw,1.7rem);
+    color:var(--gold-l);line-height:1.8;letter-spacing:.06em;
+    text-shadow:0 0 40px rgba(232,212,138,.2);margin-bottom:.8rem;">
+    古代社会は、音楽で溢れていた<br>
+    <span style="font-size:.65em;color:var(--muted);font-style:italic;letter-spacing:.12em;">
+      — Ancient civilization may have been drenched in music —
+    </span>
+  </div>
+  <div style="width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:.8rem auto;opacity:.4;"></div>
+  <p style="font-size:.82rem;color:var(--muted);line-height:2;max-width:520px;margin:0 auto;font-style:italic;">
+    文字を刻むことは音を刻むことだった。<br>
+    言葉を発することは宇宙に座標を打つことだった。<br>
+    儀式は周波数を揃える集団演奏だった。<br><br>
+    <span style="color:var(--silver);">ヘブライ語で祈る、梵字で真言を唱える、カタカムナを渦巻きに書く——<br>
+    それはすべて、宇宙と同じ周波数で生きるための<strong style="color:var(--gold-l);">「演奏」</strong>だったのかもしれない。</span>
+  </p>
+</div>
+
+<!-- ── PART 2 ── -->
+<div class="part" id="part2">
+  <div class="part-badge b2">PART 2 — KABBALAH INTEGRATION</div>
+  <h2 style="color:var(--p2)">カバラ統合</h2>
+  <p class="part-sub">Three systems form a single three-dimensional structure</p>
+
+  <p>探求の中で、三つの体系が立体的に組み合わさることに気づいた。</p>
+
+  <div class="hbox jade">
+    <strong>三体系の軸：</strong><br>
+    カバラ　　= 垂直軸（Z軸）　　降下・上昇・エントロピー勾配<br>
+    カタカムナ = 水平面（XY平面）　渦巻き・銀河・角運動量<br>
+    梵字　　　= 内向き螺旋（R軸）　DNA・情報密度・内向き深化<br><br>
+    これは<strong>球座標系</strong>そのものだ。
+  </div>
+
+  <p>それぞれの体系で「根源の1字」とされる音が、同じHz帯に収束する：</p>
+
+  <table class="dtbl">
+    <thead><tr>
+      <th>体系</th><th>根源の文字</th><th>意味</th><th>Hz</th><th>セフィロト</th>
+    </tr></thead>
+    <tbody>
+      <tr class="top"><td style="color:var(--p1)">カバラ</td><td style="font-size:1.2rem">א</td><td>無音・統一・無限</td><td style="color:var(--gold)">963</td><td>ケテル</td></tr>
+      <tr class="top"><td style="color:var(--p2)">カタカムナ</td><td>ヒ</td><td>根源の力・霊・日</td><td style="color:var(--gold)">963</td><td>ケテル相当</td></tr>
+      <tr class="top"><td style="color:var(--lotus)">梵字</td><td style="font-size:1.2rem">अ</td><td>不生・万物の始まり</td><td style="color:var(--gold)">963</td><td>ケテル相当</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>根源の音は963Hz</strong>——三体系がこの一点に収束する。これが「宇宙の原点座標」かもしれない。</p>
+
+  <canvas id="p2Canvas" height="180"></canvas>
+
+  <div class="hbox gold">
+    <strong>ヴォイニッチ手稿という第4軸：</strong><br>
+    EVA文字24字がカバラの22パス（＋ダアト）に1対1で対応する。<br>
+    テキストは「所在地音階」——楽譜であり地図。<br>
+    本体はイラスト——実体の記述。<br>
+    通読すると周波数の移行パターン＝組曲として機能する。
+  </div>
+</div>
+
+<!-- ── PART 3 ── -->
+<div class="part" id="part3">
+  <div class="part-badge b3">PART 3 — VERLINDE SIMILARITY</div>
+  <h2 style="color:var(--p3)">ヴァーリンデとの類似</h2>
+  <p class="part-sub">Physics approaches what mysticism has long described</p>
+
+  <p>アムステルダム大学の物理学者エリック・ヴァーリンデは2010年、重力は基本的な力ではなく、<strong>情報とエントロピーから創発する現象</strong>だと主張した。</p>
+
+  <div class="formula-big">F = T × ΔS/Δx</div>
+
+  <div class="hbox gold">
+    この式を三体系に当てはめると：<br><br>
+    <code>T（温度）</code>　= カバラの降下エネルギー（963Hz → 174Hz）<br>
+    <code>ΔS（情報）</code> = 梵字/DNAの螺旋圧縮（情報密度の増大）<br>
+    <code>Δx（距離）</code> = カタカムナの渦巻き半径（銀河の腕）<br><br>
+    <strong>→ F（重力）= 三体系の積から創発する</strong>
+  </div>
+
+  <p><strong>重力が「意味を持つ」三条件：</strong></p>
+
+  <div class="cond-list">
+    <div class="cond">
+      <div class="cond-num">1</div>
+      <div class="cond-body"><strong>情報密度がある</strong>　→ 梵字/DNA（内向き螺旋・情報圧縮）</div>
+    </div>
+    <div class="cond">
+      <div class="cond-num">2</div>
+      <div class="cond-body"><strong>角運動量がある</strong>　→ カタカムナ/銀河（水平渦・対数螺旋）</div>
+    </div>
+    <div class="cond">
+      <div class="cond-num">3</div>
+      <div class="cond-body"><strong>エントロピー勾配がある</strong>　→ カバラ（垂直軸・時間の矢）</div>
+    </div>
+  </div>
+
+  <p>生物が銀河にいてエントロピーが流れている——それはまさに「私たちが今ここにいる」状態だ。</p>
+
+  <canvas id="p3Canvas" height="180"></canvas>
+
+  <div class="hbox jade">
+    <strong>ダークマター不要の宇宙（2016年拡張）：</strong><br>
+    銀河外縁の回転速度がニュートン予測より速い問題——<br>
+    ダークマターは不要。宇宙全体のダークエネルギーが持つ<br>
+    エントロピーの「記憶効果」で説明できる。<br><br>
+    楕円銀河170個でヴァーリンデの予測は観測値と高精度で一致。<br>
+    ダークマターは30年探して未検出のまま。
+  </div>
+</div>
+
+<!-- ── CONCLUSION ── -->
+<div class="part" id="conclusion">
+  <div class="part-badge b3">CONCLUSION</div>
+  <h2 style="color:var(--gold-l)">結論</h2>
+  <p class="part-sub">One universe, described from many angles</p>
+
+  <div class="formula-big" style="font-size:clamp(.85rem,3vw,1.1rem);line-height:1.6">
+    重力は、宇宙が情報を整理しようとする傾向の「影」である。<br>
+    <span style="font-size:.7em;color:var(--muted)">Gravity is the shadow of the universe's tendency to organize information.</span>
+  </div>
+
+  <p>カバラが「神の設計図を読み解く」体系であり、梵字が「内なる宇宙に触れる」体系であり、カタカムナが「宇宙の渦の中に自分を置く」体系だとすれば——</p>
+
+  <div class="hbox gold">
+    三体系はそれぞれ別の角度から、<strong>同じ一つの宇宙の構造</strong>を記述していた。<br>
+    ヴァーリンデはその構造を物理学の言語で証明しようとしている。<br><br>
+    カバラ = 神の構造を外側から解読する（外向き）<br>
+    梵字　 = 内なる本質に触れる（内向き）<br>
+    カタカムナ = 渦の中に自分を置く（循環）<br>
+    ヴァーリンデ = 数式で同じ構造を記述する（物理学）
+  </div>
+
+  <p>この考察は一日の思考実験から生まれた。数学的な厳密性も実験的な検証も、まだない。しかし「なぜ古代の神秘体系がこれほど類似した構造を持つのか」という問いは、偶然で片付けるには多すぎる一致を含んでいる。</p>
+
+  <p>カタカムナ周波数変換器であなたの名前を変換してみてほしい。あなたの名前がどのセフィロトに共鳴するか、確かめてほしい。</p>
+
+  <div class="hbox vio">
+    宇宙はもしかしたら、私たちが言葉を発するたびに、<br>
+    その言葉の周波数を覚えているのかもしれない。
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="footer">
+  <div class="footer-title">SACRED GEOMETRY OF LANGUAGE</div>
+  <div class="footer-divider"></div>
+  <p class="footer-text">
+    本記事の内容はすべて仮説的考察です。<br>
+    科学的事実と神秘主義的解釈が混在しています。<br>
+    批判的・創造的に読んでいただければ幸いです。<br><br>
+    <em>This is a speculative inquiry, not scientific fact.<br>
+    Read critically, and with curiosity.</em>
+  </p>
+  <div class="footer-divider"></div>
+  <p style="font-size:.58rem;color:var(--muted);font-family:'Cinzel',serif;letter-spacing:.1em;">
+    Vol.1 Language Hz · Vol.2 Kabbalah Integration · Vol.3 Verlinde Similarity
+  </p>
+</div>
+
+<script>
+// ── COVER CANVAS（動く星と渦）──
+(function(){
+  const cv=document.getElementById('coverCanvas');
+  function resize(){ cv.width=cv.clientWidth*devicePixelRatio; cv.height=cv.clientHeight*devicePixelRatio; }
+  resize(); window.addEventListener('resize',resize);
+  const ctx=cv.getContext('2d');
+  const stars=Array.from({length:120},()=>({x:Math.random(),y:Math.random(),r:Math.random(),phase:Math.random()*Math.PI*2,speed:Math.random()*.3+.1}));
+  let t=0;
+  function draw(){
+    requestAnimationFrame(draw); t+=.008;
+    const W=cv.clientWidth,H=cv.clientHeight;
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    ctx.fillStyle='rgba(3,4,10,.15)'; ctx.fillRect(0,0,W,H);
+    stars.forEach(s=>{
+      const bri=.1+.2*Math.abs(Math.sin(t*s.speed+s.phase));
+      ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r*2,0,Math.PI*2);
+      ctx.fillStyle=`rgba(200,180,140,${bri})`; ctx.fill();
+    });
+    // 渦
+    const CX=W*.5,CY=H*.5;
+    for(let i=0;i<3;i++){
+      ctx.beginPath();
+      for(let j=0;j<=60;j++){
+        const u=j/60, a=u*Math.PI*6+t*.2+i*Math.PI*2/3, r=(0.05+u*.18)*Math.min(W,H);
+        j===0?ctx.moveTo(CX+r*Math.cos(a),CY+r*Math.sin(a)):ctx.lineTo(CX+r*Math.cos(a),CY+r*Math.sin(a));
+      }
+      const cols=['rgba(176,144,232,','rgba(128,208,160,','rgba(232,212,138,'];
+      ctx.strokeStyle=cols[i]+'.08)'; ctx.lineWidth=.8; ctx.stroke();
+    }
+  }
+  draw();
+})();
+
+// ── PART1 CANVAS（スコアバー）──
+(function(){
+  const cv=document.getElementById('p1Canvas');
+  const W=cv.clientWidth;
+  const H=230;
+  cv.width=W*devicePixelRatio; cv.height=H*devicePixelRatio;
+  const ctx=cv.getContext('2d');
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  ctx.fillStyle='#06050f'; ctx.fillRect(0,0,W,H);
+
+  const data=[
+    {name:'ヘブライ語',  cosmic:98,present:42,col:'#b090e8'},
+    {name:'梵字',        cosmic:95,present:38,col:'#e090b0'},
+    {name:'カタカムナ',  cosmic:90,present:22,col:'#80d0a0'},
+    {name:'日本語(仮名)',cosmic:60,present:72,col:'#c8a84b'},
+    {name:'英語',        cosmic:48,present:98,col:'#4090e0'},
+    {name:'中国語',      cosmic:65,present:95,col:'#f06060'},
+  ];
+
+  const bh=24, gap=8, pL=86, pR=8;
+  const bw=W-pL-pR;
+
+  data.forEach((d,i)=>{
+    const y=10+i*(bh+gap);
+
+    // 名前ラベル
+    ctx.fillStyle='rgba(200,168,75,.75)'; ctx.font='bold 8.5px Shippori Mincho'; ctx.textAlign='right';
+    ctx.fillText(d.name,pL-6,y+bh/2+3);
+
+    // 宇宙バー背景
+    ctx.fillStyle='rgba(255,255,255,.04)'; ctx.fillRect(pL,y,bw,bh/2-1);
+    // 宇宙バー本体
+    const fw1=d.cosmic/100*bw;
+    const grd1=ctx.createLinearGradient(pL,0,pL+bw,0);
+    grd1.addColorStop(0,d.col+'88'); grd1.addColorStop(1,d.col);
+    ctx.fillStyle=grd1; ctx.fillRect(pL,y,fw1,bh/2-1);
+    // 宇宙ラベル（バー内部、または右端に固定）
+    const lx1=Math.min(pL+fw1-4, W-pR-30);
+    ctx.fillStyle='rgba(255,255,255,.9)'; ctx.font='bold 7px Cinzel'; ctx.textAlign='right';
+    ctx.fillText(`宇宙${d.cosmic}`,lx1,y+bh/2-4);
+
+    // 現在バー背景
+    ctx.fillStyle='rgba(255,255,255,.04)'; ctx.fillRect(pL,y+bh/2,bw,bh/2-1);
+    // 現在バー本体
+    const fw2=d.present/100*bw;
+    const grd2=ctx.createLinearGradient(pL,0,pL+bw,0);
+    grd2.addColorStop(0,'rgba(128,208,160,.4)'); grd2.addColorStop(1,'rgba(128,208,160,.85)');
+    ctx.fillStyle=grd2; ctx.fillRect(pL,y+bh/2,fw2,bh/2-1);
+    // 現在ラベル（バー内部、または右端に固定）
+    const lx2=Math.min(pL+fw2-4, W-pR-30);
+    ctx.fillStyle='rgba(255,255,255,.85)'; ctx.font='bold 7px Cinzel'; ctx.textAlign='right';
+    ctx.fillText(`現在${d.present}`,lx2,y+bh-3);
+  });
+
+  ctx.fillStyle='rgba(200,168,75,.45)'; ctx.font='7px Cinzel'; ctx.textAlign='center';
+  ctx.fillText('上: 宇宙スケール影響度　下: 現在スケール影響度',W/2,H-5);
+})();
+
+// ── PART2 CANVAS（三体系の軸）──
+(function(){
+  const cv=document.getElementById('p2Canvas');
+  const W=cv.clientWidth;
+  cv.width=W*devicePixelRatio; cv.height=180*devicePixelRatio;
+  const ctx=cv.getContext('2d');
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  const H=180, CX=W/2, CY=H/2;
+  ctx.fillStyle='#06050f'; ctx.fillRect(0,0,W,H);
+
+  const scale=Math.min(W,H)*.38;
+  const t=Date.now()/3000;
+
+  // Z軸（カバラ）
+  ctx.beginPath(); ctx.moveTo(CX,CY-scale*.9); ctx.lineTo(CX,CY+scale*.7);
+  ctx.strokeStyle='rgba(176,144,232,.6)'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.fillStyle='#b090e8'; ctx.font='bold 9px Cinzel'; ctx.textAlign='center';
+  ctx.fillText('KABBALAH',CX,CY-scale*.9-6);
+  ctx.fillStyle='rgba(176,144,232,.5)'; ctx.font='7px Shippori Mincho';
+  ctx.fillText('Z軸・垂直・エントロピー',CX,CY-scale*.9-18);
+
+  // XY渦（カタカムナ）
+  for(let i=0;i<=36;i++){
+    const u=i/36, a=u*Math.PI*4, r=(.05+u*.38)*scale;
+    if(i===0) ctx.beginPath();
+    const x=CX+r*Math.cos(a),y=CY+r*Math.sin(a)*.4;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.strokeStyle='rgba(128,208,160,.6)'; ctx.lineWidth=1.4; ctx.stroke();
+  ctx.fillStyle='#80d0a0'; ctx.font='bold 9px Cinzel'; ctx.textAlign='right';
+  ctx.fillText('KATAKAMUNA',CX-scale*.45,CY+scale*.35);
+  ctx.fillStyle='rgba(128,208,160,.5)'; ctx.font='7px Shippori Mincho';
+  ctx.fillText('XY面・水平渦・銀河',CX-scale*.45,CY+scale*.47);
+
+  // R軸（梵字螺旋）
+  ctx.beginPath();
+  for(let i=0;i<=40;i++){
+    const u=i/40, a=u*Math.PI*5, r=u*.38*scale;
+    const x=CX+scale*.42+r*Math.cos(a)*.5, y=CY+r*Math.sin(a)*.5;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.strokeStyle='rgba(224,144,176,.6)'; ctx.lineWidth=1.4; ctx.stroke();
+  ctx.fillStyle='#e090b0'; ctx.font='bold 9px Cinzel'; ctx.textAlign='left';
+  ctx.fillText('SIDDHAM',CX+scale*.35,CY-scale*.25);
+  ctx.fillStyle='rgba(224,144,176,.5)'; ctx.font='7px Shippori Mincho';
+  ctx.fillText('R軸・内向き螺旋・DNA',CX+scale*.35,CY-scale*.13);
+
+  // 中心点
+  const cg=ctx.createRadialGradient(CX,CY,0,CX,CY,18);
+  cg.addColorStop(0,'rgba(232,212,138,.8)'); cg.addColorStop(1,'rgba(232,212,138,0)');
+  ctx.beginPath(); ctx.arc(CX,CY,18,0,Math.PI*2); ctx.fillStyle=cg; ctx.fill();
+  ctx.beginPath(); ctx.arc(CX,CY,5,0,Math.PI*2); ctx.fillStyle='#fff8e0'; ctx.fill();
+  ctx.fillStyle='rgba(232,212,138,.7)'; ctx.font='bold 7px Cinzel'; ctx.textAlign='center';
+  ctx.fillText('963Hz',CX,CY-10);
+  ctx.fillStyle='rgba(200,168,75,.5)'; ctx.font='6px Shippori Mincho';
+  ctx.fillText('三体系の交差点',CX,CY+14);
+})();
+
+// ── PART3 CANVAS（重力創発）──
+(function(){
+  const cv=document.getElementById('p3Canvas');
+  const W=cv.clientWidth;
+  const H=240; // 高さを240に拡張して凡例スペースを確保
+  cv.width=W*devicePixelRatio; cv.height=H*devicePixelRatio;
+  const ctx=cv.getContext('2d');
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  ctx.fillStyle='#06050f'; ctx.fillRect(0,0,W,H);
+
+  const pL=46,pR=12,pT=18,pB=80; // pBを80に拡張
+  const w=W-pL-pR, h=H-pT-pB;
+  const maxR=35;
+
+  // グリッド
+  [50,100,150,200,250].forEach(v=>{
+    const y=pT+h-(v/250)*h;
+    ctx.beginPath(); ctx.moveTo(pL,y); ctx.lineTo(pL+w,y);
+    ctx.strokeStyle='rgba(200,168,75,.06)'; ctx.lineWidth=.5; ctx.stroke();
+    ctx.fillStyle='rgba(200,168,75,.4)'; ctx.font='7px Shippori Mincho'; ctx.textAlign='right';
+    ctx.fillText(v,pL-4,y+3);
+  });
+
+  // ニュートン
+  ctx.beginPath();
+  for(let i=1;i<=60;i++){
+    const r=.5+i*(maxR-.5)/60;
+    const v=220/Math.sqrt(r);
+    const x=pL+r/maxR*w, y=pT+h-(v/250)*h;
+    i===1?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.strokeStyle='rgba(158,158,158,.6)'; ctx.lineWidth=1.3;
+  ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+
+  // ヴァーリンデ
+  ctx.beginPath();
+  for(let i=1;i<=60;i++){
+    const r=.5+i*(maxR-.5)/60;
+    const gN=(220*220)/r, a0=15;
+    const v=Math.sqrt((gN+Math.sqrt(gN*a0))*r);
+    const x=pL+r/maxR*w, y=pT+h-(Math.min(v,250)/250)*h;
+    i===1?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.strokeStyle='rgba(232,212,138,.9)'; ctx.lineWidth=2; ctx.stroke();
+
+  // 観測値（点）
+  [[1,215],[5,210],[10,218],[18,216],[28,215],[35,213]].forEach(([r,v])=>{
+    ctx.beginPath(); ctx.arc(pL+r/maxR*w,pT+h-(v/250)*h,3.5,0,Math.PI*2);
+    ctx.fillStyle='#69f0ae'; ctx.fill();
+  });
+
+  // 軸ラベル（グラフ直下に配置）
+  const axisY=pT+h+14;
+  ctx.fillStyle='rgba(200,168,75,.5)'; ctx.font='7.5px Shippori Mincho'; ctx.textAlign='center';
+  ctx.fillText('← 銀河の半径',pL+w/2,axisY);
+  ctx.save(); ctx.translate(10,pT+h/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center'; ctx.fillText('回転速度 km/s',0,0); ctx.restore();
+
+  // 凡例（3行、十分なスペースに縦並び）
+  const legends=[
+    {col:'#9e9e9e',dash:true, dot:false,label:'ニュートン予測（外縁は遅い）'},
+    {col:'#e8d48a',dash:false,dot:false,label:'ヴァーリンデ予測（外縁も速い）'},
+    {col:'#69f0ae',dash:false,dot:true, label:'実際の観測値'},
+  ];
+  const legStartY=pT+h+26;
+  const legLineH=16;
+  legends.forEach((l,i)=>{
+    const ly=legStartY+i*legLineH;
+    if(l.dot){
+      ctx.beginPath(); ctx.arc(pL+6,ly-2,4,0,Math.PI*2);
+      ctx.fillStyle=l.col; ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.moveTo(pL,ly-2); ctx.lineTo(pL+18,ly-2);
+      ctx.strokeStyle=l.col; ctx.lineWidth=l.dash?1.2:2;
+      if(l.dash) ctx.setLineDash([4,3]);
+      ctx.stroke(); ctx.setLineDash([]);
+    }
+    ctx.fillStyle=l.col; ctx.font='8px Shippori Mincho'; ctx.textAlign='left';
+    ctx.fillText(l.label, pL+24, ly+2);
+  });
+})();
+</script>
+</body>
+</html>
