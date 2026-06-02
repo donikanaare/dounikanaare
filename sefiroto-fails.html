@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宇宙の設計図を読む — 統合探求レポート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@200;300;400;600&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ── */
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#09090f;
+  --bg2:#0d0d16;
+  --gold:#c8a84a;
+  --gl:#f0d878;
+  --gd:#3a2808;
+  --gm:#8b6a28;
+  --text:#ddd0b4;
+  --dim:#9a8e74;
+  --border:rgba(200,168,74,.15);
+  --accent:#1a1428;
+}
+
+html{scroll-behavior:smooth;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Noto Serif JP',serif;
+  font-weight:300;
+  line-height:1.9;
+  font-size:15px;
+  overflow-x:hidden;
+}
+
+/* ── GRAIN OVERLAY ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1000;opacity:.4;
+}
+
+/* ── SIDEBAR NAV ── */
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:220px;
+  background:linear-gradient(180deg,#0a0a14 0%,#080810 100%);
+  border-right:1px solid var(--border);
+  padding:40px 0 40px;
+  display:flex;flex-direction:column;
+  z-index:100;overflow-y:auto;
+  transition:transform .3s ease;
+}
+.sidebar-logo{
+  padding:0 24px 28px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:20px;
+}
+.sidebar-logo .sym{
+  font-family:'Cinzel',serif;font-size:22px;
+  color:var(--gold);text-align:center;
+  display:block;margin-bottom:6px;
+  text-shadow:0 0 20px rgba(200,168,74,.4);
+}
+.sidebar-logo .title{
+  font-family:'Cinzel',serif;font-size:8px;
+  color:var(--gm);letter-spacing:.25em;
+  text-align:center;text-transform:uppercase;
+  line-height:1.6;
+}
+nav a{
+  display:block;padding:8px 24px;
+  font-family:'Cinzel',serif;font-size:9px;
+  color:var(--dim);text-decoration:none;
+  letter-spacing:.18em;text-transform:uppercase;
+  transition:all .2s;border-left:2px solid transparent;
+  line-height:1.5;
+}
+nav a:hover{color:var(--gold);border-left-color:var(--gold);background:rgba(200,168,74,.04);}
+nav a.active{color:var(--gl);border-left-color:var(--gl);background:rgba(200,168,74,.07);}
+.nav-chapter{
+  font-family:'Cinzel',serif;font-size:7px;
+  color:var(--gd);letter-spacing:.3em;text-transform:uppercase;
+  padding:16px 24px 4px;
+}
+
+/* ── MAIN CONTENT ── */
+main{
+  margin-left:220px;
+  min-height:100vh;
+}
+
+/* ── COVER ── */
+.cover{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:60px 80px;
+  position:relative;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%,rgba(30,20,100,.25) 0%,transparent 65%),
+    radial-gradient(ellipse 60% 40% at 20% 80%,rgba(20,50,30,.12) 0%,transparent 50%),
+    var(--bg);
+  border-bottom:1px solid var(--border);
+}
+.cover-ornament{
+  font-family:'Cinzel',serif;font-size:48px;
+  color:var(--gold);margin-bottom:32px;
+  text-shadow:0 0 60px rgba(200,168,74,.5),0 0 120px rgba(200,168,74,.2);
+  animation:pulse-glow 4s ease-in-out infinite;
+}
+@keyframes pulse-glow{
+  0%,100%{text-shadow:0 0 60px rgba(200,168,74,.5),0 0 120px rgba(200,168,74,.2);}
+  50%{text-shadow:0 0 80px rgba(200,168,74,.7),0 0 160px rgba(200,168,74,.3);}
+}
+.cover h1{
+  font-family:'Cormorant Garamond',serif;font-weight:300;
+  font-size:clamp(28px,4vw,52px);letter-spacing:.12em;
+  color:var(--gl);text-align:center;line-height:1.2;
+  margin-bottom:16px;
+}
+.cover-sub{
+  font-family:'Cinzel',serif;font-size:11px;
+  color:var(--gm);letter-spacing:.32em;text-align:center;
+  text-transform:uppercase;margin-bottom:40px;line-height:2;
+}
+.cover-rule{
+  width:100%;max-width:560px;
+  border:none;border-top:1px solid var(--border);
+  margin:0 auto 36px;position:relative;
+}
+.cover-rule::before{
+  content:'◆';position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+  font-size:10px;color:var(--gold);background:var(--bg);padding:0 8px;
+}
+.cover-quote{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:18px;color:rgba(200,168,74,.55);
+  text-align:center;letter-spacing:.08em;line-height:1.7;
+  max-width:500px;margin:0 auto 8px;
+}
+.cover-cite{
+  font-family:'Cinzel',serif;font-size:9px;
+  color:var(--dim);letter-spacing:.22em;text-align:center;
+}
+.cover-scroll{
+  position:absolute;bottom:32px;
+  font-family:'Cinzel',serif;font-size:8px;
+  color:var(--gd);letter-spacing:.3em;text-transform:uppercase;
+  animation:fade-ud 2.5s ease-in-out infinite;
+}
+@keyframes fade-ud{0%,100%{opacity:.3;transform:translateY(0);}50%{opacity:.7;transform:translateY(6px);}}
+
+/* ── CHAPTER SECTIONS ── */
+.chapter{
+  padding:80px 80px 60px;
+  border-bottom:1px solid rgba(200,168,74,.08);
+  position:relative;
+}
+.chapter::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,transparent,var(--gold),transparent);
+  opacity:0;transition:opacity .4s;
+}
+.chapter:hover::before{opacity:.4;}
+
+.chapter-num{
+  font-family:'Cinzel',serif;font-size:11px;
+  color:var(--gm);letter-spacing:.4em;text-transform:uppercase;
+  margin-bottom:10px;display:flex;align-items:center;gap:12px;
+}
+.chapter-num::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.chapter > h2{
+  font-family:'Cormorant Garamond',serif;font-weight:400;
+  font-size:clamp(22px,3vw,36px);color:var(--gl);
+  letter-spacing:.1em;margin-bottom:36px;line-height:1.3;
+}
+
+/* ── SECTION HEADINGS ── */
+.section{margin-bottom:48px;}
+.section h3{
+  font-family:'Cinzel',serif;font-size:13px;
+  color:var(--gold);letter-spacing:.25em;text-transform:uppercase;
+  margin-bottom:16px;padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.section h3::before{content:'✦';font-size:10px;color:var(--gm);}
+
+.section h4{
+  font-family:'Cormorant Garamond',serif;font-weight:600;
+  font-size:18px;color:rgba(200,168,74,.85);
+  margin:24px 0 10px;letter-spacing:.06em;
+}
+
+/* ── TEXT ── */
+p{
+  margin-bottom:16px;color:var(--text);
+  font-weight:300;
+}
+b,strong{color:#e8dcc0;font-weight:600;}
+em{font-style:italic;color:rgba(200,168,74,.8);}
+
+/* ── QUOTE ── */
+.quote{
+  margin:28px 0;padding:20px 28px;
+  border-left:3px solid var(--gold);
+  background:linear-gradient(90deg,rgba(200,168,74,.06) 0%,rgba(200,168,74,.01) 100%);
+  border-radius:0 4px 4px 0;
+  position:relative;
+}
+.quote::before{
+  content:'"';position:absolute;top:-10px;left:20px;
+  font-family:'Cormorant Garamond',serif;font-size:60px;
+  color:rgba(200,168,74,.15);line-height:1;
+}
+.quote p{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:17px;color:rgba(220,200,150,.8);
+  margin:0;line-height:1.8;
+}
+.quote cite{
+  display:block;margin-top:8px;
+  font-family:'Cinzel',serif;font-size:9px;
+  color:var(--dim);letter-spacing:.2em;
+}
+
+/* ── BULLET LIST ── */
+.bullet-list{list-style:none;margin:12px 0 20px;}
+.bullet-list li{
+  padding:7px 0 7px 22px;
+  position:relative;color:var(--text);
+  font-weight:300;
+  border-bottom:1px solid rgba(200,168,74,.05);
+}
+.bullet-list li::before{
+  content:'◆';position:absolute;left:0;top:8px;
+  font-size:7px;color:var(--gold);
+}
+.bullet-list li b{color:#e8dcc0;}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;margin:24px 0;}
+table{
+  width:100%;border-collapse:collapse;
+  font-size:13px;
+}
+thead tr{background:rgba(30,24,50,.9);}
+thead th{
+  font-family:'Cinzel',serif;font-size:9px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gl);padding:12px 14px;
+  border:1px solid rgba(200,168,74,.25);
+  font-weight:400;text-align:left;
+}
+tbody tr:nth-child(even){background:rgba(200,168,74,.025);}
+tbody tr:hover{background:rgba(200,168,74,.055);}
+tbody td{
+  padding:10px 14px;
+  border:1px solid rgba(200,168,74,.1);
+  color:var(--text);font-weight:300;
+  vertical-align:top;
+}
+tbody td:first-child{color:var(--gold);font-family:'Cinzel',serif;font-size:11px;}
+.star-row td{color:rgba(240,210,60,.9)!important;}
+.star-row{background:rgba(200,168,74,.06)!important;}
+
+/* ── HIGHLIGHT BOX ── */
+.highlight{
+  margin:24px 0;padding:18px 22px;
+  background:rgba(200,168,74,.06);
+  border:1px solid rgba(200,168,74,.2);
+  border-radius:3px;
+}
+.highlight p{margin:0;color:rgba(220,205,160,.85);}
+
+/* ── DIVIDER ── */
+.ornament-divider{
+  text-align:center;margin:48px 0;
+  color:var(--gd);font-size:11px;letter-spacing:.6em;
+}
+
+/* ── FOOTER ── */
+footer{
+  padding:40px 80px;
+  text-align:center;
+  border-top:1px solid var(--border);
+  background:rgba(200,168,74,.02);
+}
+footer p{
+  font-family:'Cinzel',serif;font-size:9px;
+  color:var(--dim);letter-spacing:.25em;margin:0;
+}
+
+/* ── SCROLL PROGRESS ── */
+.progress-bar{
+  position:fixed;top:0;left:220px;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),var(--gl));
+  transform-origin:left;transform:scaleX(0);
+  transition:transform .1s;z-index:200;
+}
+
+/* ── TOC ── */
+.toc{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin:24px 0;
+}
+.toc-item{
+  padding:14px 18px;
+  border:1px solid var(--border);
+  border-radius:3px;
+  background:rgba(200,168,74,.03);
+  transition:all .2s;cursor:pointer;text-decoration:none;
+  display:block;
+}
+.toc-item:hover{background:rgba(200,168,74,.08);border-color:rgba(200,168,74,.35);}
+.toc-num{font-family:'Cinzel',serif;font-size:9px;color:var(--gm);letter-spacing:.2em;margin-bottom:4px;}
+.toc-title{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gl);}
+
+/* ── MOBILE ── */
+.menu-btn{display:none;position:fixed;top:16px;left:16px;z-index:300;
+  background:var(--bg2);border:1px solid var(--border);
+  color:var(--gold);padding:8px 12px;cursor:pointer;
+  font-family:'Cinzel',serif;font-size:10px;border-radius:2px;}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  main{margin-left:0;}
+  .progress-bar{left:0;}
+  .chapter{padding:60px 24px 40px;}
+  .cover{padding:80px 24px 60px;}
+  footer{padding:30px 24px;}
+  .toc{grid-template-columns:1fr;}
+  .menu-btn{display:block;}
+}
+
+/* ── ANIMATIONS ── */
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+
+/* ── READING PROGRESS INDICATOR ── */
+.chapter-marker{
+  display:inline-block;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--gd);margin-right:8px;
+  transition:background .3s;vertical-align:middle;
+}
+nav a.active .chapter-marker{background:var(--gl);}
+nav a:hover .chapter-marker{background:var(--gold);}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="prog"></div>
+<button class="menu-btn" onclick="toggleSidebar()">☰ 目次</button>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <span class="sym">✦</span>
+    <div class="title">宇宙の設計図を読む<br>統合探求レポート</div>
+  </div>
+  <nav id="nav">
+    <div class="nav-chapter">目次</div>
+    <a href="#cover"  onclick="closeSidebar()"><span class="chapter-marker"></span>表紙</a>
+    <a href="#toc"    onclick="closeSidebar()"><span class="chapter-marker"></span>目次</a>
+    <div class="nav-chapter">本文</div>
+    <a href="#ch1" onclick="closeSidebar()"><span class="chapter-marker"></span>第1章　カバラと生命の木</a>
+    <a href="#ch2" onclick="closeSidebar()"><span class="chapter-marker"></span>第2章　エメラルドタブレット</a>
+    <a href="#ch3" onclick="closeSidebar()"><span class="chapter-marker"></span>第3章　メタトロンと神聖幾何学</a>
+    <a href="#ch4" onclick="closeSidebar()"><span class="chapter-marker"></span>第4章　ウォルター・ラッセル</a>
+    <a href="#ch5" onclick="closeSidebar()"><span class="chapter-marker"></span>第5章　フィボナッチ・チャクラ</a>
+    <a href="#ch6" onclick="closeSidebar()"><span class="chapter-marker"></span>第6章　ウィトルウィウス人体図</a>
+    <a href="#ch7" onclick="closeSidebar()"><span class="chapter-marker"></span>第7章　全体統合</a>
+    <a href="#conclusion" onclick="closeSidebar()"><span class="chapter-marker"></span>結語</a>
+  </nav>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main>
+
+<!-- COVER -->
+<section class="cover" id="cover">
+  <div class="cover-ornament">✦</div>
+  <h1>宇宙の設計図を読む</h1>
+  <div class="cover-sub">
+    カバラ・錬金術・エメラルドタブレット・メタトロン<br>
+    フィボナッチ・チャクラ・ウィトルウィウス・ウォルター・ラッセル<br>
+    統合探求レポート
+  </div>
+  <hr class="cover-rule">
+  <p class="cover-quote">"As above, so below. As within, so without."</p>
+  <p class="cover-cite">— Emerald Tablet / エメラルドタブレット</p>
+  <div class="cover-scroll">scroll ↓</div>
+</section>
+
+<!-- TOC -->
+<section class="chapter" id="toc">
+  <div class="chapter-num">Contents</div>
+  <h2>目次</h2>
+  <div class="toc">
+    <a href="#ch1" class="toc-item"><div class="toc-num">第 1 章</div><div class="toc-title">カバラと生命の木</div></a>
+    <a href="#ch2" class="toc-item"><div class="toc-num">第 2 章</div><div class="toc-title">エメラルドタブレットと錬金術</div></a>
+    <a href="#ch3" class="toc-item"><div class="toc-num">第 3 章</div><div class="toc-title">メタトロンの立方体と神聖幾何学</div></a>
+    <a href="#ch4" class="toc-item"><div class="toc-num">第 4 章</div><div class="toc-title">ウォルター・ラッセルの宇宙論</div></a>
+    <a href="#ch5" class="toc-item"><div class="toc-num">第 5 章</div><div class="toc-title">フィボナッチ・黄金比・チャクラ統合</div></a>
+    <a href="#ch6" class="toc-item"><div class="toc-num">第 6 章</div><div class="toc-title">ウィトルウィウス人体図との完全適合</div></a>
+    <a href="#ch7" class="toc-item"><div class="toc-num">第 7 章</div><div class="toc-title">全体統合——一つの構造</div></a>
+    <a href="#conclusion" class="toc-item"><div class="toc-num">結 語</div><div class="toc-title">心臓が全ての道の鍵</div></a>
+  </div>
+</section>
+
+<!-- ═══ CH1 ═══ -->
+<section class="chapter fade-in" id="ch1">
+  <div class="chapter-num">Chapter 01</div>
+  <h2>カバラと生命の木</h2>
+  <p><b>カバラ（Kabbalah）</b>はユダヤ神秘主義の核心をなす思想体系であり、その象徴的な中心が<b>生命の木（Tree of Life / Etz Chaim）</b>である。生命の木は宇宙と人間の構造を同一の図式で表し、神から物質世界への流出、そして物質から神への還帰という双方向の運動を可視化している。</p>
+
+  <div class="section">
+    <h3>1-1　歴史的背景と起源</h3>
+    <p><b>12〜13世紀（スペイン・南フランス）</b>にカバラの体系化が始まった。セファルディム（スペイン系ユダヤ人）の学者コミュニティが担い手であり、<b>モーゼス・デ・レオン（1240〜1305）</b>が著したとされる聖典<em>『ゾーハル（Zohar）』</em>がこの時代の金字塔となった。</p>
+    <p><em>ゾーハル</em>とはヘブライ語で「輝き・光輝」を意味し、トーラーの神秘的注釈書という形をとりつつ、神の内側の構造・魂の層位・宇宙生成論を語る壮大な文書である。</p>
+    <ul class="bullet-list">
+      <li><b>16世紀（サフェド）：</b>イサク・ルリア（1534〜1572）が生命の木を現在の形へ精緻に体系化した。</li>
+      <li><b>18世紀（東欧）：</b>ハシディズム運動が起き、カバラが祈り・喜び・踊りという民衆的信仰へ変容した。</li>
+      <li><b>19〜20世紀：</b>黄金の夜明け団がカバラをタロット・占星術・錬金術と結合させ、現代スピリチュアルの土台を形成した。</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>1-2　10のセフィロトと対応金属</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>番号</th><th>セフィロト名</th><th>意味</th><th>惑星</th><th>クイーンスケール色</th><th>対応金属</th></tr></thead>
+        <tbody>
+          <tr><td>①</td><td>ケテル</td><td>王冠・純粋光</td><td>神・源</td><td>純白</td><td>光（超越）</td></tr>
+          <tr><td>②</td><td>コクマー</td><td>知恵・父性原理</td><td>恒星天</td><td>灰色</td><td>原質</td></tr>
+          <tr><td>③</td><td>ビナー</td><td>理解・母性原理</td><td>土星 ♄</td><td>黒</td><td>鉛 Pb</td></tr>
+          <tr><td>④</td><td>ケセド</td><td>慈悲・拡大</td><td>木星 ♃</td><td>青</td><td>錫 Sn</td></tr>
+          <tr><td>⑤</td><td>ゲブラー</td><td>力・裁き</td><td>火星 ♂</td><td>赤</td><td>鉄 Fe</td></tr>
+          <tr class="star-row"><td>⑥</td><td>ティファレト ★</td><td>美・調和・中心</td><td>太陽 ☉</td><td>黄金</td><td>金 Au</td></tr>
+          <tr><td>⑦</td><td>ネツァク</td><td>勝利・感情・欲求</td><td>金星 ♀</td><td>緑</td><td>銅 Cu</td></tr>
+          <tr><td>⑧</td><td>ホド</td><td>栄光・知性・言語</td><td>水星 ☿</td><td>オレンジ</td><td>水銀 Hg</td></tr>
+          <tr><td>⑨</td><td>イェソド</td><td>基盤・潜在意識</td><td>月 ☽</td><td>紫</td><td>銀 Ag</td></tr>
+          <tr><td>⑩</td><td>マルクト</td><td>王国・物質世界</td><td>地球 ⊕</td><td>四色（四元素）</td><td>全金属の統合</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>1-3　三つの柱</h3>
+    <ul class="bullet-list">
+      <li><b>左柱（厳しさの柱）：</b>ビナー（黒）・ゲブラー（赤）・ホド（橙）—— イダー経絡・身体左側に対応</li>
+      <li><b>中央柱（均衡の柱）：</b>ケテル（白）・ティファレト（黄金）・イェソド（紫）・マルクト（四色）—— スシュムナー・脊椎に対応</li>
+      <li><b>右柱（慈悲の柱）：</b>コクマー（灰）・ケセド（青）・ネツァク（緑）—— ピンガラー経絡・身体右側に対応</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>1-4　空白部分の正体——ダアトとクリフォト</h3>
+    <p><b>ダアト（Daath）</b>は「知識・認識」を意味する隠されたセフィロト。深淵（アビス）の直上に位置し、10のセフィロトに含まれない11番目の存在。「存在するが存在しない」という逆説的性格を持つ。</p>
+    <div class="quote">
+      <p>深淵を渡り切った者だけがダアトに触れることができる。エゴの完全な消滅なしにその扉は開かない。</p>
+    </div>
+    <p><b>クリフォト（Qliphoth）</b>は「殻・皮」を意味し、生命の木の鏡像として存在する「影の木」。各セフィロトには対応するクリファ（影）があり、セフィロトの性質が歪み・過剰・崩壊した状態を表す。現代シャドウワークの元型。</p>
+  </div>
+
+  <div class="section">
+    <h3>1-5　三つのヴェール——ケテルの彼方</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>名称</th><th>意味</th><th>対応する東洋概念</th></tr></thead>
+        <tbody>
+          <tr><td>AIN（アイン）</td><td>無——概念すら成立しない絶対無</td><td>道教の「無」・仏教の「空」</td></tr>
+          <tr><td>AIN SOPH（アイン・ソフ）</td><td>無限——限界のない広がり</td><td>道（タオ）そのもの</td></tr>
+          <tr><td>AIN SOPH AUR（アイン・ソフ・アウル）</td><td>無限の光——この光がケテルへ凝縮</td><td>梵天の光・創造の前夜</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CH2 ═══ -->
+<section class="chapter fade-in" id="ch2">
+  <div class="chapter-num">Chapter 02</div>
+  <h2>エメラルドタブレットと錬金術</h2>
+  <p><em>エメラルドタブレット（Emerald Tablet / Tabula Smaragdina）</em>は錬金術・ヘルメス主義の最高聖典とされる極めて短い文書で、わずか13〜14節に宇宙の法則が圧縮されている。</p>
+
+  <div class="section">
+    <h3>2-1　著者と起源</h3>
+    <p><b>ヘルメス・トリスメギストス</b>（「三重に偉大なるヘルメス」）——ギリシャの神ヘルメスとエジプトの神トートが融合した伝説的人物。実際の起源は6〜8世紀のアラビア語文書とされ、12世紀にラテン語訳されてヨーロッパへ広まった。あのニュートンが自身でラテン語から英語に翻訳した原稿が現存する。</p>
+  </div>
+
+  <div class="section">
+    <h3>2-2　核心フレーズの解読</h3>
+    <div class="quote">
+      <p>"As above, so below. As within, so without."</p>
+      <cite>— エメラルドタブレット 第2〜3節</cite>
+    </div>
+    <p><b>表の意味：</b>天体の動きが地上に影響する（占星術の根拠）。<br>
+    <b>裏の意味：</b>宇宙のマクロコスモスと人間のミクロコスモスは同じ構造を持つ。ティファレト（金）が生命の木の中間点に位置するのは、この上下対応の鏡面として機能するためである。</p>
+
+    <div class="quote">
+      <p>"Solve et Coagula——溶解せよ、そして凝固せよ。"</p>
+      <cite>— 錬金術最大の格言</cite>
+    </div>
+    <p>表向きは物質操作の手順だが、裏の意味は「一度自分を完全に壊し（エゴの溶解）、より高い次元で再構築せよ」という魂の変容プロセス。禅の「大死一番」と完全に重なる。</p>
+  </div>
+
+  <div class="section">
+    <h3>2-3　錬金術の言語——隠された暗号体系</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>錬金術の言葉</th><th>表の意味</th><th>裏の意味（精神的）</th></tr></thead>
+        <tbody>
+          <tr><td>鉛</td><td>金属の鉛</td><td>未覚醒の魂・無意識（ビナー）</td></tr>
+          <tr><td>金</td><td>物質の金</td><td>完成した魂・神性（ティファレト）</td></tr>
+          <tr><td>火</td><td>実際の炎</td><td>浄化・試練</td></tr>
+          <tr><td>溶解（Solve）</td><td>物質を溶かす</td><td>エゴを手放す・上昇</td></tr>
+          <tr><td>凝固（Coagula）</td><td>物質を固める</td><td>新しい自己の確立・降下</td></tr>
+          <tr><td>賢者の石</td><td>金を作る触媒</td><td>悟り・完全な意識</td></tr>
+          <tr><td>水銀</td><td>化学物質</td><td>精神・変容を媒介するもの（ホド）</td></tr>
+          <tr><td>硫黄</td><td>化学物質</td><td>魂・能動原理（コクマー）</td></tr>
+          <tr><td>塩</td><td>化学物質</td><td>肉体・物質原理（マルクト）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>2-4　錬金術の変容4段階</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>段階</th><th>ラテン名</th><th>色</th><th>金属</th><th>生命の木の対応</th></tr></thead>
+        <tbody>
+          <tr><td>①</td><td>ニグレド（黒化）</td><td>黒</td><td>鉛</td><td>マルクト〜イェソド：物質・未覚醒</td></tr>
+          <tr><td>②</td><td>アルベド（白化）</td><td>白</td><td>銀</td><td>ホド〜イェソド：浄化・意識の目覚め</td></tr>
+          <tr><td>③</td><td>キトリニタス（黄化）</td><td>黄</td><td>銅・鉄</td><td>ネツァク〜ゲブラー：感情・意志の統合</td></tr>
+          <tr class="star-row"><td>④</td><td>ルベド（赤化）★</td><td>赤/金</td><td>金</td><td>ティファレト：魂の完成・悟り・神との合一</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CH3 ═══ -->
+<section class="chapter fade-in" id="ch3">
+  <div class="chapter-num">Chapter 03</div>
+  <h2>メタトロンの立方体と神聖幾何学</h2>
+
+  <div class="section">
+    <h3>3-1　フラワーオブライフ</h3>
+    <p><b>フラワーオブライフ</b>は半径の等しい円を6方向に重ねながら並べた幾何学図形で、古代エジプト・アビドスの神殿に少なくとも6000年前から刻まれている。受精卵が2→4→8と細胞分裂する過程がそのままこの図形を描く——<em>生命の起源の幾何学的記録</em>とも言える。</p>
+    <p>内包される図形：ダビデの星（六芒星）・フルーツオブライフ（13円）・ベシカ・ピスキス・正三角形・正六角形。</p>
+  </div>
+
+  <div class="section">
+    <h3>3-2　メタトロンの立方体の構築過程</h3>
+    <ul class="bullet-list">
+      <li>① 中心円 1つ（ケテル・ゼロポイント）</li>
+      <li>② 第1リング +6円（合計7円）— フラワーオブライフの核</li>
+      <li>③ 第2リング +6円（合計13円）— フルーツオブライフの完成</li>
+      <li>④ 全13中心点を直線で結ぶ（78本）— メタトロンの立方体の完成</li>
+    </ul>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>プラトン立体</th><th>面・辺・頂点</th><th>元素</th><th>セフィロト</th><th>テスラとの接続</th></tr></thead>
+        <tbody>
+          <tr><td>正四面体</td><td>4・6・4</td><td>火</td><td>ゲブラー（力）</td><td>3の構造</td></tr>
+          <tr><td>正六面体（立方体）</td><td>6・12・8</td><td>土</td><td>マルクト（物質）</td><td>6の構造</td></tr>
+          <tr><td>正八面体</td><td>8・12・6</td><td>風</td><td>ケセド（慈悲）</td><td>6の構造</td></tr>
+          <tr><td>正十二面体</td><td>12・30・20</td><td>エーテル</td><td>ケテル（源）</td><td>3×4</td></tr>
+          <tr><td>正二十面体</td><td>20・30・12</td><td>水</td><td>イェソド（潜在）</td><td>辺数30→3</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight"><p><b>辺数の和：</b>6+12+12+30+30 = 90 → デジタルルート = <b>9</b>（テスラの法則）</p></div>
+  </div>
+
+  <div class="section">
+    <h3>3-3　テスラの3・6・9の法則</h3>
+    <div class="quote">
+      <p>"If you only knew the magnificence of 3, 6 and 9, then you would have a key to the universe."</p>
+      <cite>— Nikola Tesla（ニコラ・テスラ）</cite>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>数字</th><th>幾何学的性質</th><th>メタトロンとの対応</th><th>カバラとの対応</th></tr></thead>
+        <tbody>
+          <tr><td>3</td><td>最小の安定構造・三角形・三位一体</td><td>正三角形×2 = 六芒星 = 正四面体の投影</td><td>上位三角形（ケテル・コクマー・ビナー）</td></tr>
+          <tr class="star-row"><td>6</td><td>最効率の空間充填・六角形・炭素原子</td><td>6円リング×2+中心=13、78=6×13</td><td>ティファレト⑥ = 金・完全数・黄金比の中心</td></tr>
+          <tr><td>9</td><td>全ての数の完成点・デジタルルートで常に9へ</td><td>プラトン立体辺数の和90→9</td><td>イェソド⑨ = 潜在意識・全サイクルの完成</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CH4 ═══ -->
+<section class="chapter fade-in" id="ch4">
+  <div class="chapter-num">Chapter 04</div>
+  <h2>ウォルター・ラッセルの宇宙論</h2>
+  <p><b>ウォルター・ラッセル（1871〜1963）</b>は画家・彫刻家・科学者・哲学者という多才な人物で、「宇宙は光の波動と螺旋で構成されている」という独自宇宙論を展開した。ニコラ・テスラは彼の著作を読んで<em>「人類には早すぎる知識だ」</em>と述べ、封印を勧めたとされる。</p>
+
+  <div class="section">
+    <h3>4-1　ラッセルの核心思想</h3>
+    <ul class="bullet-list">
+      <li><b>光の一元論：</b>宇宙に存在するのは光だけであり、全ての物質は光の波動の異なる状態である。</li>
+      <li><b>陰陽の螺旋運動：</b>陽（収縮・高密度）と陰（膨張・低密度）の永遠の螺旋が全ての物質を生み出す。</li>
+      <li><b>ゼロポイント：</b>陰陽の均衡点。静止した瞬間。カバラのティファレト・エメラルドタブレットの鏡面と完全に対応。</li>
+      <li><b>9つのオクターブ：</b>物質は9段階のオクターブで分類される。水素から始まり9番目で完成し、また1に戻る円環構造。</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>4-2　全知識体系との対応</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ラッセルの概念</th><th>カバラ</th><th>エメラルドタブレット</th><th>チャクラ</th></tr></thead>
+        <tbody>
+          <tr><td>光の波動（陽）</td><td>コクマー（父・能動）</td><td>「太陽が父」</td><td>ピンガラー（右経絡）</td></tr>
+          <tr><td>空間（陰）</td><td>ビナー（母・受動）</td><td>「月が母」</td><td>イダー（左経絡）</td></tr>
+          <tr class="star-row"><td>ゼロポイント ★</td><td>ティファレト（金・鏡面）</td><td>上下対応の接点</td><td>アナーハタ（心臓）</td></tr>
+          <tr><td>9つのオクターブ</td><td>10のセフィロト</td><td>4元素の段階的分化</td><td>7チャクラ</td></tr>
+          <tr><td>螺旋の展開</td><td>AIN SOPHからの流出</td><td>「地から天へ・天から地へ」</td><td>クンダリーニ上昇</td></tr>
+          <tr><td>膨張と収縮</td><td>Solve et Coagula</td><td>円環構造</td><td>プラナ（気）の循環</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CH5 ═══ -->
+<section class="chapter fade-in" id="ch5">
+  <div class="chapter-num">Chapter 05</div>
+  <h2>フィボナッチ・黄金比・チャクラ統合</h2>
+
+  <div class="section">
+    <h3>5-1　フィボナッチ数列と黄金比</h3>
+    <p><b>フィボナッチ数列：</b>1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89...（前の2数を足すと次の数）</p>
+    <p><b>黄金比 φ = 1.6180339...：</b>隣り合う数の比はφに収束する。φ²=φ+1という自己言及的な性質を持ち「自分自身で完結する唯一の数」と言われる。カバラのティファレト（美・調和）との完全対応。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>フィボナッチ数</th><th>重要な対応</th></tr></thead>
+        <tbody>
+          <tr><td>3</td><td>テスラの「3」・カバラ上位三角形・錬金術の三原質（硫黄・水銀・塩）</td></tr>
+          <tr><td>5</td><td>五芒星（黄金比の結晶）・五元素・プラトン立体の数</td></tr>
+          <tr><td>8</td><td>メタトロン正八面体の頂点数・音楽のオクターブ</td></tr>
+          <tr class="star-row"><td>13</td><td>メタトロン13円（フルーツオブライフ）★</td></tr>
+          <tr><td>34</td><td>3+4 = 7（チャクラの数）</td></tr>
+          <tr><td>55</td><td>5+5 = 10（セフィロトの数）→ 1+0 = 1（ケテルへ還帰）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>5-2　人体における黄金比</h3>
+    <ul class="bullet-list">
+      <li><b>身長全体 : へそまで</b> = φ : 1（1.618 : 1）</li>
+      <li><b>へそから頭頂 : 心臓から頭頂</b> = φ : 1</li>
+      <li><b>心臓から頭頂 : 喉から頭頂</b> = φ : 1</li>
+      <li><b>指の骨の比率</b> = φ ≒ 1.618（指先・第1・第2・第3関節）</li>
+      <li><b>DNAの二重螺旋</b> = 34Å × 21Å（比率 ≈ φ）</li>
+    </ul>
+    <div class="highlight"><p><b>核心：</b>ティファレト（金・太陽・心臓）がφ²の分割点に正確に位置する。これがエメラルドタブレットの「上下対応の鏡面」の人体における実現である。</p></div>
+  </div>
+
+  <div class="section">
+    <h3>5-3　チャクラとセフィロトの完全対応</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>チャクラ</th><th>名称</th><th>身体位置</th><th>対応セフィロト</th><th>対応金属</th><th>色</th></tr></thead>
+        <tbody>
+          <tr><td>第7</td><td>サハスラーラ</td><td>頭頂</td><td>ケテル①</td><td>純粋光</td><td>紫</td></tr>
+          <tr><td>第6</td><td>アージュニャー</td><td>眉間</td><td>コクマー②＋ビナー③</td><td>原質＋鉛</td><td>藍</td></tr>
+          <tr><td>第5</td><td>ヴィシュッダ</td><td>喉</td><td>ケセド④＋ゲブラー⑤</td><td>錫＋鉄</td><td>水色</td></tr>
+          <tr class="star-row"><td>第4</td><td>アナーハタ ★</td><td>心臓</td><td>ティファレト⑥ φ²の中心</td><td>金 Au</td><td>緑</td></tr>
+          <tr><td>第3</td><td>マニプーラ</td><td>太陽神経叢</td><td>ホド⑧＋ネツァク⑦</td><td>水銀＋銅</td><td>黄</td></tr>
+          <tr><td>第2</td><td>スワディスターナ</td><td>仙骨</td><td>イェソド⑨</td><td>銀 Ag</td><td>橙</td></tr>
+          <tr><td>第1</td><td>ムーラダーラ</td><td>会陰</td><td>マルクト⑩</td><td>全金属</td><td>赤</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight"><p><b>注：</b>ホド（水星・水銀・知性・言語）とネツァク（金星・銅・感情・欲求）は太陽神経叢ではなく<b>手・腕の領域</b>との対応がより正確である——ウィトルウィウス人体図との照合（次章）で明確になる。</p></div>
+  </div>
+
+  <div class="section">
+    <h3>5-4　三本の経絡と三本の柱</h3>
+    <ul class="bullet-list">
+      <li><b>スシュムナー（中央・クンダリーニの道）</b> = 均衡の柱（ケテル・ティファレト・イェソド・マルクト）</li>
+      <li><b>イダー（左・陰・月）</b> = 厳しさの柱（ビナー・ゲブラー・ホド）</li>
+      <li><b>ピンガラー（右・陽・太陽）</b> = 慈悲の柱（コクマー・ケセド・ネツァク）</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ CH6 ═══ -->
+<section class="chapter fade-in" id="ch6">
+  <div class="chapter-num">Chapter 06</div>
+  <h2>ウィトルウィウス人体図との完全適合</h2>
+  <p><b>ウィトルウィウス人体図（Homo Vitruvianus）</b>はレオナルド・ダ・ヴィンチが1490年頃に描いた最も有名な解剖学的スケッチ。古代ローマの建築家マルクス・ウィトルウィウス（紀元前1世紀）の著作に基づき、<b>人体が円と正方形の両方に同時に内接する</b>ことを証明した。</p>
+
+  <div class="section">
+    <h3>6-1　円と正方形の象徴的意味</h3>
+    <ul class="bullet-list">
+      <li><b>円（Circle）</b> = 天・宇宙・無限・魂・マクロコスモス = カバラの「上半分（ケテル〜ティファレト）」</li>
+      <li><b>正方形（Square）</b> = 地・物質・有限・肉体・ミクロコスモス = カバラの「下半分（ティファレト〜マルクト）」</li>
+      <li><b>両方に同時に内接</b> = エメラルドタブレットの「As above, so below」の視覚的証明</li>
+      <li><b>ティファレト（心臓）</b> = 円と正方形の交差点 = 宇宙と人間の鏡面 = 黄金比の焦点</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>6-2　ウィトルウィウス × 生命の木の重ね合わせ</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>セフィロト</th><th>人体の位置</th><th>ウィトルウィウスとの対応</th><th>備考</th></tr></thead>
+        <tbody>
+          <tr><td>ケテル①</td><td>頭頂</td><td>頭頂（円の最上部）</td><td>純粋意識・AIN SOPHの接点</td></tr>
+          <tr><td>コクマー②</td><td>右脳・右指先（腕上げ時）</td><td>腕を上げた時の右指先（円周）</td><td>父性・直感・右脳的認識</td></tr>
+          <tr><td>ビナー③</td><td>左脳・左指先（腕上げ時）</td><td>腕を上げた時の左指先（円周）</td><td>母性・受容・左脳的認識</td></tr>
+          <tr><td>ケセド④</td><td>右肩</td><td>腕を水平にした右肩（正方形角）</td><td>慈悲・拡大・与える力</td></tr>
+          <tr><td>ゲブラー⑤</td><td>左肩</td><td>腕を水平にした左肩（正方形角）</td><td>力・裁き・切断する力</td></tr>
+          <tr class="star-row"><td>ティファレト⑥★</td><td>心臓・胸の中心</td><td>円と正方形の交差点・φ²</td><td>黄金比の核心・全ての中心</td></tr>
+          <tr><td>ネツァク⑦ ★修正</td><td>右手先端</td><td>腕を水平にした右指先</td><td>感情・欲求・触れる手・金星</td></tr>
+          <tr><td>ホド⑧ ★修正</td><td>左手先端</td><td>腕を水平にした左指先</td><td>知性・言語・道具を使う手・水星</td></tr>
+          <tr><td>イェソド⑨</td><td>性器・仙骨部</td><td>正方形の中心・生命力の源</td><td>潜在意識・創造力・夢</td></tr>
+          <tr><td>マルクト⑩</td><td>足の裏・大地</td><td>円の最下部・正方形の底辺中央</td><td>物質世界・地球との接触点</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>6-3　ホド・ネツァクの位置修正</h3>
+    <div class="quote">
+      <p>ホド（水星・水銀・知性・言語・コミュニケーション）は道具を使い言葉を書く「左手」。ネツァク（金星・銅・感情・欲求・美）は感じ触れる「右手」。腕は宇宙と自分が交わる境界線である。</p>
+    </div>
+    <p>ウィトルウィウスの図で腕を水平に伸ばした時、左右の指先は「正方形の四隅」に来る。そこから上にケセド（右肩・慈悲）・ゲブラー（左肩・力）・ネツァク（右手・感情）・ホド（左手・知性）と配置されるのが最も自然な対応である。</p>
+  </div>
+
+  <div class="section">
+    <h3>6-4　フラワーオブライフとの幾何学的一致</h3>
+    <ul class="bullet-list">
+      <li><b>円の直径</b> = フラワーオブライフの第1リング直径</li>
+      <li><b>正方形の辺長</b> = フラワーオブライフの六角格子幅</li>
+      <li><b>人体の各関節位置</b> = フラワーオブライフの円の交点（ベシカ・ピスキス）</li>
+      <li><b>脊椎の各椎骨の比率</b> = フィボナッチ数列</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ CH7 ═══ -->
+<section class="chapter fade-in" id="ch7">
+  <div class="chapter-num">Chapter 07</div>
+  <h2>全体統合——一つの構造</h2>
+
+  <div class="section">
+    <h3>7-1　知識体系の大統合表</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>概念軸</th><th>カバラ</th><th>錬金術</th><th>エメラルドタブレット</th><th>ラッセル</th><th>幾何学</th><th>チャクラ</th><th>ウィトルウィウス</th></tr></thead>
+        <tbody>
+          <tr><td>源・出発点</td><td>AIN SOPH AUR</td><td>Prima Materia</td><td>「真実にして確かなり」</td><td>ゼロポイント</td><td>中心円</td><td>サハスラーラ</td><td>頭頂（円の最上部）</td></tr>
+          <tr class="star-row"><td>中心・鍵 ★</td><td>ティファレト（金）</td><td>ルベド（完成）</td><td>鏡面（As above so below）</td><td>ゼロポイント</td><td>メタトロン中心</td><td>アナーハタ（心臓）</td><td>円と正方形の交差点</td></tr>
+          <tr><td>上昇プロセス</td><td>マルクト→ケテル</td><td>ニグレド→ルベド</td><td>「地から天へ」</td><td>収縮（中心へ）</td><td>点への収束</td><td>ムーラダーラ→サハスラーラ</td><td>正方形→円（地→天）</td></tr>
+          <tr><td>完成状態</td><td>賢者の石</td><td>Philosopher's Stone</td><td>「世界の栄光」</td><td>光の一元性</td><td>メタトロンの完成</td><td>クンダリーニ覚醒</td><td>円と正方形の完全内接</td></tr>
+          <tr><td>数字表現</td><td>10・3・6・9</td><td>4段階・7金属</td><td>「一者から全て」</td><td>9オクターブ</td><td>13・78・φ</td><td>7チャクラ・3経絡</td><td>φ²（黄金比の二乗）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>7-2　全ての道に共通する答え</h3>
+    <div class="quote">
+      <p>心臓を開くことが、カバラ・ヨーガ・錬金術・数学・物理、全ての道に共通するゴールである。これは偶然ではない。</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>知識体系</th><th>「中心」の表現</th></tr></thead>
+        <tbody>
+          <tr><td>カバラ</td><td>ティファレト（美・調和・太陽・金）= 生命の木の物理的中心</td></tr>
+          <tr><td>チャクラ</td><td>アナーハタ（不打の音・無条件の愛）= 7チャクラの第4・上下3つの中間</td></tr>
+          <tr><td>黄金比</td><td>φ²の分割点 = 身体の数学的中心</td></tr>
+          <tr><td>ラッセル</td><td>ゼロポイント = 陰陽の均衡・波動の折り返し点</td></tr>
+          <tr><td>錬金術</td><td>ルベド（赤化・完成）の到達点 = 賢者の石</td></tr>
+          <tr><td>エメラルドタブレット</td><td>As above so belowの鏡面 = 宇宙と人間の接合点</td></tr>
+          <tr class="star-row"><td>ウィトルウィウス</td><td>円と正方形の交差点 = 天と地が交わる場所</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>7-3　現代への影響と接続点</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>現代分野</th><th>接続する古代知識</th><th>具体的な接点</th></tr></thead>
+        <tbody>
+          <tr><td>量子物理学</td><td>エメラルドタブレット・ラッセル宇宙論</td><td>量子場・零点エネルギー・波動と粒子の二重性</td></tr>
+          <tr><td>心理学（ユング）</td><td>錬金術・カバラ・チャクラ</td><td>元型・集合的無意識・シャドウワーク・個性化</td></tr>
+          <tr><td>建築・デザイン</td><td>フラワーオブライフ・黄金比・ウィトルウィウス</td><td>神聖幾何学・φ比率の現代アート・建築への応用</td></tr>
+          <tr><td>医学・代替医療</td><td>チャクラ・ナーディー・カバラの四元素</td><td>エネルギーヒーリング・鍼灸経絡・ホリスティック医療</td></tr>
+          <tr><td>AI・意識研究</td><td>カバラの情報論・メタトロンの構造</td><td>「宇宙は情報処理である」という情報論的宇宙観との対話</td></tr>
+          <tr><td>音楽理論</td><td>テスラ3・6・9・フィボナッチ</td><td>倍音列・音階の数学的構造・ラッセルの9オクターブ</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONCLUSION ═══ -->
+<section class="chapter fade-in" id="conclusion">
+  <div class="chapter-num">Conclusion</div>
+  <h2>結語</h2>
+  <p>本レポートで探求した全ての知識体系は、一言でまとめると<b>「宇宙と人間は同じ法則で動いており、その法則を理解した者は全てを変容させることができる」</b>という主張に収束する。</p>
+  <p>これはエメラルドタブレットが言ったことであり、カバラが言ったことであり、テスラが言ったことであり、ラッセルが言ったことであり、ダ・ヴィンチがウィトルウィウス人体図で示したことであり、チャクラ実践が身体で言ったことでもある。</p>
+  <p>異なる文明・時代・言語で独立して発見された同じ構造が現代に至るまで受け継がれているという事実は、それが単なる「思想」ではなく、何らかの実在する原理を指し示している可能性を示唆する。</p>
+
+  <div class="quote">
+    <p>"The day science begins to study non-physical phenomena, it will make more progress in one decade than in all the previous centuries of its existence."</p>
+    <cite>— Nikola Tesla</cite>
+  </div>
+
+  <p>謎解きは続く。</p>
+
+  <div class="ornament-divider">✦ &nbsp; ◆ &nbsp; ✦</div>
+
+  <div style="text-align:center;margin-top:32px;">
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:rgba(200,168,74,.6);letter-spacing:.1em;margin-bottom:8px;">
+      "As above, so below. As within, so without."
+    </p>
+    <p style="font-family:'Cinzel',serif;font-size:9px;color:var(--dim);letter-spacing:.25em;">
+      上にあるものは下にあるものの如く。内にあるものは外にあるものの如く。
+    </p>
+  </div>
+</section>
+
+<footer>
+  <p>宇宙の設計図を読む &nbsp;✦&nbsp; 統合探求レポート &nbsp;✦&nbsp; Kabbalah · Alchemy · Sacred Geometry · One Structure</p>
+</footer>
+
+</main>
+
+<script>
+// ── PROGRESS BAR ──
+window.addEventListener('scroll', () => {
+  const total = document.body.scrollHeight - window.innerHeight;
+  const prog = window.scrollY / total;
+  document.getElementById('prog').style.transform = `scaleX(${prog})`;
+});
+
+// ── SIDEBAR ACTIVE ──
+const sections = document.querySelectorAll('section[id], div[id]');
+const navLinks = document.querySelectorAll('nav a');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === `#${id}`);
+      });
+    }
+  });
+}, {rootMargin: '-30% 0px -60% 0px'});
+
+sections.forEach(s => observer.observe(s));
+
+// ── FADE IN ──
+const fadeObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); fadeObserver.unobserve(e.target); }
+  });
+}, {threshold: 0.08});
+document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
+
+// ── MOBILE SIDEBAR ──
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
+document.addEventListener('click', e => {
+  const sb = document.getElementById('sidebar');
+  const btn = document.querySelector('.menu-btn');
+  if (sb.classList.contains('open') && !sb.contains(e.target) && e.target !== btn) closeSidebar();
+});
+</script>
+</body>
+</html>
